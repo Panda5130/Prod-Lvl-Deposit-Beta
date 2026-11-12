@@ -1,7 +1,7 @@
 # FFIEC Deposit Beta Analyses
 
-**Document version 2.0** (FFIEC Call Report source). Baseline: FDIC document version 1.0 as at FDIC `main` commit
-`4287c8a178494eddce7dc6899c0f10cdbfa0df21`. Last synced FDIC commit: `4287c8a178494eddce7dc6899c0f10cdbfa0df21`.
+**Model v2.0 (FFIEC Call Report)**, successor to Model v1.0 (FDIC BankFind). Model versions and document revisions are separate; this document has its own revision numbers (table in section 6).
+Last synced FDIC commit: `057d5dd` (2026-11-12).
 
 This document is the SR 11-7 record for the FFIEC model. It never edits `WIP Regional Banking Deposit Beta Analyses.md`,
 which is the FDIC 1.0 document and arrives unchanged with each sync.
@@ -28,7 +28,8 @@ _To be completed after the first authenticated pull: reconciliation, materiality
 - No MDRM code found for RC-K time-deposit averages from 2017 on, nor for the RC-K noninterest-bearing average.
 - Unit check (dollars vs $ thousands) to be confirmed by the reconciliation.
 
-## 6. Change log
-| Date | Change | Validation |
-| :-- | :-- | :-- |
-| 2026-11-12 | Scaffold, version 2.0 skeleton | Unit tests with mocked responses; isolation check |
+## 6. Document revision history
+| Date | Revision | Change | Validation |
+| :-- | :-- | :-- | :-- |
+| 2026-11-12 | 1 | Seeded from FDIC Model v1.0, document revision 2.0 (WIP), commit 057d5dd (2026-11-12). | Lineage entry |
+| 2026-11-12 | 1 | First upstream sync (4287c8a to 057d5dd): FDIC PR #19, tighter Figure 32 axes and doc revision relabel; no model change. FFIEC scaffold with mocked-response tests. | 69 tests pass; isolation check clean |

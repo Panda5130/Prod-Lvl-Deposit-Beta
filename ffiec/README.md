@@ -1,6 +1,6 @@
-# FFIEC Call Report pipeline (doc version 2.0)
+# FFIEC Call Report pipeline (Model v2.0)
 
-Downstream of the FDIC repo (doc version 1.0, `Panda5130/Deposit-Beta`). Same ECM pipeline for the 7 target banks,
+Downstream of the FDIC repo (Model v1.0, `Panda5130/Deposit-Beta`). Same ECM pipeline for the 7 target banks,
 with financials from FFIEC Call Reports instead of FDIC BankFind. Phase 1 (pilot) does not feed the model.
 
 ## Layout
