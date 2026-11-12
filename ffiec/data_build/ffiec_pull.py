@@ -14,17 +14,20 @@ Outputs (ffiec/data/):
     amendments.csv             records whose response hash changed on a later pull
 Reads (never writes) merger_events_used.csv at the repo root for the predecessor list.
 
-ASSUMPTION TO CONFIRM ON THE FIRST AUTHENTICATED CALL: the PWS endpoint and header names in PwsClient and the
-XBRL element naming in parse_facsimile were written without access to the service documentation (the host
-blocked unauthenticated fetches). They are isolated in those two places; the tests use mocked responses.
+Endpoint and headers follow CDR SIS611 v1.10 (https://cdr.ffiec.gov/public/Files/SIS611_-_Retrieve_Public_Data_via_Web_Service.pdf).
+The PWS allows about 2500 downloads per hour (CDR help page), so the pull throttles (PAUSE_S) and checkpoints to
+disk every CHECKPOINT records; rerunning resumes. XBRL element naming in parse_facsimile is confirmed on the
+first real response.
 """
 import argparse
 import hashlib
 import io
+import json
 import logging
 import os
 import re
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -40,12 +43,14 @@ ROOT = FFIEC.parent
 DATA = FFIEC / "data"
 log = logging.getLogger("ffiec_pull")
 
-PWS_BASE = "https://ffieccdr.azure-api.net/public"
+PWS_BASE = "https://ffieccdr.azure-api.us/public"
 FDIC_API = "https://api.fdic.gov/banks"
 KEYRING_SERVICE = "ffiec_pws"
 TARGET_CERTS = [4977, 30788, 6560, 17534, 588, 3832, 33555]
 FIRST_PERIOD = "2007-12-31"       # 2007Q4 is needed for the 2008Q1 two-point average
 LAST_PERIOD = "2026-09-30"
+PAUSE_S = 1.6           # ~2250 calls/hour, under the ~2500/hour limit
+CHECKPOINT = 100
 ITEM_COLS = ["rssd", "period", "item", "value", "response_hash", "pulled_at"]
 
 NO_CREDS_MSG = (
@@ -142,26 +147,47 @@ def _us(period):
 
 
 class PwsClient:
-    """Thin wrapper; the only place that knows endpoint and header names (see module ASSUMPTION note)."""
+    """Thin wrapper; the only place that knows endpoint and header names. Per CDR SIS611 v1.10: all parameters
+    are request HEADERS (plus UserID and "Authentication: Bearer <token>"); host ffieccdr.azure-api.us."""
 
-    def __init__(self, user, token, session=None):
-        self._h = {"UserID": user, "Authentication": f"Bearer {token}"}   # never logged
+    def __init__(self, user, token, session=None, fmt="XBRL"):
+        self._h = {"UserID": user, "Authentication": f"Bearer {token}", "dataSeries": "Call"}   # never logged
         self.s = session or requests.Session()
+        self.fmt = fmt
 
-    def _get(self, op, params):
-        r = self.s.get(f"{PWS_BASE}/{op}", headers=self._h, params=params, timeout=120)
+    def _get(self, op, **headers):
+        r = self.s.get(f"{PWS_BASE}/{op}", headers={**self._h, **headers}, timeout=120)
         r.raise_for_status()
         return r.content
 
     def facsimile(self, rssd, period):
-        return self._get("RetrieveFacsimile", {"dataSeries": "Call", "reportingPeriodEndDate": _us(period),
-                                               "fiIDType": "ID_RSSD", "fiID": rssd, "facsimileFormat": "XBRL"})
+        return decode_stream(self._get("RetrieveFacsimile", reportingPeriodEndDate=_us(period), fiIdType="ID_RSSD",
+                                       fiId=str(rssd), facsimileFormat=self.fmt))
 
     def filers_since(self, period, since):
         """RSSD IDs of filers whose submission was updated since `since` (amendment detection)."""
-        raw = self._get("RetrieveFilersSinceDate", {"dataSeries": "Call", "reportingPeriodEndDate": _us(period),
-                                                    "lastUpdateDateTime": since})
-        return {int(x) for x in re.findall(r"\d+", raw.decode("utf-8", "ignore"))}
+        raw = self._get("RetrieveFilersSinceDate", reportingPeriodEndDate=_us(period), lastUpdateDateTime=since)
+        try:
+            return {int(x) for x in json.loads(raw).get("ID_RSSDs", [])}
+        except (ValueError, AttributeError):
+            return {int(x) for x in re.findall(r"\d+", raw.decode("utf-8", "ignore"))}
+
+
+def decode_stream(raw):
+    """The facsimile comes back as a byte stream; tolerate a JSON byte array, JSON {FacsimileFile: base64|list},
+    or the file itself."""
+    try:
+        j = json.loads(raw)
+    except ValueError:
+        return raw
+    if isinstance(j, dict):
+        j = j.get("FacsimileFile", j)
+    if isinstance(j, list) and all(isinstance(x, int) for x in j):
+        return bytes(j)
+    if isinstance(j, str):
+        import base64
+        return base64.b64decode(j)
+    return raw
 
 
 _FACT = re.compile(r"<(?:[\w.-]+:)?((?:RCON|RCFD|RCFN|RIAD)[0-9A-Z]{4})\b[^>]*>\s*([-+0-9.eE]+)\s*</", re.I)
@@ -195,7 +221,7 @@ def held(items):
     return set(zip(items.rssd.astype(int), items.period))
 
 
-def pull(client, plan, items, check_hash_for=(), now=None):
+def pull(client, plan, items, check_hash_for=(), now=None, pause=0.0, checkpoint=None):
     """Fetch (rssd, period) pairs not held, plus `check_hash_for` (amendment re-pulls). A re-pull whose hash
     differs replaces the old records and is reported. Returns (items, amendments, n_calls)."""
     now = now or datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -204,8 +230,12 @@ def pull(client, plan, items, check_hash_for=(), now=None):
     todo += [k for k in check_hash_for if k in have]
     rows, amend, calls = [], [], 0
     for rssd, period in todo:
+        if pause and calls:
+            time.sleep(pause)
         raw = client.facsimile(rssd, period)
         calls += 1
+        if checkpoint and rows and calls % CHECKPOINT == 0:
+            checkpoint(pd.concat([items, pd.DataFrame(rows)], ignore_index=True), pd.DataFrame())
         h = response_hash(raw)
         vals = parse_facsimile(raw)
         old = items[(items.rssd == rssd) & (items.period == period)]
@@ -286,7 +316,7 @@ def main(argv=None):
         since = items.pulled_at.min()
         for p in sorted(set(items.period)):
             check += [(r, p) for r in client.filers_since(p, since) if (r, p) in held(items)]
-    items, amend, calls = pull(client, plan, items, check)
+    items, amend, calls = pull(client, plan, items, check, pause=PAUSE_S, checkpoint=save)
     save(items, amend)
     log.info("calls %d, records %d, amendments %d", calls, len(items), len(amend))
     return 0
