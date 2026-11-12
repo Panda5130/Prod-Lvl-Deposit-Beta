@@ -49,7 +49,7 @@ KEYRING_SERVICE = "ffiec_pws"
 TARGET_CERTS = [4977, 30788, 6560, 17534, 588, 3832, 33555]
 FIRST_PERIOD = "2007-12-31"       # 2007Q4 is needed for the 2008Q1 two-point average
 LAST_PERIOD = "2026-09-30"
-PAUSE_S = 1.6           # ~2250 calls/hour, under the ~2500/hour limit
+PAUSE_S = 0.5           # plus ~1.1 s call latency = ~2250 calls/hour, under the ~2500/hour limit
 CHECKPOINT = 100
 ITEM_COLS = ["rssd", "period", "item", "value", "response_hash", "pulled_at"]
 
@@ -222,6 +222,22 @@ def held(items):
     return set(zip(items.rssd.astype(int), items.period))
 
 
+def _with_retry(fn, tries=5, base=30):
+    """Retry transient failures (connection errors, 429, 5xx) with backoff; other HTTP errors raise at once."""
+    for i in range(tries):
+        try:
+            return fn()
+        except requests.HTTPError as e:
+            code = e.response.status_code
+            if code not in (429, 500, 502, 503, 504) or i == tries - 1:
+                raise
+        except requests.ConnectionError:
+            if i == tries - 1:
+                raise
+        log.warning("transient failure, retry %d after %ds", i + 1, base * 2 ** i)
+        time.sleep(base * 2 ** i)
+
+
 def pull(client, plan, items, check_hash_for=(), now=None, pause=0.0, checkpoint=None):
     """Fetch (rssd, period) pairs not held, plus `check_hash_for` (amendment re-pulls). A re-pull whose hash
     differs replaces the old records and is reported. Returns (items, amendments, n_calls)."""
@@ -233,7 +249,7 @@ def pull(client, plan, items, check_hash_for=(), now=None, pause=0.0, checkpoint
     for rssd, period in todo:
         if pause and calls:
             time.sleep(pause)
-        raw = client.facsimile(rssd, period)
+        raw = _with_retry(lambda: client.facsimile(rssd, period))
         calls += 1
         if checkpoint and rows and calls % CHECKPOINT == 0:
             checkpoint(pd.concat([items, pd.DataFrame(rows)], ignore_index=True), pd.DataFrame())
