@@ -151,7 +151,8 @@ class PwsClient:
     are request HEADERS (plus UserID and "Authentication: Bearer <token>"); host ffieccdr.azure-api.us."""
 
     def __init__(self, user, token, session=None, fmt="XBRL"):
-        self._h = {"UserID": user, "Authentication": f"Bearer {token}", "dataSeries": "Call"}   # never logged
+        self._h = {"UserID": user, "Authentication": f"Bearer {token}", "dataSeries": "Call",
+                   "User-Agent": "ffiec-pull/1.0 (research client)"}   # never logged; the gateway returns 403 to the default python-requests agent
         self.s = session or requests.Session()
         self.fmt = fmt
 
