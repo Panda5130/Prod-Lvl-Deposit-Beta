@@ -21,10 +21,15 @@ Unchanged FDIC logic (`data_build/build_dataset.py`, imported not edited). Event
 cross-checked against NIC Transformations (`ffiec/outputs/nic_event_differences.csv`).
 
 ## 4. Pilot results
-_To be completed after the first authenticated pull: reconciliation, materiality, NIC differences._
+Pull (2026-11-13): 8,791 filings, 100,748 item records, 0 amendments; 536 filings (53 entities, all 2007Q4 to 2013Q3) returned HTTP 500 and are listed in `ffiec/data/missing_filings.csv` (mostly predecessors before they existed; to be confirmed per entity). Build: 525 rows, 358 events, all validation checks pass.
+Reconciliation with BankFind (`ffiec/outputs/reconciliation_summary.csv`): 279 quarters flagged, all 272 "differs" and 7 "ffiec_only" (2026Q3, not yet in BankFind). Deposit totals differ by a median of about $0.3bn in 2010 to 2015, under $0.2m from 2016 to 2020; interest expense and rate differences are about zero. Cause of the early-year deposit gap not yet established.
+Materiality (`ffiec/outputs/materiality_summary.csv`): RC-K interest-bearing rate versus the 2-point rate, 2008 to 2016 only (36 quarters per bank). Correlations 0.97 to 1.00; level gap (RC-K minus 2-point) from -0.001 to 0.121 points, largest for SouthState (0.121) and First Horizon (0.084).
+NIC cross-check: not run (NIC download blocked; needs a CSV via `--file`).
 
 ## 5. Open items
-- PWS endpoint/header names and XBRL element naming to be confirmed on the first authenticated call.
+- Endpoint, header names and XBRL element naming confirmed on the first authenticated pull (SIS611 v1.10); units confirmed (dollars, divided by 1,000).
+- Explain the 2010 to 2015 deposit-total differences versus BankFind; review `missing_filings.csv` for any entity that should have filed.
+- NIC Transformations cross-check not yet run.
 - No MDRM code found for RC-K time-deposit averages from 2017 on, nor for the RC-K noninterest-bearing average.
 - Unit check (dollars vs $ thousands) to be confirmed by the reconciliation.
 

@@ -157,7 +157,7 @@ class PwsClient:
         self.fmt = fmt
 
     def _get(self, op, **headers):
-        r = self.s.get(f"{PWS_BASE}/{op}", headers={**self._h, **headers}, timeout=120)
+        r = self.s.get(f"{PWS_BASE}/{op}", headers={**self._h, **headers}, timeout=60)
         r.raise_for_status()
         return r.content
 
@@ -222,20 +222,32 @@ def held(items):
     return set(zip(items.rssd.astype(int), items.period))
 
 
-def _with_retry(fn, tries=5, base=30):
-    """Retry transient failures (connection errors, 429, 5xx) with backoff; other HTTP errors raise at once."""
-    for i in range(tries):
+def _with_retry(fn, tries=3, base=30, cap=300):
+    """Retry transient failures with capped backoff. Connection errors (laptop asleep, network down) retry
+    without limit; 429/5xx retry `tries` times; other HTTP errors raise at once."""
+    i = 0
+    while True:
         try:
             return fn()
         except requests.HTTPError as e:
             code = e.response.status_code
-            if code not in (429, 500, 502, 503, 504) or i == tries - 1:
+            if code not in (429, 500, 502, 503, 504) or i >= tries - 1:
                 raise
-        except requests.ConnectionError:
-            if i == tries - 1:
-                raise
-        log.warning("transient failure, retry %d after %ds", i + 1, base * 2 ** i)
-        time.sleep(base * 2 ** i)
+            why = f"HTTP {code}"
+        except (requests.ConnectionError, requests.Timeout) as e:
+            why = type(e).__name__
+        wait = min(cap, base * 2 ** min(i, 10))
+        log.warning("transient failure (%s), retry %d after %ds", why, i + 1, wait)
+        time.sleep(wait)
+        i += 1
+
+
+def _canary_ok(client, key):
+    try:
+        client.facsimile(*key)
+        return True
+    except requests.RequestException:
+        return False
 
 
 def pull(client, plan, items, check_hash_for=(), now=None, pause=0.0, checkpoint=None):
@@ -243,13 +255,40 @@ def pull(client, plan, items, check_hash_for=(), now=None, pause=0.0, checkpoint
     differs replaces the old records and is reported. Returns (items, amendments, n_calls)."""
     now = now or datetime.now(timezone.utc).isoformat(timespec="seconds")
     have = held(items)
-    todo = [(r, p) for r, per in plan.items() for p in per if (r, p) not in have]
+    known_missing = load_missing()
+    todo = [(r, p) for r, per in plan.items() for p in per if (r, p) not in have and (r, p) not in known_missing]
     todo += [k for k in check_hash_for if k in have]
-    rows, amend, calls = [], [], 0
+    rows, amend, calls, skipped, consec, failed_entities = [], [], 0, [], 0, set()
+    canary = sorted(have)[0] if have else None
     for rssd, period in todo:
         if pause and calls:
             time.sleep(pause)
-        raw = _with_retry(lambda: client.facsimile(rssd, period))
+        try:
+            raw = _with_retry(lambda: client.facsimile(rssd, period),
+                              tries=1 if rssd in failed_entities else 3)   # an entity with no filings fails fast
+        except requests.HTTPError as e:
+            code = getattr(getattr(e, "response", None), "status_code", None)
+            if code in (401, 403):                 # auth or gateway problem: stop, do not hammer
+                if checkpoint and rows:
+                    checkpoint(pd.concat([items, pd.DataFrame(rows)], ignore_index=True), pd.DataFrame())
+                raise
+            log.warning("no filing returned for rssd %s %s (HTTP %s); recorded as missing", rssd, period, code)
+            skipped.append((rssd, period))
+            record_missing([(rssd, period)], now)  # persisted at once: a crash or stop must not repeat these
+            if rssd not in failed_entities:
+                consec += 1                      # count distinct entities, so one filer with no history is not an outage
+            failed_entities.add(rssd)
+            if consec >= 5:
+                # Many predecessors did not exist in early quarters, so a run of failures is not proof of an outage.
+                # Canary: re-fetch a filing known to exist; stop only if that fails too.
+                if canary and not _canary_ok(client, canary):
+                    if checkpoint and rows:
+                        checkpoint(pd.concat([items, pd.DataFrame(rows)], ignore_index=True), pd.DataFrame())
+                    raise RuntimeError("service outage (known-good filing also fails); stopping; rerun to resume")
+                consec = 0
+            continue
+        consec = 0
+        failed_entities.discard(rssd)
         calls += 1
         if checkpoint and rows and calls % CHECKPOINT == 0:
             checkpoint(pd.concat([items, pd.DataFrame(rows)], ignore_index=True), pd.DataFrame())
@@ -268,7 +307,28 @@ def pull(client, plan, items, check_hash_for=(), now=None, pause=0.0, checkpoint
             log.warning("no wanted items parsed for rssd %s %s", rssd, period)
     if rows:
         items = pd.concat([items, pd.DataFrame(rows)], ignore_index=True)
+    if skipped:
+        log.warning("%d filings returned no data and are listed in ffiec/data/missing_filings.csv", len(skipped))
     return items, pd.DataFrame(amend), calls
+
+
+MISSING = DATA / "missing_filings.csv"
+
+
+def load_missing():
+    if MISSING.exists():
+        d = pd.read_csv(MISSING, dtype={"period": str})
+        return set(zip(d.rssd.astype(int), d.period))
+    return set()
+
+
+def record_missing(skipped, now):
+    """Filings the service answered with a persistent error (no such filing). Not retried on later runs;
+    delete the file to retry them."""
+    old = pd.read_csv(MISSING) if MISSING.exists() else pd.DataFrame(columns=["rssd", "period", "recorded_at"])
+    new = pd.DataFrame([{"rssd": r, "period": p, "recorded_at": now} for r, p in skipped])
+    MISSING.parent.mkdir(parents=True, exist_ok=True)
+    pd.concat([old, new], ignore_index=True).drop_duplicates(["rssd", "period"]).to_csv(MISSING, index=False)
 
 
 def to_quarterly(items):
@@ -305,6 +365,25 @@ def verify_items(mdrm_csv):
     return [(c, "not in MDRM") for c in ITEMS if c not in keys]
 
 
+LOCK = DATA / ".pull.lock"
+LOCK_STALE_S = 1800
+
+
+def acquire_lock():
+    """True if this process may run. A lock younger than LOCK_STALE_S (touched at every checkpoint) means another
+    run is active; an older one is a crashed run and is taken over."""
+    DATA.mkdir(parents=True, exist_ok=True)
+    if LOCK.exists() and time.time() - LOCK.stat().st_mtime < LOCK_STALE_S:
+        return False
+    LOCK.write_text(str(os.getpid()))
+    return True
+
+
+def _checkpoint(items, amend):
+    save(items, amend)
+    LOCK.touch()
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Incremental FFIEC Call Report pull")
     ap.add_argument("--plan", action="store_true", help="show the pull plan and call count; make no calls")
@@ -326,6 +405,9 @@ def main(argv=None):
     log.info("entities %d, unmapped certs %d %s, calls needed %d", len(plan), len(missing), missing[:10], todo)
     if a.plan:
         return 0
+    if not acquire_lock():
+        log.info("another pull is active (lock is fresh); exiting")
+        return 0
     user, token = get_credentials()
     client = PwsClient(user, token)
     check = []
@@ -333,8 +415,11 @@ def main(argv=None):
         since = items.pulled_at.min()
         for p in sorted(set(items.period)):
             check += [(r, p) for r in client.filers_since(p, since) if (r, p) in held(items)]
-    items, amend, calls = pull(client, plan, items, check, pause=PAUSE_S, checkpoint=save)
-    save(items, amend)
+    try:
+        items, amend, calls = pull(client, plan, items, check, pause=PAUSE_S, checkpoint=_checkpoint)
+        save(items, amend)
+    finally:
+        LOCK.unlink(missing_ok=True)
     log.info("calls %d, records %d, amendments %d", calls, len(items), len(amend))
     return 0
 

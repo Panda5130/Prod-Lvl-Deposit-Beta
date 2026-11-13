@@ -213,3 +213,21 @@ def test_reconcile_flags_difference_and_only_quarters():
 def test_isolation_check_runs_against_base():
     mb, bad = vi.changed_outside("main")
     assert isinstance(bad, list) and all(not p.startswith("ffiec/") for p in bad)
+
+
+def test_persistent_http_error_is_recorded_missing_and_run_continues(tmp_path, monkeypatch):
+    import requests
+
+    class Flaky:
+        def facsimile(self, rssd, period):
+            if period == "2008-03-31":
+                r = requests.Response()
+                r.status_code = 500
+                raise requests.HTTPError(response=r)
+            return facsimile({"RCON2200": 1})
+    monkeypatch.setattr(fp, "MISSING", tmp_path / "missing.csv")
+    monkeypatch.setattr(fp.time, "sleep", lambda s: None)
+    items, am, n = fp.pull(Flaky(), {7: ["2008-03-31", "2008-06-30"]}, fp.load_items("nonexistent.csv"))
+    assert n == 1 and len(items) == 1 and fp.load_missing() == {(7, "2008-03-31")}
+    items2, _, n2 = fp.pull(Flaky(), {7: ["2008-03-31", "2008-06-30"]}, items)
+    assert n2 == 0                                              # missing filing is not retried
