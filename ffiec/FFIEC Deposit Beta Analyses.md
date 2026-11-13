@@ -21,17 +21,21 @@ Unchanged FDIC logic (`data_build/build_dataset.py`, imported not edited). Event
 cross-checked against NIC Transformations (`ffiec/outputs/nic_event_differences.csv`).
 
 ## 4. Pilot results
-Pull (2026-11-13): 8,791 filings, 100,748 item records, 0 amendments; 536 filings (53 entities, all 2007Q4 to 2013Q3) returned HTTP 500 and are listed in `ffiec/data/missing_filings.csv` (mostly predecessors before they existed; to be confirmed per entity). Build: 525 rows, 358 events, all validation checks pass.
-Reconciliation with BankFind (`ffiec/outputs/reconciliation_summary.csv`): 279 quarters flagged, all 272 "differs" and 7 "ffiec_only" (2026Q3, not yet in BankFind). Deposit totals differ by a median of about $0.3bn in 2010 to 2015, under $0.2m from 2016 to 2020; interest expense and rate differences are about zero. Cause of the early-year deposit gap not yet established.
-Materiality (`ffiec/outputs/materiality_summary.csv`): RC-K interest-bearing rate versus the 2-point rate, 2008 to 2016 only (36 quarters per bank). Correlations 0.97 to 1.00; level gap (RC-K minus 2-point) from -0.001 to 0.121 points, largest for SouthState (0.121) and First Horizon (0.084).
+Pull (2026-11-13): 8,791 filings, 100,748 item records, 0 amendments. 536 filings (53 entities, 2007Q4 to 2013Q3) returned HTTP 500 and are in `ffiec/data/missing_filings.csv`. Each was checked against the service's own filer list for that quarter (`RetrieveFilersSinceDate`; `ffiec/outputs/missing_filings_check.csv`): none of the 536 is listed, so these are non-filers, not outages. 13 entities miss exactly 2007Q4 to 2011Q4 and file from 2012Q1, consistent with institutions that filed another report before 2012 (not yet confirmed which). Build: 525 rows, 383 events, all validation checks pass.
+
+Reconciliation with BankFind (`ffiec/outputs/reconciliation_summary.csv`): total deposits match exactly in every quarter. 133 quarters flagged: 126 "differs" (rate_pf_clean; 6 of them also interest expense and deposit rate) and 7 "ffiec_only" (2026Q3). Root causes found and fixed in the builder:
+1. Total deposits omitted foreign offices. Filers with foreign offices report RCON2200 and RCFN2200 and no RCFD2200, so total deposits is now RCON2200 + RCFN2200 (Huntington, M&T, KeyBank; gap equalled RCFN2200 exactly).
+2. One RSSD maps to several certs over time (9 certs share 4 RSSDs, e.g. 4999 and 59026), and a rssd-to-cert dictionary kept only one. Rows now go to each cert alive in that quarter (per FDIC cert/quarter coverage, read only).
+Remaining 126 differences: 89 have a different count of predecessors included (predecessors with no Call Report in the pre-2012 quarters, plus 5 certs with no RSSD in the FDIC API: 27120, 33001, 57128, 57422, 91385); 37 have the same predecessors and differ by small interest-expense amounts (68 of 8,384 bank-quarters differ by more than 1 in EDEPDOMQ, mostly Q2 to Q4; cause not established, restated year-to-date figures are the leading suspect).
+Materiality (`ffiec/outputs/materiality_summary.csv`), after the fixes: RC-K interest-bearing rate versus the 2-point rate, 2008 to 2016 only (36 quarters per bank). Correlations 0.97 to 1.00; level gap (RC-K minus 2-point) 0.03 to 0.12 points (SouthState 0.121, First Horizon 0.084, others 0.03 to 0.05).
 NIC cross-check: not run (NIC download blocked; needs a CSV via `--file`).
 
 ## 5. Open items
-- Endpoint, header names and XBRL element naming confirmed on the first authenticated pull (SIS611 v1.10); units confirmed (dollars, divided by 1,000).
-- Explain the 2010 to 2015 deposit-total differences versus BankFind; review `missing_filings.csv` for any entity that should have filed.
+- Endpoint, header names, element naming and units (dollars, divided by 1,000) confirmed on the first authenticated pull (SIS611 v1.10).
+- 37 quarters with the same predecessors still differ on interest expense (small); test whether BankFind uses restated or as-originally-filed year-to-date figures.
+- The 89 quarters with fewer predecessors than BankFind: decide whether FFIEC may use a different predecessor set pre-2012 (Mode A needs the pre-merger history).
 - NIC Transformations cross-check not yet run.
 - No MDRM code found for RC-K time-deposit averages from 2017 on, nor for the RC-K noninterest-bearing average.
-- Unit check (dollars vs $ thousands) to be confirmed by the reconciliation.
 
 ## 6. Document revision history
 | Date | Revision | Change | Validation |

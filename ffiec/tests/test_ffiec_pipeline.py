@@ -178,6 +178,22 @@ def test_builder_drops_incomplete_ri_quarters():
     assert bf.financials_from_items(w, {4977: 1}).empty
 
 
+def test_shared_rssd_goes_to_the_cert_alive_that_quarter():
+    rows = [{"rssd": 1, "period": p, "item": i, "value": v} for p in ("2008-03-31", "2008-06-30")
+            for i, v in [("RCON2200", 1e9), ("RIAD4508", 1.0), ("RIAD0093", 1.0), ("RIADA517", 1.0), ("RIADA518", 1.0)]]
+    life = {(10, 20080331), (20, 20080630)}                     # cert 10 retired, cert 20 took over the RSSD
+    out = bf.financials_from_items(pd.DataFrame(rows), {10: 1, 20: 1}, life)
+    assert sorted(zip(out.CERT, out.REPDTE)) == [(10, 20080331), (20, 20080630)]
+
+
+def test_total_deposits_include_foreign_offices():
+    rows = [{"rssd": 1, "period": "2008-03-31", "item": i, "value": v}
+            for i, v in [("RCON2200", 9e9), ("RCFN2200", 1e9), ("RIAD4508", 1.0), ("RIAD0093", 1.0),
+                         ("RIADA517", 1.0), ("RIADA518", 1.0)]]
+    out = bf.financials_from_items(pd.DataFrame(rows), {4977: 1})
+    assert out.DEP.iloc[0] == pytest.approx(10_000_000.0)       # $ thousands: domestic + foreign
+
+
 # ---------------------------------------------------------------- NIC cross-check
 def test_nic_cross_check_flags_differences():
     events = pd.DataFrame({"predecessor_cert": [10, 11, 12], "survivor_cert": [1, 1, 1],

@@ -38,15 +38,17 @@ def load_fdic_module(root=ROOT):
     return mod
 
 
-def financials_from_items(quarterly, cert_rssd):
+def financials_from_items(quarterly, cert_rssd, cert_quarters=None):
     """Wide FDIC-shaped frame (CERT, REPDTE, DEP, EDEPDOMQ, EDEPFORQ) in $ thousands from quarterly long items."""
-    rssd_cert = {r: c for c, r in cert_rssd.items() if r}
     w = quarterly.pivot_table(index=["rssd", "period"], columns="item", values="value", aggfunc="first")
     w = w.reset_index()
-    for col in ("RCFD2200", "RCON2200", "RIAD4172"):
+    for col in ("RCFD2200", "RCON2200", "RCFN2200", "RIAD4172"):
         if col not in w:
             w[col] = float("nan")
-    w["DEP"] = w.RCFD2200.fillna(w.RCON2200)
+    # Total deposits = domestic offices (RCON2200) + foreign offices (RCFN2200). Filers with foreign offices
+    # report no RCFD2200 in the service output, so using RCON2200 alone drops foreign deposits (root cause of
+    # the 2008-2015 reconciliation gap for Huntington, M&T and KeyBank). RCFD2200, if present, is the total.
+    w["DEP"] = w.RCFD2200.fillna(w.RCON2200 + w.RCFN2200.fillna(0.0))
     dom = []
     for _, r in w.iterrows():
         codes = ri_dom_codes(r["period"])
@@ -58,10 +60,20 @@ def financials_from_items(quarterly, cert_rssd):
     w.loc[(w.period < "2008-01-01") & w.EDEPDOMQ.isna(), "EDEPDOMQ"] = 0.0
     w["EDEPFORQ"] = w.RIAD4172.fillna(0.0)
     w = w.dropna(subset=["DEP", "EDEPDOMQ"])
-    out = pd.DataFrame({"CERT": w.rssd.map(rssd_cert), "REPDTE": w.period.str.replace("-", "").astype(int),
+    out = pd.DataFrame({"rssd": w.rssd, "REPDTE": w.period.str.replace("-", "").astype(int),
                         "DEP": w.DEP / UNIT_DIVISOR, "EDEPDOMQ": w.EDEPDOMQ / UNIT_DIVISOR,
                         "EDEPFORQ": w.EDEPFORQ / UNIT_DIVISOR})
-    return out.dropna(subset=["CERT"]).astype({"CERT": int})
+    # One RSSD can belong to several certs over time (e.g. a charter change retired the cert but kept the RSSD).
+    # The filing is the RSSD's, so each row goes to every cert sharing it; for a shared RSSD the quarter must fall
+    # inside that cert's life, which `cert_quarters` ((CERT, REPDTE) pairs the FDIC history knows) tells us.
+    cert_map = pd.DataFrame([(r, c) for c, r in cert_rssd.items() if r], columns=["rssd", "CERT"])
+    shared = cert_map.rssd.duplicated(keep=False)
+    out = out.merge(cert_map, on="rssd", how="inner")
+    if cert_quarters is not None:
+        in_life = pd.Series([(c, d) in cert_quarters for c, d in zip(out.CERT, out.REPDTE)], index=out.index)
+        keep = ~out.rssd.isin(set(cert_map.rssd[shared])) | in_life
+        out = out[keep]
+    return out.drop(columns="rssd")[["CERT", "REPDTE", "DEP", "EDEPDOMQ", "EDEPFORQ"]].astype({"CERT": int})
 
 
 def make_source_class(bd, fin, hist):
@@ -81,7 +93,8 @@ def build_ffiec(items_path=None, cert_rssd_path=None, hist_path=None, outdir=OUT
     quarterly = pd.read_csv(items_path or FFIEC / "data" / "ffiec_items_quarterly.csv", dtype={"period": str})
     cr = pd.read_csv(cert_rssd_path or FFIEC / "data" / "cert_rssd.csv")
     cert_rssd = {int(c): (int(r) if pd.notna(r) else None) for c, r in zip(cr.cert, cr.rssd)}
-    fin = financials_from_items(quarterly, cert_rssd)
+    fdic_fin = pd.read_csv(root / "data_build" / "raw" / "financials_targets.csv", usecols=["CERT", "REPDTE"])  # read only
+    fin = financials_from_items(quarterly, cert_rssd, set(zip(fdic_fin.CERT, fdic_fin.REPDTE)))
     hist = pd.read_csv(hist_path or root / "data_build" / "raw" / "history_targets.csv")
     src = make_source_class(bd, fin, hist)
     outdir.mkdir(parents=True, exist_ok=True)
