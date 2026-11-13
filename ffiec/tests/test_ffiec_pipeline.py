@@ -181,9 +181,19 @@ def test_builder_drops_incomplete_ri_quarters():
 def test_shared_rssd_goes_to_the_cert_alive_that_quarter():
     rows = [{"rssd": 1, "period": p, "item": i, "value": v} for p in ("2008-03-31", "2008-06-30")
             for i, v in [("RCON2200", 1e9), ("RIAD4508", 1.0), ("RIAD0093", 1.0), ("RIADA517", 1.0), ("RIADA518", 1.0)]]
-    life = {(10, 20080331), (20, 20080630)}                     # cert 10 retired, cert 20 took over the RSSD
+    life = {(10, 20080331): 1_000_000.0, (20, 20080630): 1_000_000.0}   # cert 10 retired, cert 20 took over the RSSD
     out = bf.financials_from_items(pd.DataFrame(rows), {10: 1, 20: 1}, life)
     assert sorted(zip(out.CERT, out.REPDTE)) == [(10, 20080331), (20, 20080630)]
+
+
+def test_wrong_api_rssd_resolved_by_extra_rssd_and_deposit_match():
+    ri = [("RIAD4508", 1.0), ("RIAD0093", 1.0), ("RIADA517", 1.0), ("RIADA518", 1.0)]
+    rows = [{"rssd": r, "period": "2008-03-31", "item": i, "value": v}
+            for r, dep in [(1, 9e9), (2, 1e9)] for i, v in [("RCON2200", dep)] + ri]
+    fdic = {(10, 20080331): 9_000_000.0, (20, 20080331): 1_000_000.0}   # API gave cert 10 the RSSD of cert 20
+    out = bf.financials_from_items(pd.DataFrame(rows), {10: 2, 20: 2}, fdic, extra={10: [1]})
+    got = dict(zip(out.CERT, out.DEP))
+    assert got == {10: 9_000_000.0, 20: 1_000_000.0}
 
 
 def test_total_deposits_include_foreign_offices():

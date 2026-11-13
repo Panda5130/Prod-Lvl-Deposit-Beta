@@ -133,9 +133,9 @@ predecessor_cert,predecessor_name,survivor_cert,survivor_name,effective_date,mer
 33126,Paragon Bank & Trust,33134,,2010-03-31,2010Q1,223,Merger -Without Assistance,2009Q4,95369.0,975656.0,9.774859171675262,A,,4
 35428,SUNRISE BANK OF ALBUQUERQUE,33134,,2014-01-01,2014Q1,221,Absorbtion - Without Assistance,2013Q4,39816.0,530003.0,7.51241030711147,A,,4
 57276,Bank of Las Vegas,33134,,2014-01-01,2014Q1,223,Merger -Without Assistance,2013Q4,208088.0,530003.0,39.26166455661571,A,,4
-35421,Black Mountain Community Bank,57276,,2010-01-29,2010Q1,223,Merger -Without Assistance,2009Q4,149428.0,149428.0,100.0,A,,5
-35253,Desert Community Bank,57276,,2010-01-29,2010Q1,223,Merger -Without Assistance,2009Q4,86539.0,149428.0,57.9135101855074,A,,5
-35357,Red Rock Community Bank,57276,,2010-01-29,2010Q1,223,Merger -Without Assistance,2009Q4,118823.0,149428.0,79.5185641245282,A,,5
+35421,Black Mountain Community Bank,57276,,2010-01-29,2010Q1,223,Merger -Without Assistance,2009Q4,149428.0,63651.0,234.76143344173698,A,,5
+35253,Desert Community Bank,57276,,2010-01-29,2010Q1,223,Merger -Without Assistance,2009Q4,86539.0,63651.0,135.95858666792353,A,,5
+35357,Red Rock Community Bank,57276,,2010-01-29,2010Q1,223,Merger -Without Assistance,2009Q4,118823.0,63651.0,186.6789209910292,A,,5
 57037,Indiana Community Bank,33134,,2014-01-01,2014Q1,223,Merger -Without Assistance,2013Q4,77918.0,530003.0,14.701426218342158,A,,4
 35270,Elkhart Community Bank,57037,,2010-03-19,2010Q1,223,Merger -Without Assistance,2009Q4,86860.0,66944.0,129.75023900573615,A,,5
 57665,Veritex Community Bank,6560,Huntington National Bank,2025-10-20,2025Q4,223,Merger -Without Assistance,2025Q3,10814840.0,169742133.0,6.371335041489081,A,,0
@@ -165,7 +165,7 @@ predecessor_cert,predecessor_name,survivor_cert,survivor_name,effective_date,mer
 1701,Peoples State Bank of Commerce,2824,,2017-07-17,2017Q3,223,Merger -Without Assistance,2017Q2,139489.0,327996.0,42.52765277625337,A,,2
 19195,Capital Bank,2824,,2018-10-24,2018Q4,223,Merger -Without Assistance,2018Q3,106948.0,471477.0,22.68360916863389,A,,2
 4999,"Cadence Bank, N.A.",11813,,2021-10-29,2021Q4,223,Merger -Without Assistance,2021Q3,17297593.0,23281239.0,74.29842114502583,A,,1
-59026,"Superior Bank, National Association",4999,,2011-11-10,2011Q4,223,Merger -Without Assistance,2011Q3,2127264.0,2127264.0,100.0,A,,2
+59026,"Superior Bank, National Association",4999,,2011-11-10,2011Q4,223,Merger -Without Assistance,2011Q3,2127264.0,1147867.0,185.32321253246238,A,,2
 17750,Superior Bank,59026,,2011-04-15,2011Q2,211,Failure - Whole Institution,,,,,B,no predecessor financials,3
 34378,"Encore Bank, National Association",4999,,2012-09-14,2012Q3,223,Merger -Without Assistance,2012Q2,1220568.0,3102267.0,39.34438911931178,A,,2
 30297,"Encore Bank, National Association",34378,,2007-06-30,2007Q2,223,Merger -Without Assistance,2007Q1,998939.0,,,B,below 1% materiality,3
@@ -359,7 +359,7 @@ predecessor_cert,predecessor_name,survivor_cert,survivor_name,effective_date,mer
 28997,"Provident Community Bank, National Association",58408,,2014-05-01,2014Q2,223,Merger -Without Assistance,2014Q1,263336.0,1654040.0,15.920775797441417,A,,2
 34802,First Capital Bank,58408,,2016-01-01,2016Q1,223,Merger -Without Assistance,2015Q4,508181.0,1961154.0,25.912345486381998,A,,2
 35525,"Atlantic Capital Bank, National Association",33555,SouthState Bank,2022-03-01,2022Q1,223,Merger -Without Assistance,2021Q4,3335446.0,35140717.0,9.491684532219418,A,,0
-58492,Atlantic Capital Bank,35525,,2015-10-31,2015Q4,223,Merger -Without Assistance,2015Q3,1179732.0,1179732.0,100.0,A,,1
+58492,Atlantic Capital Bank,35525,,2015-10-31,2015Q4,223,Merger -Without Assistance,2015Q3,1179732.0,938489.0,125.70546911045308,A,,1
 3076,Independent Bank,33555,SouthState Bank,2025-01-01,2025Q1,223,Merger -Without Assistance,2024Q4,15244551.0,38171079.0,39.93743797496529,A,,0
 17711,Independent Bank,3076,,2009-01-01,2009Q1,223,Merger -Without Assistance,2008Q4,198592.0,514785.0,38.57765863418709,A,,1
 57826,Town Center Bank,3076,,2010-07-30,2010Q3,223,Merger -Without Assistance,2010Q2,31122.0,759625.0,4.097021556689156,A,,1

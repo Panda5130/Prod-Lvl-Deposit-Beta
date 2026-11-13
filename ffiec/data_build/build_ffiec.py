@@ -23,6 +23,7 @@ import pandas as pd
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from items import ri_dom_codes  # noqa: E402
+from ffiec_pull import load_cert_rssd, load_extra_rssd  # noqa: E402
 
 FFIEC = HERE.parent
 ROOT = FFIEC.parent
@@ -38,7 +39,7 @@ def load_fdic_module(root=ROOT):
     return mod
 
 
-def financials_from_items(quarterly, cert_rssd, cert_quarters=None):
+def financials_from_items(quarterly, cert_rssd, cert_quarters=None, extra=None):
     """Wide FDIC-shaped frame (CERT, REPDTE, DEP, EDEPDOMQ, EDEPFORQ) in $ thousands from quarterly long items."""
     w = quarterly.pivot_table(index=["rssd", "period"], columns="item", values="value", aggfunc="first")
     w = w.reset_index()
@@ -63,17 +64,25 @@ def financials_from_items(quarterly, cert_rssd, cert_quarters=None):
     out = pd.DataFrame({"rssd": w.rssd, "REPDTE": w.period.str.replace("-", "").astype(int),
                         "DEP": w.DEP / UNIT_DIVISOR, "EDEPDOMQ": w.EDEPDOMQ / UNIT_DIVISOR,
                         "EDEPFORQ": w.EDEPFORQ / UNIT_DIVISOR})
-    # One RSSD can belong to several certs over time (e.g. a charter change retired the cert but kept the RSSD).
-    # The filing is the RSSD's, so each row goes to every cert sharing it; for a shared RSSD the quarter must fall
-    # inside that cert's life, which `cert_quarters` ((CERT, REPDTE) pairs the FDIC history knows) tells us.
-    cert_map = pd.DataFrame([(r, c) for c, r in cert_rssd.items() if r], columns=["rssd", "CERT"])
-    shared = cert_map.rssd.duplicated(keep=False)
+    # A cert can have several RSSDs and an RSSD several certs (the FDIC API sometimes gives a cert another cert's
+    # RSSD, or the RSSD of a later charter). `extra` adds the known further RSSDs per cert. Where a cert or an RSSD
+    # is ambiguous, a filing is assigned to a cert only if the cert existed that quarter and the filing's total
+    # deposits are within 10% of BankFind's DEP for that cert-quarter (identity check only; values stay FFIEC);
+    # with two candidates the closest wins. `cert_quarters` is {(CERT, REPDTE): DEP in $ thousands}.
+    pairs = {(r, c) for c, r in cert_rssd.items() if r}
+    pairs |= {(r, c) for c, rs in (extra or {}).items() for r in rs}
+    cert_map = pd.DataFrame(sorted(pairs), columns=["rssd", "CERT"])
+    ambiguous = cert_map.rssd.duplicated(keep=False) | cert_map.CERT.duplicated(keep=False)
+    amb = set(map(tuple, cert_map[ambiguous].values))
     out = out.merge(cert_map, on="rssd", how="inner")
     if cert_quarters is not None:
-        in_life = pd.Series([(c, d) in cert_quarters for c, d in zip(out.CERT, out.REPDTE)], index=out.index)
-        keep = ~out.rssd.isin(set(cert_map.rssd[shared])) | in_life
-        out = out[keep]
-    return out.drop(columns="rssd")[["CERT", "REPDTE", "DEP", "EDEPDOMQ", "EDEPFORQ"]].astype({"CERT": int})
+        ref = pd.Series([cert_quarters.get((c, d)) for c, d in zip(out.CERT, out.REPDTE)], index=out.index, dtype=float)
+        is_amb = pd.Series([(r, c) in amb for r, c in zip(out.rssd, out.CERT)], index=out.index)
+        out["gap"] = ((out.DEP - ref).abs() / ref.abs().where(ref != 0))
+        out = out[~is_amb | (ref.notna() & (out.gap <= 0.10))]
+        out = out.sort_values("gap").drop_duplicates(["CERT", "REPDTE"], keep="first")
+    return out.drop(columns=[c for c in ("rssd", "gap") if c in out])[
+        ["CERT", "REPDTE", "DEP", "EDEPDOMQ", "EDEPFORQ"]].astype({"CERT": int})
 
 
 def make_source_class(bd, fin, hist):
@@ -91,10 +100,10 @@ def make_source_class(bd, fin, hist):
 def build_ffiec(items_path=None, cert_rssd_path=None, hist_path=None, outdir=OUT, root=ROOT):
     bd = load_fdic_module(root)
     quarterly = pd.read_csv(items_path or FFIEC / "data" / "ffiec_items_quarterly.csv", dtype={"period": str})
-    cr = pd.read_csv(cert_rssd_path or FFIEC / "data" / "cert_rssd.csv")
-    cert_rssd = {int(c): (int(r) if pd.notna(r) else None) for c, r in zip(cr.cert, cr.rssd)}
-    fdic_fin = pd.read_csv(root / "data_build" / "raw" / "financials_targets.csv", usecols=["CERT", "REPDTE"])  # read only
-    fin = financials_from_items(quarterly, cert_rssd, set(zip(fdic_fin.CERT, fdic_fin.REPDTE)))
+    cert_rssd = load_cert_rssd(cert_rssd_path or FFIEC / "data" / "cert_rssd.csv")   # includes rssd_overrides.csv
+    fdic_fin = pd.read_csv(root / "data_build" / "raw" / "financials_targets.csv", usecols=["CERT", "REPDTE", "DEP"])  # read only
+    fin = financials_from_items(quarterly, cert_rssd, dict(zip(zip(fdic_fin.CERT, fdic_fin.REPDTE), fdic_fin.DEP)),
+                                load_extra_rssd())
     hist = pd.read_csv(hist_path or root / "data_build" / "raw" / "history_targets.csv")
     src = make_source_class(bd, fin, hist)
     outdir.mkdir(parents=True, exist_ok=True)

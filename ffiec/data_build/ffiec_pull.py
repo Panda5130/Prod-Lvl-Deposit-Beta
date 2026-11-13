@@ -86,7 +86,7 @@ def read_events(root=ROOT):
     return pd.read_csv(root / "merger_events_used.csv")
 
 
-def plan_pulls(cert_rssd, events, targets=TARGET_CERTS, first=FIRST_PERIOD, last=LAST_PERIOD):
+def plan_pulls(cert_rssd, events, targets=TARGET_CERTS, first=FIRST_PERIOD, last=LAST_PERIOD, extra=None):
     """({rssd: [period,...]}, missing_certs). Targets: every quarter. Predecessors: first..predecessor_last_quarter
     for Mode A (financials feed the adjustment), only the last quarter for Mode B (the materiality test)."""
     wanted = {int(c): quarter_ends(first, last) for c in targets}
@@ -104,6 +104,8 @@ def plan_pulls(cert_rssd, events, targets=TARGET_CERTS, first=FIRST_PERIOD, last
             missing.append(cert)
         else:
             plan[int(rssd)] = sorted(set(plan.get(int(rssd), [])) | set(per))
+        for x in (extra or {}).get(cert, []):
+            plan[x] = sorted(set(plan.get(x, [])) | set(per))
     return plan, sorted(missing)
 
 
@@ -114,6 +116,17 @@ def load_cert_rssd(path=None):
         return {}
     d = pd.read_csv(path)
     return {int(c): (int(r) if pd.notna(r) and r != 0 else None) for c, r in zip(d.cert, d.rssd)}
+
+
+def load_extra_rssd(path=None):
+    """{cert: [rssd, ...]}: additional RSSDs a cert has filed under, beyond the FDIC API's FED_RSSD (which can be
+    another cert's, or the RSSD of a later charter). Evidence per row is in data/rssd_extra.csv."""
+    path = Path(path or DATA / "rssd_extra.csv")
+    out = {}
+    if path.exists():
+        for c, r in pd.read_csv(path)[["cert", "rssd"]].itertuples(index=False):
+            out.setdefault(int(c), []).append(int(r))
+    return out
 
 
 def fetch_cert_rssd(certs, session=None, path=None, chunk=50):
@@ -399,7 +412,7 @@ def main(argv=None):
         return 1 if bad else 0
     ev = read_events()
     cert_rssd = fetch_cert_rssd(TARGET_CERTS + ev.predecessor_cert.astype(int).tolist())
-    plan, missing = plan_pulls(cert_rssd, ev, first=a.first, last=a.last)
+    plan, missing = plan_pulls(cert_rssd, ev, first=a.first, last=a.last, extra=load_extra_rssd())
     items = load_items()
     todo = sum(1 for r, per in plan.items() for p in per if (r, p) not in held(items))
     log.info("entities %d, unmapped certs %d %s, calls needed %d", len(plan), len(missing), missing[:10], todo)
