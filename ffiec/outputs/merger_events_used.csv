@@ -103,7 +103,7 @@ predecessor_cert,predecessor_name,survivor_cert,survivor_name,effective_date,mer
 34547,Mount Prospect National Bank,18117,,2007-10-01,2007Q4,223,Merger -Without Assistance,,,,,B,no predecessor financials,2
 986,Citizens Bank,13675,,2013-04-12,2013Q2,223,Merger -Without Assistance,2013Q1,7218613.0,12393277.0,58.24620074254775,A,,1
 20001,Republic Bank,986,,2007-04-28,2007Q2,223,Merger -Without Assistance,,,,,B,no predecessor financials,2
-57422,"Citizens Bank Wealth Management, National Association",986,,2011-06-30,2011Q2,223,Merger -Without Assistance,,,,,B,no predecessor financials,2
+57422,"Citizens Bank Wealth Management, National Association",986,,2011-06-30,2011Q2,223,Merger -Without Assistance,2011Q1,0.0,7753522.0,0.0,B,below 1% materiality,2
 28330,TCF National Bank,6560,Huntington National Bank,2021-06-09,2021Q2,223,Merger -Without Assistance,2021Q1,39975492.0,106544576.0,37.519969106639465,A,,0
 58373,TCF National Bank Arizona,28330,,2009-10-31,2009Q4,223,Merger -Without Assistance,2009Q3,136624.0,11538155.0,1.184106124419372,A,,1
 1003,Chemical Bank,28330,,2019-08-01,2019Q3,223,Merger -Without Assistance,2019Q2,15900424.0,19304159.0,82.36786694514898,A,,1

@@ -2,3 +2,7 @@
 4999,115641,"PWS by FDICCertNumber 2008Q1: filing identifier 115641; FDIC API RSSD 4262534 is the Superior Bank charter (cert 59026) the bank merged with in 2011"
 35525,2920737,"PWS by FDICCertNumber 2008Q2: deposits 955543 equal BankFind DEP; identifier 2920737; FDIC API RSSD 3555695 is cert 58492"
 57276,3049653,"PWS by FDICCertNumber 2008Q1: filing identifier 3049653; FDIC API RSSD 2856032 is cert 35421"
+27120,1160853,"FDIC API has no FED_RSSD; PWS by FDICCertNumber 2008Q1 filing identifier 1160853 (Bremer Trust, N.A.); NIC lists 1160853 as a 2019 predecessor"
+33001,1459575,"FDIC API has no FED_RSSD; PWS by FDICCertNumber 2008Q1 filing identifier 1459575 (Old National Trust Company); NIC lists it as a 2014 predecessor"
+57422,3095641,"FDIC API has no FED_RSSD; PWS by FDICCertNumber 2008Q1 filing identifier 3095641 (Citizens Bank Wealth Management, N.A.)"
+91385,390167,"FDIC API has no FED_RSSD; PWS by FDICCertNumber 2008Q1 filing identifier 390167 (KeyTrust Company, N.A.); NIC lists it as a 2014 predecessor"

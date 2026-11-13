@@ -47,16 +47,27 @@ def reconcile(fdic, ffiec, amendments=None, tol=TOL):
     return pd.DataFrame(summ), q
 
 
+VALID_FROM = "2012-03-31"
+
+
 def main():
     out = FFIEC / "outputs"
     fdic = pd.read_csv(ROOT / "consolidated_fdic_quarterly_financials_2008-2026_merger_adjusted.csv")
     ffiec = pd.read_csv(out / "consolidated_fdic_quarterly_financials_2008-2026_merger_adjusted.csv")
     ap = FFIEC / "data" / "amendments.csv"
     summ, q = reconcile(fdic, ffiec, pd.read_csv(ap) if ap.exists() else None)
+    # FFIEC Call Reports are the reference from 2012Q1: savings institutions filed Thrift Financial Reports to the
+    # OTS until 2011 and began Call Reports in 2012, so earlier quarters lack predecessors (see the FFIEC doc).
+    if len(q):
+        q["in_window"] = q.quarter >= VALID_FROM
     summ.to_csv(out / "reconciliation_summary.csv", index=False)
     q.to_csv(out / "reconciliation_quarters.csv", index=False)
     print(summ.groupby("measure").max_abs_diff.max().to_string())
     print("quarters flagged:", len(q), q.status.value_counts().to_dict() if len(q) else {})
+    if len(q):
+        w = q[q.in_window]
+        print(f"from {VALID_FROM}: flagged {len(w)}", w.status.value_counts().to_dict(),
+              "| before:", len(q) - len(w))
     return 0
 
 
