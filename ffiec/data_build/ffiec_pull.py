@@ -334,6 +334,54 @@ def pull(client, plan, items, check_hash_for=(), now=None, pause=0.0, checkpoint
     return items, pd.DataFrame(amend), calls
 
 
+BACKFILL_DONE = DATA / "backfill_done.csv"
+
+
+def backfill(client, items, new_items, first, last, done=None, pause=0.0, checkpoint=None, now=None):
+    """Add item codes that were not wanted at the first pull, from filings already held (additive; nothing existing
+    is changed). Each held (rssd, period) in [first, last] is fetched once per item set; the response hash must equal
+    the stored one, otherwise the filing was amended since the pull: it is reported and left untouched. A filing
+    that does not carry a code simply gets no row for it. `done` is a set of (rssd, period, items-key) already
+    fetched (resume); returns (items, new_done, amendments, n_calls)."""
+    now = now or datetime.now(timezone.utc).isoformat(timespec="seconds")
+    wanted, key = set(new_items), ",".join(sorted(new_items))
+    done = set(done or ())
+    stored = items.drop_duplicates(["rssd", "period"]).set_index(["rssd", "period"]).response_hash.to_dict()
+    todo = sorted(k for k in stored if first <= k[1] <= last and (k[0], k[1], key) not in done)
+    rows, new_done, amend, calls = [], [], [], 0
+    for rssd, period in todo:
+        if pause and calls:
+            time.sleep(pause)
+        raw = _with_retry(lambda: client.facsimile(rssd, period))
+        calls += 1
+        h = response_hash(raw)
+        if h != stored[(rssd, period)]:
+            amend.append({"rssd": rssd, "period": period, "old_hash": stored[(rssd, period)], "new_hash": h,
+                          "detected_at": now})
+        else:
+            rows += [{"rssd": rssd, "period": period, "item": k, "value": v, "response_hash": h, "pulled_at": now}
+                     for k, v in parse_facsimile(raw, wanted).items()]
+        new_done.append((rssd, period, key))
+        if checkpoint and calls % CHECKPOINT == 0:
+            checkpoint(pd.concat([items, pd.DataFrame(rows)], ignore_index=True), new_done)
+    if rows:
+        items = pd.concat([items, pd.DataFrame(rows)], ignore_index=True)
+    return items.drop_duplicates(["rssd", "period", "item"], keep="first"), new_done, pd.DataFrame(amend), calls
+
+
+def load_backfill_done():
+    if BACKFILL_DONE.exists():
+        d = pd.read_csv(BACKFILL_DONE, dtype={"period": str, "items": str})
+        return set(zip(d.rssd.astype(int), d.period, d["items"]))
+    return set()
+
+
+def save_backfill_done(new_done):
+    old = pd.read_csv(BACKFILL_DONE, dtype=str) if BACKFILL_DONE.exists() else pd.DataFrame(columns=["rssd", "period", "items"])
+    pd.concat([old, pd.DataFrame(new_done, columns=["rssd", "period", "items"]).astype(str)],
+              ignore_index=True).drop_duplicates().to_csv(BACKFILL_DONE, index=False)
+
+
 MISSING = DATA / "missing_filings.csv"
 
 
@@ -413,12 +461,45 @@ def main(argv=None):
     ap.add_argument("--verify-items", metavar="MDRM_CSV")
     ap.add_argument("--first", default=FIRST_PERIOD)
     ap.add_argument("--last", default=LAST_PERIOD)
+    ap.add_argument("--backfill", metavar="CODES", help="comma-separated item codes to add from held filings "
+                                                         "(within --first/--last); additive, resumable")
     a = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", stream=sys.stdout)
     if a.verify_items:
         bad = verify_items(a.verify_items)
         print("item check:", "all codes present" if not bad else bad)
         return 1 if bad else 0
+    if a.backfill:
+        codes = [c.strip().upper() for c in a.backfill.split(",") if c.strip()]
+        unknown = [c for c in codes if c not in ITEMS]
+        if unknown:
+            log.error("not in items.py: %s", unknown)
+            return 1
+        items, done = load_items(), load_backfill_done()
+        key = ",".join(sorted(codes))
+        todo = sum(1 for k in set(zip(items.rssd.astype(int), items.period)) if a.first <= k[1] <= a.last
+                   and (k[0], k[1], key) not in done)
+        log.info("backfill %s: %d filings to fetch", codes, todo)
+        if a.plan:
+            return 0
+        if not acquire_lock():
+            log.info("another pull is active (lock is fresh); exiting")
+            return 0
+        client = PwsClient(*get_credentials())
+
+        def ckpt(it, nd):
+            save(it, pd.DataFrame())
+            save_backfill_done(nd)
+            LOCK.touch()
+        try:
+            items, nd, amend, calls = backfill(client, items, codes, a.first, a.last, done, pause=PAUSE_S,
+                                               checkpoint=ckpt)
+            save(items, amend)
+            save_backfill_done(nd)
+        finally:
+            LOCK.unlink(missing_ok=True)
+        log.info("backfill calls %d, amendments %d", calls, len(amend))
+        return 0
     ev = read_events()
     cert_rssd = fetch_cert_rssd(TARGET_CERTS + ev.predecessor_cert.astype(int).tolist())
     plan, missing = plan_pulls(cert_rssd, ev, first=a.first, last=a.last, extra=load_extra_rssd())

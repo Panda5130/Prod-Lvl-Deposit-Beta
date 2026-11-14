@@ -257,3 +257,21 @@ def test_persistent_http_error_is_recorded_missing_and_run_continues(tmp_path, m
     assert n == 1 and len(items) == 1 and fp.load_missing() == {(7, "2008-03-31")}
     items2, _, n2 = fp.pull(Flaky(), {7: ["2008-03-31", "2008-06-30"]}, items)
     assert n2 == 0                                              # missing filing is not retried
+
+
+def test_backfill_adds_items_without_touching_existing_and_flags_amendments():
+    r_ok, r_amended = facsimile({"RCON2200": 100, "RCONJ473": 7, "RCONJ474": 3}), facsimile({"RCON2200": 999})
+    h_ok = fp.response_hash(r_ok)
+    items = pd.DataFrame([
+        {"rssd": 1, "period": "2014-12-31", "item": "RCON2200", "value": 100.0, "response_hash": h_ok, "pulled_at": "t"},
+        {"rssd": 2, "period": "2014-12-31", "item": "RCON2200", "value": 50.0, "response_hash": "old", "pulled_at": "t"},
+        {"rssd": 3, "period": "2020-12-31", "item": "RCON2200", "value": 1.0, "response_hash": "x", "pulled_at": "t"}])
+    cl = FakeClient({(1, "2014-12-31"): r_ok, (2, "2014-12-31"): r_amended})
+    out, nd, amend, calls = fp.backfill(cl, items, ["RCONJ473", "RCONJ474"], "2011-12-31", "2016-12-31")
+    assert calls == 2 and (3, "2020-12-31") not in cl.calls                      # outside the window: not fetched
+    got = out[out.rssd == 1].set_index("item").value.to_dict()
+    assert got == {"RCON2200": 100.0, "RCONJ473": 7.0, "RCONJ474": 3.0}
+    assert list(amend.rssd) == [2] and set(out[out.rssd == 2].item) == {"RCON2200"}   # amended filing left untouched
+    cl2 = FakeClient({})
+    _, _, _, calls2 = fp.backfill(cl2, out, ["RCONJ473", "RCONJ474"], "2011-12-31", "2016-12-31", done=set(nd))
+    assert calls2 == 0                                                           # resumes: nothing refetched
