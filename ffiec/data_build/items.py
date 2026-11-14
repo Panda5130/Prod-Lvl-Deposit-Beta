@@ -34,7 +34,10 @@ ITEMS = {
     # RC-E balances (time-deposit balances by size; 2017 on uses the $250k split)
     "RCON2215": ("level", "rce_bal", "Total transaction accounts"),
     "RCON6648": ("level", "rce_bal", "Time deposits < $100,000 (to 2016)"),
-    "RCON2604": ("level", "rce_bal", "Time deposits >= $100,000 (to 2016)"),
+    # RCON2604 (total >= $100,000) exists in MDRM from 2010 but the service output never carries it (0 of 4,601 filings);
+    # from 2010 the >= $100,000 time deposits are reported as the two items below (J473 + J474), checked 2026-11-14.
+    "RCONJ473": ("level", "rce_bal", "Time deposits $100,000 through $250,000 (2010 on; to 2016 used with J474)"),
+    "RCONJ474": ("level", "rce_bal", "Time deposits more than $250,000 (2010 on; to 2016 used with J473)"),
     "RCONHK16": ("level", "rce_bal", "Time deposits <= $250,000 (2017 on)"),
     "RCONHK17": ("level", "rce_bal", "Time deposits > $250,000 (2017 on)"),
 }

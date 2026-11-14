@@ -28,6 +28,7 @@
 ### 0.2 Revision History
 | Version | Date | Description | Validation |
 | :--- | :--- | :--- | :--- |
+| 0.3 (draft) | 2026-11-14 | Hybrid denominator finalized (section 5.4): items, formulas, pro forma, missing-data and validation rules; time-deposit item correction (J473 + J474 replace RCON2604); re-pull specified (5.5) | Item coverage checked on 4,601 entity-quarters; build not yet run |
 | 0.2 (draft) | 2026-11-14 | Owner approved the RC-K average-balance denominator; feasibility check found no RC-K time-deposit average from 2017Q1 and no noninterest-bearing average (section 5.4); fallback options recorded, build pending owner choice | MDRM search; two live filings inspected |
 | 0.1 (draft) | 2026-11-14 | First SR 11-7 draft for Prod-Lvl. Source switch from BankFind to Call Reports approved by the owner; sample starts at 2012Q1. Built from the pilot record (section 4) | Pilot reconciliation (section 4.3); no model rerun yet |
 
@@ -145,10 +146,36 @@ Total deposits and deposit interest expense switch from BankFind to Call Reports
 
 The RC-K time-deposit averages were dropped when the time-deposit size split moved to $250,000 in 2017; the new items (RCONHK16 and HK17) are quarter-end balances in Schedule RC-E, not averages. Time deposits are a median 16% of total deposits for the banks and predecessors from 2017 (range 2% to 74%), so the missing piece is not small. No RC-K noninterest-bearing average exists in any period, so an RC-K rate on total deposits is not available either. Consequence: a pure RC-K interest-bearing denominator exists only for 2012Q1 to 2016Q4 (20 quarters), too short for the models.
 
-**Options for the owner** (the build does not start until one is chosen):
-1. RC-K averages for transaction accounts, savings and foreign offices, plus the average of the opening and closing RC-E time-deposit balances for the time-deposit component, for all 58 quarters. A hybrid average: no break in the series, but the time-deposit part stays a two-point average (about 16% of deposits from 2017).
-2. Keep the two-point average of quarter-end total deposits (the origin definition), and carry RC-K as a documented sensitivity for 2012Q1 to 2016Q4.
-3. RC-K to 2016Q4 and the hybrid from 2017Q1: not recommended, because it puts a definition break inside a 58-quarter sample.
+**Decision (owner, 2026-11-14): hybrid denominator for all 58 quarters.** Final method (build pending the re-pull in 5.5):
+
+*Balances, for entity e (an RSSD) and quarter t, in dollars:*
+- `NMD_ib = RCON3485 + RCONB563` (RC-K averages: interest-bearing transaction accounts, savings including MMDAs). Excludes noninterest-bearing demand deposits (MDRM text of RCON3485).
+- `FOR = RCFN3404` (RC-K average, foreign offices; filed by FFIEC 031 filers with foreign offices only).
+- `TD_t` = quarter-end time deposits: to 2016Q4 `RCON6648 + RCONJ473 + RCONJ474`; from 2017Q1 `RCONHK16 + RCONHK17`. The two splits tile the same total (under $100k plus $100k and over; $250k or less plus over $250k).
+- `TD_avg_t = (TD_t + TD_{t-1}) / 2`, in every quarter (not RC-K to 2016, so the definition has no break). 2012Q1 needs 2011Q4.
+- **`A_t = NMD_ib + FOR + TD_avg_t`** is the interest-bearing deposit average balance.
+
+*Interest expense:* `IE_t` = domestic RI codes (ri_dom_codes: 4508, 0093, and A517 + A518 to 2016 or HK03 + HK04 from 2017) plus `RIAD4172` (foreign), converted from year to date to quarterly, as in the pilot.
+
+*Series:*
+- **Model variable (assumed, owner to confirm): `rate_ib = 400 x IE_t / A_t`**, the interest-bearing deposit rate. NIB deposits are excluded from the base; they carry no interest expense and are not averaged in RC-K.
+- **Second series: `rate_nmd = 400 x (RIAD4508 + RIAD0093) / NMD_ib`**, domestic interest-bearing non-maturity deposits, exact RC-K averages in all quarters.
+- **Reconciling series (optional, not built):** the total-deposit rate on `A_t` plus a two-point NIB average (`RCON6631 + RCFN6631`), which needs those two items added to the pull.
+
+*Pro forma:* the origin merger logic is reused; `A_t` and `IE_t` are scaled by the transfer share and summed over predecessors, as `DEP` and `IE` are in the origin. Mode A/B and the 1% materiality decisions stay on total deposits (`DEP`); the build asserts that the event set equals the origin's.
+
+*Missing data:* a quarter is dropped if any component other than `RCFN3404` is missing; `RCFN3404` missing counts as zero only when `RIAD4172` is also absent or zero, otherwise the quarter is flagged. Nothing else is zero-filled.
+
+*Validation tests for the rerun:*
+1. 2012Q1 to 2016Q4: compare `TD_avg_t` with the RC-K time-deposit averages (`RCONA529 + RCONA514`), per bank, and the effect on `rate_ib`. This measures what the two-point approximation costs on the 16% time-deposit piece.
+2. `rate_ib x (A_t / DEP)` against the origin rate on the same window (expected close, not equal; the gap is the base and the averaging).
+3. Pro forma event set identical to the origin's.
+4. `A_t` below quarter-end total deposits in every quarter (an interest-bearing base cannot exceed total).
+
+**Correction to the pilot data (2026-11-14).** `RCON2604` (time deposits of $100,000 or more) is in the MDRM from 2010 but is not in the service output (0 of 4,601 filings); in 2010 to 2016 the same balance is `RCONJ473 + RCONJ474`. `items.py` now lists J473 and J474 in its place. The pilot never needed this item.
+
+### 5.5 Data to pull for the hybrid denominator
+`RCONJ473` and `RCONJ474` for 2011Q4 to 2016Q4: 3,306 filings, 229 entities, one call each, read only, through the same incremental puller. Every other item of the method is already in `ffiec/data/ffiec_items.csv`. Pulling `RCON6631` and `RCFN6631` as well (only for the optional reconciling series) would add the same 3,306 filings plus 2017Q1 onward.
 
 ---
 
@@ -176,7 +203,7 @@ Not yet produced. Section filled after the rerun in 5.3.
 
 | # | Item | Status |
 | :-: | :-- | :-- |
-| O1 | Average-balance denominator (Schedule RC-K): approved by the owner 2026-11-14, but the Call Report has no RC-K time-deposit average from 2017Q1 and no noninterest-bearing average in any period (section 5.4). Choice of fallback needed before the build | Open, owner |
+| O1 | Average-balance denominator: hybrid method decided 2026-11-14 (RC-K averages plus two-point RC-E time deposits, section 5.4). Needs the J473/J474 re-pull (3,306 filings) and owner confirmation that the model variable is the interest-bearing rate | Open |
 | O2 | COVID liquidity dummy retest on the Prod-Lvl series | Deferred to model development |
 | O3 | Product-level betas (savings and money market, time, transaction) | Separate plan after this version |
 | O4 | `ffiec/reference/CSV_ATTRIBUTES_*.zip` (NIC attributes) are not committed; keep or delete | Owner |
