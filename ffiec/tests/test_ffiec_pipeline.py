@@ -168,7 +168,7 @@ def test_builder_applies_fdic_merger_logic(tmp_path):
     assert e.mode_applied == "A" and e.pct_of_survivor_deposits == pytest.approx(50.0)
     row = data[(data.cert_number == 4977) & (data.quarter == "2008-03-31")].iloc[0]
     assert row.n_predecessors_included == 1 and row.dep_avg_pf == pytest.approx(1_500_000 * 1.0)  # $ thousands
-    assert (tmp_path / "out" / "merger_events_used.csv").exists()
+    assert (tmp_path / "out" / "merger_events_used_v2.csv").exists()
     assert checks["pro forma rate reconstruction max abs diff"] < 1e-9
 
 

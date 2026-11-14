@@ -52,8 +52,8 @@ VALID_FROM = "2012-03-31"
 
 def main():
     out = FFIEC / "outputs"
-    fdic = pd.read_csv(ROOT / "consolidated_fdic_quarterly_financials_2008-2026_merger_adjusted.csv")
-    ffiec = pd.read_csv(out / "consolidated_fdic_quarterly_financials_2008-2026_merger_adjusted.csv")
+    fdic = pd.read_csv(ROOT / "consolidated_fdic_quarterly_financials_2008-2026_merger_adjusted_v2.csv")
+    ffiec = pd.read_csv(out / "consolidated_fdic_quarterly_financials_2008-2026_merger_adjusted_v2.csv")
     ap = FFIEC / "data" / "amendments.csv"
     summ, q = reconcile(fdic, ffiec, pd.read_csv(ap) if ap.exists() else None)
     # FFIEC Call Reports are the reference from 2012Q1: savings institutions filed Thrift Financial Reports to the

@@ -8,7 +8,8 @@ unchanged `build`, `validate` and `write` run. So pro_forma, rate_frame, the 1% 
 the recursion are exactly the FDIC code. No hook in shared code was needed.
 
 Inputs: ffiec/data/ffiec_items_quarterly.csv, ffiec/data/cert_rssd.csv; FDIC /history events from
-data_build/raw/history_targets.csv (read only; the primary event source, per the plan).
+data_build/raw/history_targets.csv and supplementary_transfer_events.csv (read only; FDIC /history is the primary
+event source, plus the supplementary NIC transfers of FDIC issue #20). Outputs carry the FDIC vintage suffix (_v2).
 Units: Call Report values are dollars; BankFind DEP/EDEPDOMQ/EDEPFORQ are $ thousands, so values are divided
 by UNIT_DIVISOR (ASSUMPTION to confirm on the first pull against BankFind; the reconciliation exposes it).
 Rows missing total deposits or any domestic RI code for the quarter are dropped (never zero-filled).
@@ -87,8 +88,9 @@ def financials_from_items(quarterly, cert_rssd, cert_quarters=None, extra=None):
 
 def make_source_class(bd, fin, hist):
     class FfiecSource(bd.Fdic):
-        def __init__(self, refresh=False):          # does not call the FDIC loader: no network, no raw cache
+        def __init__(self, refresh=False, supplementary=None):   # no FDIC loader: no network, no raw cache
             self.refresh, self.fin, self.hist = refresh, fin, hist
+            self.supp = bd.load_supplementary(supplementary)      # FDIC supplementary transfers (issue #20), read only
 
         def extend(self, certs):                    # predecessors come from the pre-pulled FFIEC items
             missing = sorted(set(certs) - set(self.fin.CERT))
@@ -108,8 +110,10 @@ def build_ffiec(items_path=None, cert_rssd_path=None, hist_path=None, outdir=OUT
     src = make_source_class(bd, fin, hist)
     outdir.mkdir(parents=True, exist_ok=True)
     bd.Fdic, bd.ROOT = src, outdir                  # in-memory only; build_dataset.py on disk is untouched
-    data, events = bd.build(False)
+    data, events = bd.build(False, root / "data_build" / "raw" / "supplementary_transfer_events.csv")
     checks = bd.validate(data)
+    for old in outdir.glob(f"*_{bd.VINTAGE}.*"):   # FDIC write() never overwrites a vintage; FFIEC outputs are rebuilt
+        old.unlink()
     bd.write(data, events, checks)
     return data, events, checks
 

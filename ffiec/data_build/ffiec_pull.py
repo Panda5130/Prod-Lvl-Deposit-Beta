@@ -12,7 +12,7 @@ Outputs (ffiec/data/):
     ffiec_items.csv            long: rssd, period, item, value, response_hash, pulled_at (RI items YTD as reported)
     ffiec_items_quarterly.csv  same keys, RI items converted to quarterly flows
     amendments.csv             records whose response hash changed on a later pull
-Reads (never writes) merger_events_used.csv at the repo root for the predecessor list.
+Reads (never writes) merger_events_used_v2.csv (else merger_events_used.csv) at the repo root for the predecessor list.
 
 Endpoint and headers follow CDR SIS611 v1.10 (https://cdr.ffiec.gov/public/Files/SIS611_-_Retrieve_Public_Data_via_Web_Service.pdf).
 The PWS allows about 2500 downloads per hour (CDR help page), so the pull throttles (PAUSE_S) and checkpoints to
@@ -83,7 +83,8 @@ def quarter_ends(first=FIRST_PERIOD, last=LAST_PERIOD):
 
 
 def read_events(root=ROOT):
-    return pd.read_csv(root / "merger_events_used.csv")
+    v2 = root / "merger_events_used_v2.csv"            # FDIC data vintage v2 (adds supplementary transfers, issue #20)
+    return pd.read_csv(v2 if v2.exists() else root / "merger_events_used.csv")
 
 
 def plan_pulls(cert_rssd, events, targets=TARGET_CERTS, first=FIRST_PERIOD, last=LAST_PERIOD, extra=None):
@@ -126,6 +127,14 @@ def load_extra_rssd(path=None):
     if path.exists():
         for c, r in pd.read_csv(path)[["cert", "rssd"]].itertuples(index=False):
             out.setdefault(int(c), []).append(int(r))
+    # RSSDs of the FDIC supplementary-transfer predecessors (NIC-sourced, read only) when the API has none or another
+    supp = ROOT / "data_build" / "raw" / "supplementary_transfer_events.csv"
+    if supp.exists():
+        d = pd.read_csv(supp)
+        if "predecessor_rssd" in d:
+            for c, r in d[["predecessor_cert", "predecessor_rssd"]].dropna().itertuples(index=False):
+                if int(r) not in out.setdefault(int(c), []):
+                    out[int(c)].append(int(r))
     return out
 
 

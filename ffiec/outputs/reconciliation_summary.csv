@@ -2,11 +2,11 @@ cert_number,measure,n_quarters,max_abs_diff,n_over_tol
 588,total_deposits,74,0.0,0
 588,deposit_interest_expense,74,0.0,0
 588,deposit_rate,74,0.0,0
-588,rate_pf_clean,74,0.5261079744448495,17
+588,rate_pf_clean,74,0.4783089951416931,17
 3832,total_deposits,74,0.0,0
 3832,deposit_interest_expense,74,0.0,0
 3832,deposit_rate,74,0.0,0
-3832,rate_pf_clean,74,0.1176193853221569,18
+3832,rate_pf_clean,74,0.1166103822962217,18
 4977,total_deposits,74,0.0,0
 4977,deposit_interest_expense,74,2210.0,1
 4977,deposit_rate,74,0.045077878153679404,1
@@ -14,7 +14,7 @@ cert_number,measure,n_quarters,max_abs_diff,n_over_tol
 6560,total_deposits,74,0.0,0
 6560,deposit_interest_expense,74,0.0,0
 6560,deposit_rate,74,0.0,0
-6560,rate_pf_clean,74,0.027158455444191182,16
+6560,rate_pf_clean,74,0.027158455444191182,13
 17534,total_deposits,74,0.0,0
 17534,deposit_interest_expense,74,9731.0,1
 17534,deposit_rate,74,0.04152503983959199,1
@@ -26,4 +26,4 @@ cert_number,measure,n_quarters,max_abs_diff,n_over_tol
 33555,total_deposits,74,0.0,0
 33555,deposit_interest_expense,74,6567.0,2
 33555,deposit_rate,74,2.065709830208844,2
-33555,rate_pf_clean,74,0.13660394821779676,24
+33555,rate_pf_clean,74,0.13839895920784562,24

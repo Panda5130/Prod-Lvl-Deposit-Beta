@@ -84,7 +84,7 @@ def main(argv=None):
     nic = read_nic(a.file if a.file else download_nic())
     cr = pd.read_csv(FFIEC / "data" / "cert_rssd.csv")
     cert_rssd = {int(c): r for c, r in zip(cr.cert, cr.rssd) if pd.notna(r)}
-    diff, summary = compare(nic, pd.read_csv(ROOT / "merger_events_used.csv"), cert_rssd)
+    diff, summary = compare(nic, pd.read_csv(ROOT / "merger_events_used_v2.csv"), cert_rssd)
     out = FFIEC / "outputs"
     out.mkdir(parents=True, exist_ok=True)
     diff.to_csv(out / "nic_event_differences.csv", index=False)

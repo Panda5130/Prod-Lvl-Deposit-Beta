@@ -70,7 +70,7 @@ def main():
     cert_rssd = {int(c): (int(r) if pd.notna(r) else None) for c, r in zip(cr.cert, cr.rssd)}
     quarterly = pd.read_csv(FFIEC / "data" / "ffiec_items_quarterly.csv", dtype={"period": str})
     rck = rck_rates(quarterly, cert_rssd)
-    base = pd.read_csv(out / "consolidated_fdic_quarterly_financials_2008-2026_merger_adjusted.csv")
+    base = pd.read_csv(out / "consolidated_fdic_quarterly_financials_2008-2026_merger_adjusted_v2.csv")
     s = summarize(base, rck)
     s.to_csv(out / "materiality_summary.csv", index=False)
     rck[rck.cert_number.notna()].to_csv(out / "materiality_coverage.csv", index=False)
