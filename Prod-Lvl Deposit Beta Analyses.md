@@ -1,0 +1,178 @@
+# Prod-Lvl Deposit Beta Analyses
+
+> **STATUS: DRAFT. NOT VALIDATED. NOT APPROVED FOR PRODUCTION USE.**
+> SR 11-7 / OCC 2011-12 style development document for the Prod-Lvl model. It replaces the inherited high-level working document in this repository.
+
+---
+
+## 0. Document Control
+
+| Item | Detail |
+| :--- | :--- |
+| Document title | Prod-Lvl Deposit Beta Analyses |
+| Model family | Regional bank deposit-rate error-correction models (deposit beta) |
+| Model type | Single-equation, one-step error-correction models (ECM), as in the origin model (section 3) |
+| Development status | Draft; data source switch approved, estimation not yet rerun |
+| Validation status | Not validated |
+| Model tier / materiality | Not yet assigned |
+| Developer / owner | Shivam Panda (GitHub: Panda5130) |
+| Code repository | `Panda5130/Prod-Lvl-Deposit-Beta` |
+| Origin model | High-Level Deposit Beta, repository `Panda5130/Deposit-Beta` (FDIC BankFind data), document "WIP Regional Banking Deposit Beta Analyses", version 2.0 (WIP), last synced origin commit `ea95980` |
+| Document date | 2026-11-14 |
+| Data period | 2012Q1 to 2026Q2 (58 quarters, about 55 after lags and differencing) |
+
+### 0.1 Naming
+- **High-Level Deposit Beta** (origin repository): bank-level deposit interest expense and total deposits from FDIC BankFind. Kept as the benchmark.
+- **Prod-Lvl Deposit Beta** (this repository): the same models fed by FFIEC Call Report data, the granular source that later phases need. Earlier working documents used "FDIC" and "FFIEC" for the two sources while the choice was open. The choice is made, so this document uses the two repository names.
+
+### 0.2 Revision History
+| Version | Date | Description | Validation |
+| :--- | :--- | :--- | :--- |
+| 0.1 (draft) | 2026-11-14 | First SR 11-7 draft for Prod-Lvl. Source switch from BankFind to Call Reports approved by the owner; sample starts at 2012Q1. Built from the pilot record (section 4) | Pilot reconciliation (section 4.3); no model rerun yet |
+
+---
+
+## 1. Executive Summary
+
+### 1.1 Purpose
+Estimate the deposit beta of seven U.S. regional banks (the long-run share of a federal funds rate change that passes through to the bank's deposit rate) and the speed of adjustment toward it, using FFIEC Call Report data. Each bank is modeled separately.
+
+### 1.2 Banks in Scope
+First Horizon Bank (cert 4977), Glacier Bank (30788), Huntington National Bank (6560), KeyBank National Association (17534), Manufacturers and Traders Trust Company (588), Old National Bank (3832), SouthState Bank (33555). Merger predecessors are included pro forma (section 4.2).
+
+### 1.3 What Changes From the Origin Model
+| Item | Origin (High-Level) | Prod-Lvl |
+| :-- | :-- | :-- |
+| Source of deposits and interest expense | FDIC BankFind Financials API | FFIEC Call Reports, CDR Public Web Service |
+| Sample | 2011Q1 to 2026Q2 (62 quarters) | 2012Q1 to 2026Q2 (58 quarters) |
+| Dependent variable | `rate_pf_clean` | Same definition, from Call Report items (section 3.1) |
+| Regressor, model form, selection, backtests | As origin | Unchanged; rerun on the new data |
+| Merger events | FDIC `/history` plus 7 NIC-found transfers | Same event list (read from the origin repository's shared file), cross-checked to NIC Transformations |
+
+Results of the rerun are not yet available. This document will carry them in section 6 once the rerun is complete.
+
+---
+
+## 2. Model Purpose, Scope and Intended Use
+
+### 2.1 Business Purpose
+Deposit betas feed interest-rate risk measurement (NII and EVE sensitivity), deposit pricing analysis, funds-transfer pricing and peer benchmarking. The Call Report source also carries deposit detail by account type (Schedule RC-E and RC-K) that allows product-level betas as a later development.
+
+### 2.2 Intended Use (once validated)
+- Peer benchmarking of long-run deposit pass-through.
+- Scenario projection of deposit rates conditional on a federal funds rate path, up to 8 quarters.
+
+### 2.3 Uses Outside Scope
+- Production pricing or regulatory capital decisions before validation.
+- Product-level betas: not in this version (planned as a separate development, section 8).
+- Horizons beyond 8 quarters or rate regimes outside the sample (for example negative rates).
+
+### 2.4 Model Output
+Per bank: estimated one-step ECM (speed of adjustment, long-run beta with delta-method standard errors), in-sample and rolling-origin forecast error, and long-run beta stability.
+
+---
+
+## 3. Model Overview
+
+### 3.1 Variables
+| Role | Variable | Definition | Source |
+| :-- | :-- | :-- | :-- |
+| Dependent (y) | `rate_pf_clean` | 400 x quarterly deposit interest expense / average of current and prior quarter-end total deposits, pro forma for mergers | FFIEC Call Reports |
+| Regressor (x) | `FFT` | Quarterly average of the monthly effective federal funds rate | FRED `FEDFUNDS` |
+
+Call Report items (fixed in `ffiec/data_build/items.py`, each checked against the current MDRM): total deposits `RCFD2200` if present, else `RCON2200 + RCFN2200` (domestic plus foreign offices); deposit interest expense from the Schedule RI domestic codes plus `RIAD4172` (foreign offices). Call Report income items are year to date and are converted to quarterly values; dollars are divided by 1,000.
+
+### 3.2 Model Form
+Unchanged from the origin model: one-step ECM fitted by OLS, specification chosen among Engle-Granger, Johansen VECM and ARDL bounds forms, champion chosen out of sample, one asymmetric variant per passing specification, deterministic terms pruned after the screen. The origin document is the reference for the equations, the selection rule and the backtest design. Any departure on Prod-Lvl is recorded in section 0.2.
+
+---
+
+## 4. Data
+
+### 4.1 Source
+- FFIEC CDR Public Web Service (SIS611 v1.10), one filing per bank per quarter, by RSSD ID; 8,848 filings pulled for the pilot, none amended.
+- FDIC certificate to RSSD mapping from the FDIC institutions API, with corrections in `ffiec/data/rssd_extra.csv` (section 4.2).
+- Credentials are read only from the OS keyring or environment variables and are never logged or committed. Raw responses are hashed; an amendment is detected by hash change and logged.
+
+### 4.2 Merger Adjustment
+The origin merger logic (`data_build/build_dataset.py`) is reused unchanged, fed by Call Report data; Mode A/B, the 1% materiality test and the recursion are as origin. Events are FDIC `/history` plus the supplementary transfers of origin issue #20, cross-checked against NIC Transformations (380 of 387 events match; the 3 candidate mergers NIC adds are among the supplementary transfers). Certificate to RSSD is not one to one: 9 certs share 4 RSSDs, the API gives 3 certs another cert's RSSD, and 4 trust certs have no API RSSD. Filings are assigned to a cert only if the cert existed that quarter and the filing's total deposits are within 10% of BankFind's (identity check; values stay from the Call Report).
+
+### 4.3 Reconciliation With the Origin Source (pilot)
+- Total deposits: 0 of 8,503 shared bank-quarters differ.
+- Interest expense: 63 bank-quarters differ by more than $1 thousand. The Call Report quarterly series ties to the filed year-to-date; BankFind's own quarterly field does not tie to its year-to-date field in those quarters. The Call Report is the reference.
+- Window: savings institutions filed Thrift Financial Reports to the OTS until 2011 and Call Reports from March 2012, so quarters before 2012 lack some predecessors. The reference window is 2012Q1 onward (decision 2026-11-13). Earlier quarters are kept in the outputs for reference only. Inside the window, 25 of 406 bank-quarters differ from the origin pro forma rate by more than 0.005 points (median 0.000, 95th percentile 0.0074, maximum 0.160); the differences trace to the two documented origin-side items (predecessors without Call Reports: Wilmington Trust NA, Federal Trust Bank; BankFind quarterly interest expense).
+- Evidence files: `ffiec/outputs/reconciliation_summary.csv`, `reconciliation_quarters.csv`, `nic_event_differences.csv`, `missing_filings_check.csv`.
+
+### 4.4 Sample
+2012Q1 to 2026Q2: 58 quarters per bank, about 55 usable after lags and differencing. This is shorter than the origin sample (62), which lowers test power further (limitation L1). Seven-bank results from the two sources are compared on the common window before any conclusion about the change in estimates.
+
+---
+
+## 5. Data Source Change Control (SR 11-7)
+
+### 5.1 Change
+Total deposits and deposit interest expense switch from BankFind to Call Reports. This is a model change: it alters the input data of every estimate.
+
+### 5.2 Controls
+1. **Separate vintage, separate repository.** Origin results stay in `Panda5130/Deposit-Beta` and are never overwritten. Prod-Lvl writes its own outputs here, with a vintage tag in the file name, so that the two sets can be compared side by side.
+2. **Comparison file.** A fixed comparison (per bank: spec, lambda, long-run beta, MAE, ratings, origin versus Prod-Lvl on the same 2012Q1 window) is produced on every rerun.
+3. **Lineage.** Each output records the origin commit it was synced from and the Call Report pull date.
+4. **Sync.** Origin changes arrive only by merge into a dated sync branch with a validation note. Prod-Lvl does not push to the origin repository.
+5. **Reproducibility.** `ffiec_pull.py` (incremental), `build_ffiec.py`, `reconcile.py`, `materiality.py`; 19 tests for the Prod-Lvl pipeline (85 in the repository).
+
+### 5.3 Rerun Plan (to complete before validation)
+1. Rebuild the dataset on the 2012Q1 window (already built; rerun on each pull).
+2. Rerun the screen (unit root, break, cointegration), model selection, estimation, asymmetric variants and pruning on the new data.
+3. Rerun backtests, beta stability and scenarios; compare to the origin on the same window.
+4. Retest the COVID liquidity dummy on the Prod-Lvl series when the models are developed (origin excluded it for all seven banks; not applied in the pilot).
+5. Decide the champion per bank and record any change from the origin.
+
+---
+
+## 6. Results
+
+Not yet produced. Section filled after the rerun in 5.3.
+
+---
+
+## 7. Limitations and Assumptions
+
+| # | Limitation | Impact |
+| :-: | :-- | :-: |
+| P1 | The origin limitations L1 to L22 carry over unchanged unless restated here, with L1 worse: 58 rather than 62 quarters | High |
+| P2 | Quarters before 2012 are not reliable (missing thrift predecessors) and are excluded; the Call Report cannot be filled from BankFind without mixing sources | Medium |
+| P3 | 592+ filings returned no data; each was checked against the service's filer list for that quarter and none is listed (non-filers, not outages) | Low |
+| P4 | Wilmington Trust NA (cert 33911) and Federal Trust Bank (cert 32580) have no Call Report; their deposits are not in the pro forma, as for the origin 4 Mode B events | Low |
+| P5 | Partial deposit transfers carry interest expense in proportion to deposits (origin L20, L21) | Low |
+| P6 | The Call Report series is the reference where BankFind's quarterly interest expense does not tie to its year-to-date (63 bank-quarters) | Low |
+| P7 | The deposit rate still uses the two-point average of quarter-end total deposits | Medium |
+
+---
+
+## 8. Open Issues and Planned Developments
+
+| # | Item | Status |
+| :-: | :-- | :-- |
+| O1 | Average-balance denominator (Schedule RC-K). Pilot comparison for 2008 to 2016: correlation 0.97 to 1.00 against the two-point rate, level gap 0.03 to 0.12 points. No MDRM code found for the RC-K time-deposit averages from 2017 and the noninterest-bearing average. Owner decision needed before use | Open |
+| O2 | COVID liquidity dummy retest on the Prod-Lvl series | Deferred to model development |
+| O3 | Product-level betas (savings and money market, time, transaction) | Separate plan after this version |
+| O4 | `ffiec/reference/CSV_ATTRIBUTES_*.zip` (NIC attributes) are not committed; keep or delete | Owner |
+| O5 | Independent validation, model inventory registration, monitoring plan | Not started |
+
+---
+
+## 9. Implementation
+
+- Environment: Python; the Call Report pull needs FFIEC CDR credentials in the keyring (`ffiec_pws`: `token`, `user`) or `FFIEC_USER` and `FFIEC_TOKEN`.
+- Pilot run: `python ffiec/data_build/ffiec_pull.py` then `build_ffiec.py`, `reconcile.py`, `materiality.py`; `pytest -q --tb=line`.
+- Tests and checks: `ffiec/tests/`; `verify_isolation.py`.
+
+## 10. Governance
+
+| Item | Status |
+| :-- | :-- |
+| Model owner | Shivam Panda |
+| Model inventory registration | Not registered |
+| Independent validation | Not performed |
+| Ongoing monitoring | Not defined. Proposed: quarterly refresh after each Call Report cycle, with the origin backtest limits |
+| Change management | Git (`Panda5130/Prod-Lvl-Deposit-Beta`); source changes recorded in section 5 |
