@@ -28,6 +28,7 @@
 ### 0.2 Revision History
 | Version | Date | Description | Validation |
 | :--- | :--- | :--- | :--- |
+| 0.2 (draft) | 2026-11-14 | Owner approved the RC-K average-balance denominator; feasibility check found no RC-K time-deposit average from 2017Q1 and no noninterest-bearing average (section 5.4); fallback options recorded, build pending owner choice | MDRM search; two live filings inspected |
 | 0.1 (draft) | 2026-11-14 | First SR 11-7 draft for Prod-Lvl. Source switch from BankFind to Call Reports approved by the owner; sample starts at 2012Q1. Built from the pilot record (section 4) | Pilot reconciliation (section 4.3); no model rerun yet |
 
 ---
@@ -45,7 +46,7 @@ First Horizon Bank (cert 4977), Glacier Bank (30788), Huntington National Bank (
 | :-- | :-- | :-- |
 | Source of deposits and interest expense | FDIC BankFind Financials API | FFIEC Call Reports, CDR Public Web Service |
 | Sample | 2011Q1 to 2026Q2 (62 quarters) | 2012Q1 to 2026Q2 (58 quarters) |
-| Dependent variable | `rate_pf_clean` | Same definition, from Call Report items (section 3.1) |
+| Dependent variable | `rate_pf_clean` (two-point average denominator) | Numerator from Call Report items; denominator moves to RC-K average balances (approved), form pending (section 5.4) |
 | Regressor, model form, selection, backtests | As origin | Unchanged; rerun on the new data |
 | Merger events | FDIC `/history` plus 7 NIC-found transfers | Same event list (read from the origin repository's shared file), cross-checked to NIC Transformations |
 
@@ -127,6 +128,28 @@ Total deposits and deposit interest expense switch from BankFind to Call Reports
 4. Retest the COVID liquidity dummy on the Prod-Lvl series when the models are developed (origin excluded it for all seven banks; not applied in the pilot).
 5. Decide the champion per bank and record any change from the origin.
 
+### 5.4 Denominator: Schedule RC-K Average Balances (owner decision 2026-11-14)
+**Decision.** The owner chose to switch the denominator of the deposit rate from the two-point average of quarter-end total deposits to Schedule RC-K quarterly-average balances. The numerator (deposit interest expense) is unchanged. Under SR 11-7 this is a second change to the dependent variable, recorded separately from the source switch in 5.1 so each can be compared against the origin on its own.
+
+**Expected effect.** The rate moves up in level (the pilot gap, 2008 to 2016: 0.03 to 0.12 points, correlation with the two-point rate 0.97 to 1.00) if the base is interest-bearing deposits, because noninterest-bearing deposits drop out. The effect on the long-run beta is expected to be small and is to be measured in the rerun, not assumed.
+
+**Feasibility finding (2026-11-14), which blocks a complete series.** Items were checked against the current MDRM and against live filings (KeyBank, RSSD 280110, 2016Q4 and 2018Q4, service output):
+| RC-K average | Code | 2012Q1 to 2016Q4 | 2017Q1 onward |
+| :-- | :-- | :-: | :-: |
+| Interest-bearing transaction accounts, domestic | RCON3485 | Reported | Reported |
+| Savings deposits including MMDAs, domestic | RCONB563 | Reported | Reported |
+| Time deposits under $100,000 | RCONA529 | Reported | Ended 2016Q4; no successor in MDRM |
+| Time deposits of $100,000 or more | RCONA514 | Reported | Ended 2016Q4; no successor in MDRM |
+| Interest-bearing deposits, foreign offices | RCFN3404 | Reported (031 filers) | Reported |
+| Noninterest-bearing deposits, average | none | Not collected | Not collected |
+
+The RC-K time-deposit averages were dropped when the time-deposit size split moved to $250,000 in 2017; the new items (RCONHK16 and HK17) are quarter-end balances in Schedule RC-E, not averages. Time deposits are a median 16% of total deposits for the banks and predecessors from 2017 (range 2% to 74%), so the missing piece is not small. No RC-K noninterest-bearing average exists in any period, so an RC-K rate on total deposits is not available either. Consequence: a pure RC-K interest-bearing denominator exists only for 2012Q1 to 2016Q4 (20 quarters), too short for the models.
+
+**Options for the owner** (the build does not start until one is chosen):
+1. RC-K averages for transaction accounts, savings and foreign offices, plus the average of the opening and closing RC-E time-deposit balances for the time-deposit component, for all 58 quarters. A hybrid average: no break in the series, but the time-deposit part stays a two-point average (about 16% of deposits from 2017).
+2. Keep the two-point average of quarter-end total deposits (the origin definition), and carry RC-K as a documented sensitivity for 2012Q1 to 2016Q4.
+3. RC-K to 2016Q4 and the hybrid from 2017Q1: not recommended, because it puts a definition break inside a 58-quarter sample.
+
 ---
 
 ## 6. Results
@@ -145,7 +168,7 @@ Not yet produced. Section filled after the rerun in 5.3.
 | P4 | Wilmington Trust NA (cert 33911) and Federal Trust Bank (cert 32580) have no Call Report; their deposits are not in the pro forma, as for the origin 4 Mode B events | Low |
 | P5 | Partial deposit transfers carry interest expense in proportion to deposits (origin L20, L21) | Low |
 | P6 | The Call Report series is the reference where BankFind's quarterly interest expense does not tie to its year-to-date (63 bank-quarters) | Low |
-| P7 | The deposit rate still uses the two-point average of quarter-end total deposits | Medium |
+| P7 | Until section 5.4 is resolved the deposit rate uses the two-point average of quarter-end total deposits; the approved RC-K denominator cannot be built as a complete series from the Call Report | Medium |
 
 ---
 
@@ -153,7 +176,7 @@ Not yet produced. Section filled after the rerun in 5.3.
 
 | # | Item | Status |
 | :-: | :-- | :-- |
-| O1 | Average-balance denominator (Schedule RC-K). Pilot comparison for 2008 to 2016: correlation 0.97 to 1.00 against the two-point rate, level gap 0.03 to 0.12 points. No MDRM code found for the RC-K time-deposit averages from 2017 and the noninterest-bearing average. Owner decision needed before use | Open |
+| O1 | Average-balance denominator (Schedule RC-K): approved by the owner 2026-11-14, but the Call Report has no RC-K time-deposit average from 2017Q1 and no noninterest-bearing average in any period (section 5.4). Choice of fallback needed before the build | Open, owner |
 | O2 | COVID liquidity dummy retest on the Prod-Lvl series | Deferred to model development |
 | O3 | Product-level betas (savings and money market, time, transaction) | Separate plan after this version |
 | O4 | `ffiec/reference/CSV_ATTRIBUTES_*.zip` (NIC attributes) are not committed; keep or delete | Owner |
