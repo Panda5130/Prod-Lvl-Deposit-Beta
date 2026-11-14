@@ -275,3 +275,52 @@ def test_backfill_adds_items_without_touching_existing_and_flags_amendments():
     cl2 = FakeClient({})
     _, _, _, calls2 = fp.backfill(cl2, out, ["RCONJ473", "RCONJ474"], "2011-12-31", "2016-12-31", done=set(nd))
     assert calls2 == 0                                                           # resumes: nothing refetched
+
+
+# ---------------------------------------------------------------- hybrid denominator A_t
+def _hy(rows):
+    return bf.hybrid_denominator(pd.DataFrame(rows))
+
+
+def test_hybrid_denominator_both_regimes_and_missing_rules():
+    base = {"RCON3485": 10.0, "RCONB563": 20.0, "RCFN3404": 5.0, "RIAD4172": 1.0}
+    rows = [
+        {"rssd": 1, "period": "2016-12-31", **base, "RCON6648": 4.0, "RCONJ473": 3.0, "RCONJ474": 1.0},   # TD 8
+        {"rssd": 1, "period": "2017-03-31", **base, "RCONHK16": 6.0, "RCONHK17": 4.0},                    # TD 10
+        {"rssd": 1, "period": "2017-06-30", **base, "RCONHK16": 6.0},                                      # HK17 missing
+        {"rssd": 2, "period": "2017-03-31", "RCON3485": 10.0, "RCONB563": 20.0, "RCONHK16": 2.0, "RCONHK17": 2.0},
+        {"rssd": 2, "period": "2017-06-30", "RCON3485": 10.0, "RCONB563": 20.0, "RCONHK16": 2.0, "RCONHK17": 2.0,
+         "RIAD4172": 7.0},
+    ]
+    w = _hy(rows).set_index(["rssd", "period"])
+    assert w.loc[(1, "2017-03-31"), "TD_AVG"] == pytest.approx(9.0)          # (8 + 10)/2: no break at the switch
+    assert w.loc[(1, "2017-03-31"), "A"] == pytest.approx(10 + 20 + 5 + 9)   # NMD_ib + FOR + TD_avg
+    assert pd.isna(w.loc[(1, "2016-12-31"), "A"])                            # no prior quarter-end
+    assert pd.isna(w.loc[(1, "2017-06-30"), "A"])                            # a missing piece is never zero-filled
+    assert pd.isna(w.loc[(2, "2017-03-31"), "A"]) and pd.isna(w.loc[(2, "2017-06-30"), "A"])
+    r2 = _hy([{"rssd": 3, "period": p, "RCON3485": 10.0, "RCONB563": 20.0, "RCONHK16": 2.0, "RCONHK17": 2.0}
+              for p in ("2017-03-31", "2017-06-30")]).set_index("period")
+    assert r2.loc["2017-06-30", "A"] == pytest.approx(10 + 20 + 0 + 4)       # no foreign offices, no RIAD4172: FOR = 0
+    r3 = _hy([{"rssd": 4, "period": p, "RCON3485": 10.0, "RCONB563": 20.0, "RCONHK16": 2.0, "RCONHK17": 2.0,
+               "RIAD4172": 7.0} for p in ("2017-03-31", "2017-06-30")]).set_index("period")
+    assert pd.isna(r3.loc["2017-06-30", "A"])                                # foreign interest but no RCFN3404: flagged
+
+
+def test_hybrid_pro_forma_matches_fdic_when_denominator_is_deposits():
+    bd = bf.load_fdic_module()
+    qs = pd.period_range("2012Q1", "2013Q4", freq="Q")
+    fin = pd.DataFrame([{"CERT": c, "REPDTE": int(q.end_time.strftime("%Y%m%d")), "DEP": dep, "EDEPDOMQ": ie,
+                         "EDEPFORQ": 0.0} for c, dep, ie, last in [(1, 1000.0, 5.0, None), (2, 400.0, 2.0, "2012Q4")]
+                        for q in qs if last is None or q <= pd.Period(last)])
+    hist = pd.DataFrame([{"CERT": 2, "ACQ_CERT": 1, "OUT_CERT": 2, "OUT_INSTNAME": "P", "CHANGECODE": 223,
+                          "CHANGECODE_DESC": "Merger", "EFFDATE": "2013-02-14"}])
+    src = bf.make_source_class(bd, fin, hist)(False, None)
+    rows = []
+    want = bd.pro_forma(src, 1, rows)
+    modes = {(int(r["predecessor_cert"]), int(r["survivor_cert"]), str(r["effective_date"])): r["mode_applied"]
+             for r in rows}
+    assert modes[(2, 1, "2013-02-14")] == "A"
+    got = bf.pro_forma_ib(src, 1, modes)
+    pd.testing.assert_frame_equal(got, want)
+    got_b = bf.pro_forma_ib(src, 1, {k: "B" for k in modes})                  # forced Mode B: no predecessor folded in
+    assert (got_b.n_pred == 0).all() and got_b.DEP.equals(src.series(1).DEP)

@@ -23,7 +23,7 @@ import pandas as pd
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from items import ri_dom_codes  # noqa: E402
+from items import NEW_REGIME_START, ri_dom_codes  # noqa: E402
 from ffiec_pull import load_cert_rssd, load_extra_rssd  # noqa: E402
 
 FFIEC = HERE.parent
@@ -40,10 +40,39 @@ def load_fdic_module(root=ROOT):
     return mod
 
 
-def financials_from_items(quarterly, cert_rssd, cert_quarters=None, extra=None):
-    """Wide FDIC-shaped frame (CERT, REPDTE, DEP, EDEPDOMQ, EDEPFORQ) in $ thousands from quarterly long items."""
+def hybrid_denominator(w):
+    """Interest-bearing average balance A_t (dollars) per (rssd, period); NaN when a required piece is missing.
+
+    A_t = NMD_ib + FOR + TD_avg.  NMD_ib = RCON3485 + RCONB563 (RC-K averages). FOR = RCFN3404 (RC-K average, 031
+    filers); missing counts as 0 only when RIAD4172 is absent or 0, otherwise A_t is NaN (never zero-filled).
+    TD_avg = mean of this and the prior quarter-end time deposits (RC-E): 6648 + J473 + J474 to 2016Q4,
+    HK16 + HK17 from 2017Q1. A prior quarter-end that is not the previous calendar quarter gives NaN."""
+    w = w.sort_values(["rssd", "period"]).copy()
+    for c in ("RCON3485", "RCONB563", "RCFN3404", "RIAD4172", "RCON6648", "RCONJ473", "RCONJ474", "RCONHK16",
+              "RCONHK17"):
+        if c not in w:
+            w[c] = float("nan")
+    new = w.period >= NEW_REGIME_START
+    td = (w.RCONHK16 + w.RCONHK17).where(new, w.RCON6648 + w.RCONJ473 + w.RCONJ474)   # NaN if any piece missing
+    prev_p = pd.PeriodIndex(pd.to_datetime(w.period), freq="Q") - 1
+    prior = pd.Series(td.values, index=pd.MultiIndex.from_arrays([w.rssd.values, pd.PeriodIndex(
+        pd.to_datetime(w.period), freq="Q")]))
+    prior = prior[~prior.index.duplicated()]
+    td_prev = pd.Series(prior.reindex(pd.MultiIndex.from_arrays([w.rssd.values, prev_p])).values, index=w.index)
+    foreign = w.RCFN3404.where(w.RCFN3404.notna() | w.RIAD4172.fillna(0).ne(0), 0.0)
+    w["NMD_IB"] = w.RCON3485 + w.RCONB563
+    w["TD_AVG"] = (td + td_prev) / 2
+    w["A"] = w.NMD_IB + foreign + w.TD_AVG
+    return w
+
+
+def financials_from_items(quarterly, cert_rssd, cert_quarters=None, extra=None, hybrid=False):
+    """Wide FDIC-shaped frame (CERT, REPDTE, DEP, EDEPDOMQ, EDEPFORQ) in $ thousands from quarterly long items.
+    hybrid=True adds A (hybrid interest-bearing average balance, $ thousands) and RATE_NMD_NUM/DEN columns."""
     w = quarterly.pivot_table(index=["rssd", "period"], columns="item", values="value", aggfunc="first")
     w = w.reset_index()
+    if hybrid:
+        w = hybrid_denominator(w)
     for col in ("RCFD2200", "RCON2200", "RCFN2200", "RIAD4172"):
         if col not in w:
             w[col] = float("nan")
@@ -65,6 +94,10 @@ def financials_from_items(quarterly, cert_rssd, cert_quarters=None, extra=None):
     out = pd.DataFrame({"rssd": w.rssd, "REPDTE": w.period.str.replace("-", "").astype(int),
                         "DEP": w.DEP / UNIT_DIVISOR, "EDEPDOMQ": w.EDEPDOMQ / UNIT_DIVISOR,
                         "EDEPFORQ": w.EDEPFORQ / UNIT_DIVISOR})
+    if hybrid:
+        out["A"] = w.A / UNIT_DIVISOR
+        out["NMD_IB"] = w.NMD_IB / UNIT_DIVISOR
+        out["NMD_IE"] = (w.RIAD4508 + w.RIAD0093) / UNIT_DIVISOR
     # A cert can have several RSSDs and an RSSD several certs (the FDIC API sometimes gives a cert another cert's
     # RSSD, or the RSSD of a later charter). `extra` adds the known further RSSDs per cert. Where a cert or an RSSD
     # is ambiguous, a filing is assigned to a cert only if the cert existed that quarter and the filing's total
@@ -82,8 +115,8 @@ def financials_from_items(quarterly, cert_rssd, cert_quarters=None, extra=None):
         out["gap"] = ((out.DEP - ref).abs() / ref.abs().where(ref != 0))
         out = out[~is_amb | (ref.notna() & (out.gap <= 0.10))]
         out = out.sort_values("gap").drop_duplicates(["CERT", "REPDTE"], keep="first")
-    return out.drop(columns=[c for c in ("rssd", "gap") if c in out])[
-        ["CERT", "REPDTE", "DEP", "EDEPDOMQ", "EDEPFORQ"]].astype({"CERT": int})
+    cols = ["CERT", "REPDTE", "DEP", "EDEPDOMQ", "EDEPFORQ"] + (["A", "NMD_IB", "NMD_IE"] if hybrid else [])
+    return out.drop(columns=[c for c in ("rssd", "gap") if c in out])[cols].astype({"CERT": int})
 
 
 def make_source_class(bd, fin, hist):
@@ -105,7 +138,7 @@ def build_ffiec(items_path=None, cert_rssd_path=None, hist_path=None, outdir=OUT
     cert_rssd = load_cert_rssd(cert_rssd_path or FFIEC / "data" / "cert_rssd.csv")   # includes rssd_overrides.csv
     fdic_fin = pd.read_csv(root / "data_build" / "raw" / "financials_targets.csv", usecols=["CERT", "REPDTE", "DEP"])  # read only
     fin = financials_from_items(quarterly, cert_rssd, dict(zip(zip(fdic_fin.CERT, fdic_fin.REPDTE), fdic_fin.DEP)),
-                                load_extra_rssd())
+                                load_extra_rssd(), hybrid=True)
     hist = pd.read_csv(hist_path or root / "data_build" / "raw" / "history_targets.csv")
     src = make_source_class(bd, fin, hist)
     outdir.mkdir(parents=True, exist_ok=True)
@@ -115,7 +148,75 @@ def build_ffiec(items_path=None, cert_rssd_path=None, hist_path=None, outdir=OUT
     for old in outdir.glob(f"*_{bd.VINTAGE}.*"):   # FDIC write() never overwrites a vintage; FFIEC outputs are rebuilt
         old.unlink()
     bd.write(data, events, checks)
+    supp = root / "data_build" / "raw" / "supplementary_transfer_events.csv"
+    build_hybrid(data, events, fin, hist, bd, supp, outdir)
     return data, events, checks
+
+
+HYBRID_START = "2012-01-01"
+
+
+def pro_forma_ib(src, cert, modes, depth=0):
+    """Same fold as FDIC `pro_forma` (predecessors scaled by transfer share, Mode A recursion, merger-quarter
+    interest expense pro rata to the days before the effective date) but with the Mode A/B decision taken from
+    `modes` ({(predecessor, survivor, effective date): mode}, i.e. the total-deposit build's decision on DEP).
+    The series' DEP column holds A_t; a predecessor quarter with A_t missing makes the survivor's A_pf missing
+    for that quarter (NaN propagates; the row is then dropped, never zero-filled)."""
+    pf = src.series(cert).copy()
+    pf["n_pred"] = 0
+    for e in src.events(cert).itertuples():
+        pred_cert, mq, share = int(e.OUT_CERT), pd.Period(e.EFFDATE, "Q"), float(e.transfer_share)
+        if modes.get((pred_cert, cert, str(e.EFFDATE.date()))) != "A":
+            continue
+        pred = src.series(pred_cert)
+        pred = pred[pred.index < mq]
+        if pred.empty:
+            continue
+        last_q = pred.index.max()
+        pred_pf = pro_forma_ib(src, pred_cert, modes, depth + 1)
+        pred_pf = pred_pf[pred_pf.index < mq].copy()
+        pred_pf[["DEP", "ie"]] *= share
+        idx = pf.index.intersection(pred_pf.index)
+        pf.loc[idx, ["DEP", "ie"]] += pred_pf.loc[idx, ["DEP", "ie"]]
+        pf.loc[idx, "n_pred"] += 1 + pred_pf.loc[idx, "n_pred"]
+        if mq in pf.index:
+            frac = (e.EFFDATE - mq.start_time).days / ((mq.end_time.normalize() - mq.start_time).days + 1)
+            pf.loc[mq, "ie"] += frac * pred_pf.loc[last_q, "ie"]
+    return pf
+
+
+def build_hybrid(data, events, fin, hist, bd, supplementary, outdir=OUT):
+    """Interest-bearing deposit-rate dataset on the hybrid denominator A_t (doc 5.4). A_t is already an
+    average, so no further averaging. Merger Mode A/B decisions are those of the total-deposit build (made on
+    DEP), so the event set is identical by construction."""
+    src = make_source_class(bd, fin.assign(DEP=fin["A"]), hist)(False, supplementary)
+    modes = {}
+    for r in events.itertuples():
+        modes.setdefault((int(r.predecessor_cert), int(r.survivor_cert), str(r.effective_date)), r.mode_applied)
+    rows = []
+    for cert, name in bd.TARGETS.items():
+        sa, pf = src.series(cert), pro_forma_ib(src, cert, modes)
+        d = pd.DataFrame({"bank_name": name, "cert_number": cert,
+                          "quarter": sa.index.to_timestamp(how="end").strftime("%Y-%m-%d"),
+                          "ie": sa["ie"], "A": sa["DEP"], "rate_ib": 400 * sa["ie"] / sa["DEP"],
+                          "ie_ann_pf": 4 * pf["ie"], "A_pf": pf["DEP"], "rate_ib_pf": 400 * pf["ie"] / pf["DEP"],
+                          "n_predecessors_included": pf["n_pred"].astype(int)}, index=sa.index)
+        f = fin[fin.CERT == cert].assign(q=lambda x: pd.to_datetime(x.REPDTE.astype(str)).dt.to_period("Q"))
+        f = f.set_index("q").sort_index()
+        d["rate_nmd"] = 400 * f["NMD_IE"] / f["NMD_IB"]
+        rows.append(d)
+    out = pd.concat(rows).reset_index(drop=True)
+    out = out[out.quarter >= HYBRID_START]
+    ref = data[data.quarter >= HYBRID_START][["cert_number", "quarter", "rate_pf", "dep_avg_pf", "adjustment_mode",
+                                              "merger_quarter", "pct_deposits_acquired_in_quarter"]]
+    out = ref.rename(columns={"rate_pf": "rate_total_pf"}).merge(out, on=["cert_number", "quarter"], how="left")
+    dropped = out[out.rate_ib_pf.isna()][["bank_name", "cert_number", "quarter"]]
+    out = out.dropna(subset=["rate_ib_pf"])
+    out.to_csv(outdir / f"ffiec_deposit_rates_hybrid_{bd.VINTAGE}.csv", index=False)
+    dropped.to_csv(outdir / f"hybrid_dropped_quarters_{bd.VINTAGE}.csv", index=False)
+    for old in outdir.glob(f"hybrid_event_set_differences_{bd.VINTAGE}.csv"):
+        old.unlink()
+    return out, dropped
 
 
 def main():
