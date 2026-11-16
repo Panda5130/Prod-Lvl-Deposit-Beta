@@ -41,6 +41,11 @@ ITEMS = {
     "RCONJ474": ("level", "rce_bal", "Time deposits more than $250,000 (2010 on; to 2016 used with J473)"),
     "RCONHK16": ("level", "rce_bal", "Time deposits <= $250,000 (2017 on)"),
     "RCONHK17": ("level", "rce_bal", "Time deposits > $250,000 (2017 on)"),
+    # Schedule RC quarter-end deposit split, for the reconciling total-deposit series (doc 5.4, O1)
+    "RCON6631": ("level", "rc_bal", "Noninterest-bearing deposits (domestic offices)"),
+    "RCON6636": ("level", "rc_bal", "Interest-bearing deposits (domestic offices)"),
+    "RCFN6631": ("level", "rc_bal", "Noninterest-bearing deposits (foreign offices, 031 filers)"),
+    "RCFN6636": ("level", "rc_bal", "Interest-bearing deposits (foreign offices, 031 filers)"),
 }
 # Open items: no MDRM code was found for RC-K time-deposit quarterly averages from 2017 on, nor for the RC-K
 # noninterest-bearing deposit average. The materiality script reports those quarters as coverage gaps.

@@ -324,3 +324,26 @@ def test_hybrid_pro_forma_matches_fdic_when_denominator_is_deposits():
     pd.testing.assert_frame_equal(got, want)
     got_b = bf.pro_forma_ib(src, 1, {k: "B" for k in modes})                  # forced Mode B: no predecessor folded in
     assert (got_b.n_pred == 0).all() and got_b.DEP.equals(src.series(1).DEP)
+
+
+def test_one_point_time_deposit_fallback_only_for_first_call_report_in_2012q1():
+    leg = {"RCON3485": 10.0, "RCONB563": 20.0, "RCON6648": 4.0, "RCONJ473": 3.0, "RCONJ474": 1.0}   # TD 8
+    rows = [{"rssd": 1, "period": "2012-03-31", **leg},                      # thrift: first Call Report 2012Q1
+            {"rssd": 2, "period": "2011-12-31", "RCON3485": 1.0},            # filed 2011Q4 but TD missing
+            {"rssd": 2, "period": "2012-03-31", **leg},
+            {"rssd": 3, "period": "2012-06-30", **leg}]                      # first filing later: no fallback
+    w = _hy(rows).set_index(["rssd", "period"])
+    assert w.loc[(1, "2012-03-31"), "TD_FALLBACK"] and w.loc[(1, "2012-03-31"), "TD_AVG"] == pytest.approx(8.0)
+    assert not w.loc[(2, "2012-03-31"), "TD_FALLBACK"] and pd.isna(w.loc[(2, "2012-03-31"), "A"])
+    assert not w.loc[(3, "2012-06-30"), "TD_FALLBACK"] and pd.isna(w.loc[(3, "2012-06-30"), "A"])
+
+
+def test_reconciling_total_adds_two_point_noninterest_bearing_average():
+    leg = {"RCON3485": 10.0, "RCONB563": 20.0, "RCONHK16": 6.0, "RCONHK17": 4.0}
+    rows = [{"rssd": 1, "period": "2017-03-31", **leg, "RCON6631": 50.0},
+            {"rssd": 1, "period": "2017-06-30", **leg, "RCON6631": 70.0},
+            {"rssd": 1, "period": "2017-09-30", **leg, "RCON6631": 70.0, "RCFN2200": 5.0}]   # foreign NIB missing
+    w = _hy(rows).set_index("period")
+    assert w.loc["2017-06-30", "NIB_AVG"] == pytest.approx(60.0)
+    assert w.loc["2017-06-30", "TOT_AVG"] == pytest.approx(w.loc["2017-06-30", "A"] + 60.0)
+    assert pd.isna(w.loc["2017-09-30", "TOT_AVG"])                    # foreign offices but no RCFN6631: not filled

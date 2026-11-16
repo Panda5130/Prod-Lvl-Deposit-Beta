@@ -30,6 +30,9 @@ FFIEC = HERE.parent
 ROOT = FFIEC.parent
 OUT = FFIEC / "outputs"
 UNIT_DIVISOR = 1000.0
+TD_FALLBACK_PERIOD = "2012-03-31"
+# product legs: (balance column, interest-expense column) in the hybrid frame
+PRODUCTS = {"tran": ("RCON3485", "RIAD4508"), "sav": ("RCONB563", "RIAD0093"), "time": ("TD_AVG", "TD_IE")}
 log = logging.getLogger("build_ffiec")
 
 
@@ -46,10 +49,13 @@ def hybrid_denominator(w):
     A_t = NMD_ib + FOR + TD_avg.  NMD_ib = RCON3485 + RCONB563 (RC-K averages). FOR = RCFN3404 (RC-K average, 031
     filers); missing counts as 0 only when RIAD4172 is absent or 0, otherwise A_t is NaN (never zero-filled).
     TD_avg = mean of this and the prior quarter-end time deposits (RC-E): 6648 + J473 + J474 to 2016Q4,
-    HK16 + HK17 from 2017Q1. A prior quarter-end that is not the previous calendar quarter gives NaN."""
+    HK16 + HK17 from 2017Q1. A prior quarter-end that is not the previous calendar quarter gives NaN.
+    One-point fallback (owner decision 2026-11-16): in TD_FALLBACK_PERIOD only, an entity with no Call Report in
+    the prior quarter (savings institutions filed the Thrift Financial Report until 2011Q4) uses its own quarter-end
+    time deposits as the prior value, so TD_avg = TD_t; flagged in TD_FALLBACK. No other source is used."""
     w = w.sort_values(["rssd", "period"]).copy()
     for c in ("RCON3485", "RCONB563", "RCFN3404", "RIAD4172", "RCON6648", "RCONJ473", "RCONJ474", "RCONHK16",
-              "RCONHK17"):
+              "RCONHK17", "RIAD4508", "RIAD0093", "RIADA517", "RIADA518", "RIADHK03", "RIADHK04"):
         if c not in w:
             w[c] = float("nan")
     new = w.period >= NEW_REGIME_START
@@ -59,10 +65,31 @@ def hybrid_denominator(w):
         pd.to_datetime(w.period), freq="Q")]))
     prior = prior[~prior.index.duplicated()]
     td_prev = pd.Series(prior.reindex(pd.MultiIndex.from_arrays([w.rssd.values, prev_p])).values, index=w.index)
+    filed_prev = pd.Series(pd.MultiIndex.from_arrays([w.rssd.values, prev_p]).isin(prior.index), index=w.index)
+    w["TD_FALLBACK"] = (w.period == TD_FALLBACK_PERIOD) & ~filed_prev & td.notna()
+    td_prev = td_prev.where(~w.TD_FALLBACK, td)
+
+    def two_point(x):                       # same prior-quarter rule and the same one-point fallback as TD
+        ser = pd.Series(x.values, index=pd.MultiIndex.from_arrays(
+            [w.rssd.values, pd.PeriodIndex(pd.to_datetime(w.period), freq="Q")]))
+        ser = ser[~ser.index.duplicated()]
+        prev = pd.Series(ser.reindex(pd.MultiIndex.from_arrays([w.rssd.values, prev_p])).values, index=w.index)
+        fb = (w.period == TD_FALLBACK_PERIOD) & ~filed_prev
+        return (x + prev.where(~fb, x)) / 2
     foreign = w.RCFN3404.where(w.RCFN3404.notna() | w.RIAD4172.fillna(0).ne(0), 0.0)
+    w["FOR_BAL"] = foreign
     w["NMD_IB"] = w.RCON3485 + w.RCONB563
     w["TD_AVG"] = (td + td_prev) / 2
+    w["TD_IE"] = (w.RIADHK03 + w.RIADHK04).where(new, w.RIADA517 + w.RIADA518)
     w["A"] = w.NMD_IB + foreign + w.TD_AVG
+    # Reconciling total-deposit leg: noninterest-bearing quarter-end balances (Schedule RC), two-point average.
+    # RCFN6631 missing counts as 0 only when the filer reports no foreign-office deposits (RCFN2200 absent or 0).
+    for c in ("RCON6631", "RCFN6631", "RCFN2200"):
+        if c not in w:
+            w[c] = float("nan")
+    nib = w.RCON6631 + w.RCFN6631.where(w.RCFN6631.notna() | w.RCFN2200.fillna(0).ne(0), 0.0)
+    w["NIB_AVG"] = two_point(nib)
+    w["TOT_AVG"] = w.A + w.NIB_AVG
     return w
 
 
@@ -98,6 +125,11 @@ def financials_from_items(quarterly, cert_rssd, cert_quarters=None, extra=None, 
         out["A"] = w.A / UNIT_DIVISOR
         out["NMD_IB"] = w.NMD_IB / UNIT_DIVISOR
         out["NMD_IE"] = (w.RIAD4508 + w.RIAD0093) / UNIT_DIVISOR
+        for name, (bal, ie) in PRODUCTS.items():
+            out[f"{name.upper()}_BAL"] = w[bal] / UNIT_DIVISOR
+            out[f"{name.upper()}_IE"] = w[ie] / UNIT_DIVISOR
+        out["TD_FALLBACK"] = w.TD_FALLBACK.astype(float)
+        out["TOT_AVG"] = w.TOT_AVG / UNIT_DIVISOR
     # A cert can have several RSSDs and an RSSD several certs (the FDIC API sometimes gives a cert another cert's
     # RSSD, or the RSSD of a later charter). `extra` adds the known further RSSDs per cert. Where a cert or an RSSD
     # is ambiguous, a filing is assigned to a cert only if the cert existed that quarter and the filing's total
@@ -115,7 +147,8 @@ def financials_from_items(quarterly, cert_rssd, cert_quarters=None, extra=None, 
         out["gap"] = ((out.DEP - ref).abs() / ref.abs().where(ref != 0))
         out = out[~is_amb | (ref.notna() & (out.gap <= 0.10))]
         out = out.sort_values("gap").drop_duplicates(["CERT", "REPDTE"], keep="first")
-    cols = ["CERT", "REPDTE", "DEP", "EDEPDOMQ", "EDEPFORQ"] + (["A", "NMD_IB", "NMD_IE"] if hybrid else [])
+    hy = ["A", "NMD_IB", "NMD_IE", "TD_FALLBACK", "TOT_AVG"] + [f"{n.upper()}_{x}" for n in PRODUCTS for x in ("BAL", "IE")]
+    cols = ["CERT", "REPDTE", "DEP", "EDEPDOMQ", "EDEPFORQ"] + (hy if hybrid else [])
     return out.drop(columns=[c for c in ("rssd", "gap") if c in out])[cols].astype({"CERT": int})
 
 
@@ -186,13 +219,23 @@ def pro_forma_ib(src, cert, modes, depth=0):
 
 
 def build_hybrid(data, events, fin, hist, bd, supplementary, outdir=OUT):
-    """Interest-bearing deposit-rate dataset on the hybrid denominator A_t (doc 5.4). A_t is already an
-    average, so no further averaging. Merger Mode A/B decisions are those of the total-deposit build (made on
-    DEP), so the event set is identical by construction."""
-    src = make_source_class(bd, fin.assign(DEP=fin["A"]), hist)(False, supplementary)
+    """Interest-bearing deposit-rate dataset on the hybrid denominator A_t (doc 5.4), plus pro forma product
+    rates (transaction, savings incl. MMDA, time). Each balance is already a quarterly average (RC-K, or the
+    two-point time-deposit average), so no further averaging. Every series is folded with `pro_forma_ib` using the
+    Mode A/B decisions of the total-deposit build (made on DEP), so the event set is identical by construction."""
     modes = {}
     for r in events.itertuples():
         modes.setdefault((int(r.predecessor_cert), int(r.survivor_cert), str(r.effective_date)), r.mode_applied)
+
+    def source(bal, ie=None, ie_for=True):
+        f = fin.assign(DEP=fin[bal], EDEPDOMQ=fin[ie] if ie else 0.0,
+                       EDEPFORQ=fin["EDEPFORQ"] if ie_for else 0.0)
+        return make_source_class(bd, f, hist)(False, supplementary)
+
+    src = source("A", "EDEPDOMQ")                              # all interest-bearing deposits, incl. foreign
+    prod = {n: source(f"{n.upper()}_BAL", f"{n.upper()}_IE", ie_for=False) for n in PRODUCTS}
+    flag = source("TD_FALLBACK", None, ie_for=False)
+    tot = source("TOT_AVG", "EDEPDOMQ")                         # reconciling total: A_t + NIB average
     rows = []
     for cert, name in bd.TARGETS.items():
         sa, pf = src.series(cert), pro_forma_ib(src, cert, modes)
@@ -201,21 +244,31 @@ def build_hybrid(data, events, fin, hist, bd, supplementary, outdir=OUT):
                           "ie": sa["ie"], "A": sa["DEP"], "rate_ib": 400 * sa["ie"] / sa["DEP"],
                           "ie_ann_pf": 4 * pf["ie"], "A_pf": pf["DEP"], "rate_ib_pf": 400 * pf["ie"] / pf["DEP"],
                           "n_predecessors_included": pf["n_pred"].astype(int)}, index=sa.index)
+        for n, s in prod.items():
+            ppf = pro_forma_ib(s, cert, modes)
+            d[f"{n}_avg_pf"] = ppf["DEP"]
+            d[f"{n}_ie_ann_pf"] = 4 * ppf["ie"]
+            d[f"rate_{n}_pf"] = 400 * ppf["ie"] / ppf["DEP"]
+        tpf = pro_forma_ib(tot, cert, modes)
+        d["tot_avg_pf"] = tpf["DEP"]
+        d["rate_total_recon_pf"] = 400 * tpf["ie"] / tpf["DEP"]
+        d["td_fallback_in_pf"] = pro_forma_ib(flag, cert, modes)["DEP"].gt(0).astype(int)
         f = fin[fin.CERT == cert].assign(q=lambda x: pd.to_datetime(x.REPDTE.astype(str)).dt.to_period("Q"))
         f = f.set_index("q").sort_index()
         d["rate_nmd"] = 400 * f["NMD_IE"] / f["NMD_IB"]
         rows.append(d)
     out = pd.concat(rows).reset_index(drop=True)
     out = out[out.quarter >= HYBRID_START]
-    ref = data[data.quarter >= HYBRID_START][["cert_number", "quarter", "rate_pf", "dep_avg_pf", "adjustment_mode",
-                                              "merger_quarter", "pct_deposits_acquired_in_quarter"]]
-    out = ref.rename(columns={"rate_pf": "rate_total_pf"}).merge(out, on=["cert_number", "quarter"], how="left")
+    ref = data[data.quarter >= HYBRID_START][["bank_name", "cert_number", "quarter", "rate_pf", "dep_avg_pf",
+                                              "adjustment_mode", "merger_quarter", "pct_deposits_acquired_in_quarter"]]
+    out = ref.rename(columns={"rate_pf": "rate_total_pf"}).merge(out.drop(columns="bank_name"),
+                                                                  on=["cert_number", "quarter"], how="left")
     dropped = out[out.rate_ib_pf.isna()][["bank_name", "cert_number", "quarter"]]
     out = out.dropna(subset=["rate_ib_pf"])
     out.to_csv(outdir / f"ffiec_deposit_rates_hybrid_{bd.VINTAGE}.csv", index=False)
     dropped.to_csv(outdir / f"hybrid_dropped_quarters_{bd.VINTAGE}.csv", index=False)
-    for old in outdir.glob(f"hybrid_event_set_differences_{bd.VINTAGE}.csv"):
-        old.unlink()
+    fb = fin[fin.TD_FALLBACK > 0][["CERT", "REPDTE"]]
+    fb.to_csv(outdir / f"hybrid_td_fallback_{bd.VINTAGE}.csv", index=False)
     return out, dropped
 
 
