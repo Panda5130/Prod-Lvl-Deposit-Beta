@@ -294,16 +294,16 @@ def test_hybrid_denominator_both_regimes_and_missing_rules():
     ]
     w = _hy(rows).set_index(["rssd", "period"])
     assert w.loc[(1, "2017-03-31"), "TD_AVG"] == pytest.approx(9.0)          # (8 + 10)/2: no break at the switch
-    assert w.loc[(1, "2017-03-31"), "A"] == pytest.approx(10 + 20 + 5 + 9)   # NMD_ib + FOR + TD_avg
-    assert pd.isna(w.loc[(1, "2016-12-31"), "A"])                            # no prior quarter-end
-    assert pd.isna(w.loc[(1, "2017-06-30"), "A"])                            # a missing piece is never zero-filled
-    assert pd.isna(w.loc[(2, "2017-03-31"), "A"]) and pd.isna(w.loc[(2, "2017-06-30"), "A"])
+    assert w.loc[(1, "2017-03-31"), "A_HYB"] == pytest.approx(10 + 20 + 5 + 9)   # NMD_ib + FOR + TD_avg
+    assert pd.isna(w.loc[(1, "2016-12-31"), "A_HYB"])                            # no prior quarter-end
+    assert pd.isna(w.loc[(1, "2017-06-30"), "A_HYB"])                            # a missing piece is never zero-filled
+    assert pd.isna(w.loc[(2, "2017-03-31"), "A_HYB"]) and pd.isna(w.loc[(2, "2017-06-30"), "A_HYB"])
     r2 = _hy([{"rssd": 3, "period": p, "RCON3485": 10.0, "RCONB563": 20.0, "RCONHK16": 2.0, "RCONHK17": 2.0}
               for p in ("2017-03-31", "2017-06-30")]).set_index("period")
-    assert r2.loc["2017-06-30", "A"] == pytest.approx(10 + 20 + 0 + 4)       # no foreign offices, no RIAD4172: FOR = 0
+    assert r2.loc["2017-06-30", "A_HYB"] == pytest.approx(10 + 20 + 0 + 4)       # no foreign offices, no RIAD4172: FOR = 0
     r3 = _hy([{"rssd": 4, "period": p, "RCON3485": 10.0, "RCONB563": 20.0, "RCONHK16": 2.0, "RCONHK17": 2.0,
                "RIAD4172": 7.0} for p in ("2017-03-31", "2017-06-30")]).set_index("period")
-    assert pd.isna(r3.loc["2017-06-30", "A"])                                # foreign interest but no RCFN3404: flagged
+    assert pd.isna(r3.loc["2017-06-30", "A_HYB"])                                # foreign interest but no RCFN3404: flagged
 
 
 def test_hybrid_pro_forma_matches_fdic_when_denominator_is_deposits():
@@ -334,12 +334,12 @@ def test_one_point_time_deposit_fallback_only_for_first_call_report_in_2012q1():
             {"rssd": 3, "period": "2012-06-30", **leg}]                      # first filing later: no fallback
     w = _hy(rows).set_index(["rssd", "period"])
     assert w.loc[(1, "2012-03-31"), "TD_FALLBACK"] and w.loc[(1, "2012-03-31"), "TD_AVG"] == pytest.approx(8.0)
-    assert not w.loc[(2, "2012-03-31"), "TD_FALLBACK"] and pd.isna(w.loc[(2, "2012-03-31"), "A"])
-    assert not w.loc[(3, "2012-06-30"), "TD_FALLBACK"] and pd.isna(w.loc[(3, "2012-06-30"), "A"])
+    assert not w.loc[(2, "2012-03-31"), "TD_FALLBACK"] and pd.isna(w.loc[(2, "2012-03-31"), "TD_AVG"])
+    assert not w.loc[(3, "2012-06-30"), "TD_FALLBACK"] and pd.isna(w.loc[(3, "2012-06-30"), "TD_AVG"])
 
 
 def test_reconciling_total_adds_two_point_noninterest_bearing_average():
-    leg = {"RCON3485": 10.0, "RCONB563": 20.0, "RCONHK16": 6.0, "RCONHK17": 4.0}
+    leg = {"RCON3485": 10.0, "RCONB563": 20.0, "RCONHK16": 6.0, "RCONHK17": 4.0, "RCON6636": 40.0}
     rows = [{"rssd": 1, "period": "2017-03-31", **leg, "RCON6631": 50.0},
             {"rssd": 1, "period": "2017-06-30", **leg, "RCON6631": 70.0},
             {"rssd": 1, "period": "2017-09-30", **leg, "RCON6631": 70.0, "RCFN2200": 5.0}]   # foreign NIB missing
@@ -347,3 +347,23 @@ def test_reconciling_total_adds_two_point_noninterest_bearing_average():
     assert w.loc["2017-06-30", "NIB_AVG"] == pytest.approx(60.0)
     assert w.loc["2017-06-30", "TOT_AVG"] == pytest.approx(w.loc["2017-06-30", "A"] + 60.0)
     assert pd.isna(w.loc["2017-09-30", "TOT_AVG"])                    # foreign offices but no RCFN6631: not filled
+
+
+def test_schedule_rc_base_two_point_split_and_missing_rules():
+    td = {"RCONHK16": 6.0, "RCONHK17": 4.0}                                    # TD 10 each quarter
+    rows = [{"rssd": 1, "period": "2017-03-31", **td, "RCON6636": 50.0, "RCFN6636": 8.0, "RCFN2200": 9.0},
+            {"rssd": 1, "period": "2017-06-30", **td, "RCON6636": 70.0, "RCFN6636": 12.0, "RCFN2200": 13.0},
+            {"rssd": 1, "period": "2017-09-30", **td, "RCON6636": 70.0, "RCFN2200": 13.0},   # foreign IB missing
+            {"rssd": 2, "period": "2017-03-31", **td, "RCON6636": 30.0},                     # no foreign offices
+            {"rssd": 2, "period": "2017-06-30", **td, "RCON6636": 50.0},
+            {"rssd": 3, "period": "2012-03-31", "RCON6648": 4.0, "RCONJ473": 3.0, "RCONJ474": 1.0,
+             "RCON6636": 20.0}]                                                    # thrift: first Call Report 2012Q1
+    w = _hy(rows).set_index(["rssd", "period"])
+    r = w.loc[(1, "2017-06-30")]
+    assert r.A == pytest.approx((50 + 8 + 70 + 12) / 2)                       # two-point RCON6636 + RCFN6636
+    assert r.NMD_RC + r.TD_AVG + r.FOR_RC == pytest.approx(r.A)                # product legs tile A exactly
+    assert r.NMD_RC == pytest.approx(60.0 - 10.0) and r.FOR_RC == pytest.approx(10.0)
+    assert pd.isna(w.loc[(1, "2017-03-31"), "A"])                              # no prior quarter-end
+    assert pd.isna(w.loc[(1, "2017-09-30"), "A"])                              # foreign offices, no RCFN6636: not filled
+    assert w.loc[(2, "2017-06-30"), "A"] == pytest.approx(40.0)                # RCFN2200 absent: foreign = 0
+    assert w.loc[(3, "2012-03-31"), "A"] == pytest.approx(20.0)                # one-point fallback applies

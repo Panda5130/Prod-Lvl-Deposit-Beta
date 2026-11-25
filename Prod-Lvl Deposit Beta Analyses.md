@@ -18,7 +18,7 @@
 | Developer / owner | Shivam Panda (GitHub: Panda5130) |
 | Code repository | `Panda5130/Prod-Lvl-Deposit-Beta` |
 | Origin model | High-Level Deposit Beta, repository `Panda5130/Deposit-Beta` (FDIC BankFind data), document "WIP Regional Banking Deposit Beta Analyses", version 2.0 (WIP), last synced origin commit `ea95980` |
-| Document date | 2026-11-16 |
+| Document date | 2026-11-25 |
 | Data period | 2012Q1 to 2026Q3 (59 quarters per bank, section 6.1; about 56 after lags and differencing) |
 
 ### 0.1 Naming
@@ -28,6 +28,7 @@
 ### 0.2 Revision History
 | Version | Date | Description | Validation |
 | :--- | :--- | :--- | :--- |
+| 0.6 (draft) | 2026-11-25 | Schedule RC interest-bearing base built (owner decision, 6.4): quarter-end `RCON6636 + RCFN6636` folded pro forma, then two-point averaged; product legs non-maturity / time / foreign tile it; sensitivity script committed (6.5, O6); product lines and sweep sourcing (6.7); finding on the 2012Q1 total-deposit rate (P12) | Reconciliation exact in 408 of 413 rows (6.6); 25 tests |
 | 0.5 (draft) | 2026-11-16 | One-point 2011Q4 fallback for thrift predecessors (all 7 banks now 59 quarters); pro forma product rates (transaction, savings including MMDA, time); reconciling total-deposit series built after the `6631`/`6636` pull; finding: RC-K savings averages include noninterest-bearing reclassified balances (section 6.4), denominator decision reopened (O1) | Quarter-end identities `6631 + 6636 = 2200` hold; reconciliation fails by a median 13% to 2021, section 6.4 |
 | 0.4 (draft) | 2026-11-14 | Hybrid denominator built and validated on the Call Report data (J473/J474 re-pull complete); results of the build in section 6; P7 and O1 updated | Four build checks in section 6.2; estimation not yet rerun |
 | 0.3 (draft) | 2026-11-14 | Hybrid denominator finalized (section 5.4): items, formulas, pro forma, missing-data and validation rules; time-deposit item correction (J473 + J474 replace RCON2604); re-pull specified (5.5) | Item coverage checked on 4,601 entity-quarters; build not yet run |
@@ -161,7 +162,7 @@ The RC-K time-deposit averages were dropped when the time-deposit size split mov
 
 *Series:*
 - **Model variable (assumed, owner to confirm): `rate_ib = 400 x IE_t / A_t`**, the interest-bearing deposit rate. NIB deposits are excluded from the base; they carry no interest expense and are not averaged in RC-K.
-- **Second series: `rate_nmd = 400 x (RIAD4508 + RIAD0093) / NMD_ib`**, domestic interest-bearing non-maturity deposits, exact RC-K averages in all quarters.
+- **Second series: `rate_nmd = 400 x (RIAD4508 + RIAD0093) / NMD_ib`**, domestic interest-bearing non-maturity deposits, exact RC-K averages in all quarters. Superseded 2026-11-25: kept as the reference column `rate_nmd_rck`; the model's non-maturity rate is `rate_nmd_pf` on the Schedule RC base (6.6, 6.7).
 - **Reconciling series (built 2026-11-16):** `rate_total_recon = 400 x IE_t / (A_t + NIB_avg_t)`, with `NIB_avg_t` the two-point average of `RCON6631 + RCFN6631` (Schedule RC quarter-end noninterest-bearing deposits; `RCFN6631` missing counts as zero only when `RCFN2200` is absent or zero). Results in section 6.4.
 - **Product rates (built 2026-11-16, pro forma, O3):** transaction `400 x RIAD4508 / RCON3485`, savings including MMDA `400 x RIAD0093 / RCONB563`, time `400 x time-deposit IE / TD_avg_t` (time-deposit IE: `RIADA517 + RIADA518` to 2016, `RIADHK03 + RIADHK04` from 2017). Each leg is folded with the same merger decisions as `rate_ib_pf`.
 
@@ -191,7 +192,7 @@ Code `ffiec/data_build/build_ffiec.py` (`hybrid_denominator`, `pro_forma_ib`, `b
 
 Series per bank-quarter:
 - `rate_ib`, `rate_ib_pf`: 400 x interest expense / A_t, standalone and pro forma.
-- `rate_nmd`: 400 x (RIAD4508 + RIAD0093) / (RCON3485 + RCONB563), exact RC-K averages, standalone.
+- `rate_nmd` (renamed `rate_nmd_rck` in 6.6): 400 x (RIAD4508 + RIAD0093) / (RCON3485 + RCONB563), exact RC-K averages, standalone.
 - `rate_tran_pf`, `rate_sav_pf`, `rate_time_pf`: product rates, pro forma, with their averages (`tran_avg_pf`, `sav_avg_pf`, `time_avg_pf`) and annualised interest expense (`*_ie_ann_pf`).
 - `rate_total_recon_pf`, `tot_avg_pf`: reconciling total-deposit rate and its base (section 6.4).
 - `rate_total_pf`, `dep_avg_pf`: the total-deposit pro forma rate used before.
@@ -215,7 +216,7 @@ Pro forma: the unchanged FDIC fold, with the Mode A/B decision taken from the to
 
 ### 6.3 Known data points
 - The interest-bearing ratio `A_pf` / total-deposit average has its largest moves in merger quarters and in the 2020 to 2021 deposit inflows: Huntington 2021Q2 (TCF; ratio 0.44), SouthState 2020Q2, Glacier 2021Q3, M&T 2025Q1, KeyBank 2022Q2. In Huntington's case the RC-K interest-bearing transaction and savings averages fall from $92 billion (2021Q1) to $50 billion (2021Q2) while total deposits rise 38%; a product reclassification is the likely cause and is not resolved. Treat `rate_ib_pf` for Huntington 2021Q2 to Q4 as a candidate outlier for the estimation phase.
-- KeyBank `rate_tran_pf` is 7.1% to 9.5% in 2018Q4 to 2019Q3: `RIAD4508` reaches $34 million a quarter against a transaction-account average (`RCON3485`) of about $1.4 billion, while about $95 billion sits in the savings average. It returns to 0.5% to 0.8% from 2020Q2. Same cause as 6.4: the interest expense and the average of reclassified balances are reported in different products. The transaction/savings split is not reliable where a bank runs a reclassification program; their sum (`rate_nmd`) is not affected by this misallocation.
+- KeyBank `rate_tran_pf` is 7.1% to 9.5% in 2018Q4 to 2019Q3: `RIAD4508` reaches $34 million a quarter against a transaction-account average (`RCON3485`) of about $1.4 billion, while about $95 billion sits in the savings average. It returns to 0.5% to 0.8% from 2020Q2. Same cause as 6.4: the interest expense and the average of reclassified balances are reported in different products. The transaction/savings split is not reliable where a bank runs a reclassification program; their sum (`rate_nmd_rck`; on the RC base `rate_nmd_pf`) is not affected by this misallocation.
 - Huntington 2021Q2 (above) coincides with the end of its reclassification program (6.4).
 - Estimation has not been rerun on this series.
 
@@ -244,6 +245,91 @@ Since `6631 + 6636 = 2200` holds at every quarter-end, `tot_avg_pf - dep_avg_pf`
 3. Keep the hybrid as is and treat the break as a limitation (dummy or shorter window in estimation).
 4. Use the total-deposit rate `rate_total_pf` as the model variable (origin definition; unaffected).
 
+**Decision (owner, 2026-11-25): option 1, Schedule RC interest-bearing base.** Built 2026-11-25 (section 6.6); 6.1 to 6.3 describe the hybrid build that preceded it. The sensitivity tests behind the choice are in 6.5.
+- New base: `A_t` = two-point average of quarter-end `RCON6636 + RCFN6636`, replacing the hybrid (`RCON3485 + RCONB563 + RCFN3404` + two-point time deposits).
+- `RCFN6636` missing counts as zero only when `RCFN2200` is absent or zero; otherwise the quarter is flagged.
+- The prior-quarter rule and the 2012Q1 one-point fallback for the 14 thrift predecessors (P9) apply unchanged.
+- Reason: RC-K savings averages include swept (Regulation D reclassification) noninterest-bearing balances, which Schedule RC reports as noninterest-bearing (6.4).
+
+### 6.5 Denominator sensitivity tests (2026-11-25)
+Run on the 413 pro forma bank-quarters of the 2026-11-16 build (commit `59b094b`). Reproduce with `python -I ffiec/sweep_sensitivity.py` (committed 2026-11-25, O6); it writes `ffiec/outputs/sweep_sensitivity/ffiec_deposit_rates_hybrid_v2.csv` and `report.txt`. On the current build it reproduces Tests B and D exactly; Test A medians move by at most 0.3 points and the 5th percentile of the lower-bound gap from -5.0% to -4.3%, because the noninterest-bearing average is now folded before averaging (6.6).
+
+Four bases were compared:
+- **Hybrid:** `A_t` as built in 6.1.
+- **Hybrid minus lower bound:** the hybrid less a two-point average of `max(RCON6631 - RCON2215, 0)`, a lower bound on the swept noninterest-bearing balance.
+- **Hybrid minus point estimate:** the hybrid less a two-point average of `RCON6631 - (RCON2215 - RCON3485)`.
+- **RC 6636:** the two-point average of `RCON6636 + RCFN6636` (decision above).
+
+**Test A. Reconciliation and rate gap.** "Gap" means the base plus the two-point noninterest-bearing average, compared with the two-point total-deposit average. "Rate vs RC base" is the median difference from the RC-base rate, per bank.
+
+| Base | Gap, median (5th / 95th pct) | Rate vs RC base, median per bank | Note |
+| :-- | :-: | :-: | :-- |
+| Hybrid | +11.9% (-1.1% / +27.2%) | -3 to -12 bp | Largest gap: First Horizon 2023Q4, 77 bp |
+| Hybrid minus lower bound | +0.8% (-5.0% / +15.8%) | -5 to +2 bp | First Horizon (+16.9%) and M&T (+8.3%) still off after 2022, where the bound is 0 |
+| Hybrid minus point estimate | -0.9% (-9.4% / +6.0%) | -3 to +4 bp | Overshoots SouthState (-7% to -16%) and First Horizon 2020 to 2021 (-14%) |
+| RC 6636 | 0.0% at every bank | 0 | Reconciles by identity (`6631 + 6636 = 2200`, 6.2 check 7) |
+
+**Test B. Pass-through in the hiking cycles.** The rate rise on each base, as a percentage of the rise on the RC base:
+
+| Base | 2015Q4 to 2019Q2 | 2021Q4 to 2023Q4 |
+| :-- | :-: | :-: |
+| Hybrid | 68% to 86% (all 7 banks) | About 100% at five banks; 76% to 77% at First Horizon and M&T |
+| Hybrid minus lower bound | 86% to 103% | Not reported |
+| Hybrid minus point estimate | 95% to 116% | Not reported |
+
+On the hybrid base, the beta would be understated by about 15% to 30% in the first cycle but not in the second. This is the reporting-driven break of 6.4, seen in the quantity the model estimates.
+
+**Test C. Cost of two-point averaging.** At the four banks with no reclassification after 2022 (Glacier, KeyBank, Old National, SouthState), the hybrid and RC bases differ by under 1%. Losing the RC-K daily averaging for non-maturity deposits costs little where sweeps are absent.
+
+**Test D. KeyBank product mismatch (2017 to 2021).** Transaction accounts are 1.1% to 2.1% of the non-maturity average balance but 8% to 29% of non-maturity interest expense. The transaction rate is 9.5% in 2019Q2 and still 0.5% in 2021. This mismatch is between two interest-bearing products: interest is reported by account type, while the balance sits in the savings average after reclassification. It is separate from the swept noninterest-bearing issue in 6.4. At sweep banks the transaction/savings split is unreliable, but the sum of the two is consistent (P11).
+
+**Not caused by sweeps.** SouthState 2025Q1 is off by -33 bp under every base. That quarter is the Independent Bank Group merger quarter (P8).
+
+**Open with the owner:**
+- Restricting the model to five banks: Huntington, Old National, KeyBank, M&T and First Horizon (O7).
+- The product-line definitions (O3).
+
+The RC-base rebuild follows those decisions.
+
+### 6.6 Schedule RC base build (2026-11-25)
+Code `ffiec/data_build/build_ffiec.py` (`hybrid_denominator`, `build_hybrid`). Output `ffiec/outputs/ffiec_deposit_rates_hybrid_v2.csv` (file name kept): 413 bank-quarters, 7 banks x 59 quarters, none dropped.
+
+*Method.*
+- Quarter-end interest-bearing deposits `IB_t = RCON6636 + RCFN6636` (`RCFN6636` missing counts as zero only when `RCFN2200` is absent or zero). Legs: non-maturity `RCON6636 - TD_t`, time `TD_t` (RC-E, 5.4), foreign `RCFN6636`; they add up to `IB_t`.
+- Each quarter-end series is folded pro forma with the total-deposit build's Mode A/B decisions, then two-point averaged on the pro forma series: `A_pf = (IB_pf,t + IB_pf,t-1) / 2`. This is the origin's order for `DEP` (fold, then average), so the reconciling total equals `dep_avg_pf` and a merger quarter is averaged as in the origin. The former hybrid folded entity-level averages, which differed from the origin in merger quarters (up to -21%) and wherever an entity's history broke.
+- 2012Q1 fallback: a predecessor whose first Call Report is 2012Q1 gets its own 2012Q1 quarter-end balances as its 2011Q4 value (balances only), so the pro forma 2011Q4 includes it. Same 14 entities as 5.4.
+- Interest expense unchanged: domestic RI codes plus `RIAD4172`, merger-quarter interest pro rata as in the origin.
+
+*Checks.*
+| # | Check | Result |
+| :-: | :-- | :-- |
+| 9 | Reconciling base `tot_avg_pf` vs `dep_avg_pf` | Equal to 2e-5% in 408 rows; the 5 differing rows are the 2012Q1 fallback rows (P12) |
+| 10 | Legs non-maturity + time + foreign vs `A_pf`; their interest expense vs total | Equal to 1e-16 in all rows |
+| 11 | `A_pf` / `dep_avg_pf`, outside the fallback rows | 0.568 to 0.863, median 0.729; never above 1 |
+| 12 | Huntington around TCF (2021Q2) | `A_pf` / `dep_avg_pf` 0.685 (2021Q1), 0.671 (2021Q2), 0.668 (2021Q3); the hybrid fell to 0.436. The 6.3 Huntington outlier was the reclassification effect and is gone |
+| 13 | Tests | 25 pass (`ffiec/tests`), including the RC base split, missing-data rules and fallback |
+
+*Effect.* `rate_ib_pf` on the RC base minus the hybrid rate, median per bank: +2.8 bp (Old National) to +8.8 bp (First Horizon); largest +77 bp (First Horizon 2023Q4). Medians across the 413 rows: `rate_ib_pf` 0.47 (hybrid 0.40), `rate_nmd_pf` 0.30, `rate_time_pf` 1.11, `rate_total_pf` and `rate_total_recon_pf` 0.35.
+
+*Columns.* `A_pf`, `rate_ib_pf` (RC base, model candidate); `nmd_*`, `time_*`, `for_*` (`*_avg_pf`, `*_ie_ann_pf`, `rate_*_pf`; `rate_for_pf` is empty where the bank has no foreign offices); `tot_avg_pf`, `rate_total_recon_pf`; reference only (RC-K, affected by P10/P11): `A_hyb_pf`, `rate_ib_hyb_pf`, `tran_*`, `sav_*`, `rate_nmd_rck` (renamed from `rate_nmd`).
+
+### 6.7 Product lines and sources (scope of five banks under O7)
+*Swept balances.* No public bank-level source reports Regulation D reclassification ("reserve sweep") volumes. They were reported on the FR 2900 (confidential). The Call Report sweep items `RCONMT87` to `RCONMT95` (MDRM, from 2021-09-30) are third-party sweep deposits under the brokered-deposit rule, not reclassification sweeps. Schedule RC does not report the swept volume either; it classifies swept balances as noninterest-bearing (`RCON6631`), which is why the RC base removes them without needing the volume. The volume can only be bounded (`RCON6631 - RCON2215`, 6.5).
+
+*Product lines for Huntington, Old National, KeyBank, M&T and First Horizon* (codes checked in the MDRM 2026-11-25; all FFIEC 031/041, Call Report source, 2012Q1 to 2026Q3):
+| Line | Interest expense (Schedule RI) | Balance (quarter-end, two-point averaged) | Share of `A_pf`, median | Status |
+| :-- | :-- | :-- | :-: | :-- |
+| Interest-bearing non-maturity (interest-bearing transaction accounts + savings incl. MMDA) | `RIAD4508 + RIAD0093` | `RCON6636` (RC) less time deposits | 80% to 86% | Model line; `rate_nmd_pf` |
+| Time deposits | `RIADA517 + RIADA518` to 2016; `RIADHK03 + RIADHK04` from 2017 | `RCON6648 + RCONJ473 + RCONJ474` to 2016; `RCONHK16 + RCONHK17` from 2017 (RC-E) | 14% to 20% | Model line; `rate_time_pf` |
+| Foreign offices | `RIAD4172` | `RCFN6636` (RC) | 0% to 2.9%; none after 2016Q4 (Huntington), 2015Q4 (KeyBank), 2021Q2 (M&T); never for First Horizon, Old National | Kept inside `rate_ib_pf`; not a model line |
+| Noninterest-bearing | none (zero rate) | `RCON6631 + RCFN6631` (RC) | outside `A_pf` | Mix and weights only |
+
+*Splits that are not available on a consistent basis:*
+- Transaction vs savings: interest is split (`RIAD4508`, `RIAD0093`) but the balances that match it are not. RC-K averages (`RCON3485`, `RCONB563`) carry the reclassification effects (P10, P11); RC-E quarter-ends (`RCON2215` total transaction accounts, `RCON6810` MMDA, `RCON0352` other savings) are not split into interest-bearing and noninterest-bearing.
+- MMDA vs other savings: balances exist (`RCON6810`, `RCON0352`), interest does not (`RIAD0093` covers both).
+- Time deposits by size: the size bands change in 2017 ($100,000 to $250,000), so no sub-split is consistent over the window.
+- Brokered deposits: balance only (`RCON2365`), no interest.
+
 ---
 
 ## 7. Limitations and Assumptions
@@ -259,8 +345,9 @@ Since `6631 + 6636 = 2200` holds at every quarter-end, `tot_avg_pf - dep_avg_pf`
 | P7 | The hybrid denominator mixes RC-K quarterly averages (transaction and savings accounts) with a two-point average of quarter-end time deposits (RC-E). The two-point average matches the RC-K time-deposit average in 2012 to 2016 (section 6.2, test 1) but is not an exact RC-K average | Medium |
 | P8 | In a merger quarter and in quarters of large deposit inflows the RC-K averages and the two-point average move at different speeds; the interest-bearing denominator shows its largest jumps there (section 6.3) | Medium |
 | P9 | 2012Q1 time-deposit and NIB averages of the 14 thrift predecessors are one-point (2012Q1 quarter-end), not two-point; 5 bank-quarters flagged | Low |
-| P10 | RC-K savings averages include noninterest-bearing reclassified balances; `A_t` overstates the interest-bearing base by up to about 30% to 2021 and shifts level in 2021 to 2022 (section 6.4). Open under O1 | High |
-| P11 | Transaction/savings product split unreliable during reclassification programs (KeyBank 2018 to 2019, section 6.3) | Medium |
+| P10 | RC-K savings averages include noninterest-bearing reclassified balances; the former hybrid `A_t` overstated the interest-bearing base by up to about 30% to 2021, with a level shift in 2021 to 2022 (section 6.4). Resolved by the Schedule RC base, built 2026-11-25 (6.6). Still applies to the RC-K reference columns (`A_hyb_pf`, `rate_ib_hyb_pf`, `rate_tran_pf`, `rate_sav_pf`, `rate_nmd_rck`) | Resolved for the model series |
+| P11 | Transaction/savings product split unreliable during reclassification programs (KeyBank 2017 to 2021, sections 6.3, 6.5 test D); no reporting-consistent split exists (6.7), so the model's non-maturity line is the combined interest-bearing non-maturity deposits | Medium |
+| P12 | `rate_total_pf` (total-deposit series) in 2012Q1 has no 2011Q4 balance for the 14 thrift predecessors, so its two-point average is understated and the rate overstated: M&T +13.7 bp, SouthState +5.7 bp, Old National +2.2 bp, First Horizon +0.9 bp, Huntington +0.8 bp. The interest-bearing series applies the one-point fallback; the total-deposit build does not | Low |
 
 ---
 
@@ -268,11 +355,13 @@ Since `6631 + 6636 = 2200` holds at every quarter-end, `tot_avg_pf - dep_avg_pf`
 
 | # | Item | Status |
 | :-: | :-- | :-- |
-| O1 | Average-balance denominator: hybrid built 2026-11-14; reconciling series built 2026-11-16 and fails (section 6.4, P10). Owner to choose among the options in 6.4 and confirm the model variable (built as `rate_ib_pf`; `rate_total_pf` in the same file) | Open, blocks estimation |
+| O1 | Average-balance denominator: Schedule RC base chosen and built 2026-11-25 (6.4 to 6.6). Owner to confirm the model variable is `rate_ib_pf` (`rate_total_pf` stays in the same file) | Built; model variable to confirm |
 | O2 | COVID liquidity dummy retest on the Prod-Lvl series | Deferred to model development |
-| O3 | Product-level betas (savings and money market, time, transaction) | Product rates built (6.1); split reliability open (P11); models not started |
+| O3 | Product-level betas | Product lines set out in 6.7 (interest-bearing non-maturity, time; foreign and noninterest-bearing as non-modelled legs); `rate_nmd_pf`, `rate_time_pf` built on the RC base; owner to confirm the lines; models not started |
 | O4 | `ffiec/reference/CSV_ATTRIBUTES_*.zip` (NIC attributes) are not committed; keep or delete | Owner |
 | O5 | Independent validation, model inventory registration, monitoring plan | Not started |
+| O6 | Commit the sensitivity script and its outputs so section 6.5 can be reproduced | Done 2026-11-25 (`ffiec/sweep_sensitivity.py`) |
+| O7 | Scope: restrict the model to five banks (Huntington, Old National, KeyBank, M&T, First Horizon) | Owner considering |
 
 ---
 

@@ -31,8 +31,14 @@ ROOT = FFIEC.parent
 OUT = FFIEC / "outputs"
 UNIT_DIVISOR = 1000.0
 TD_FALLBACK_PERIOD = "2012-03-31"
-# product legs: (balance column, interest-expense column) in the hybrid frame
-PRODUCTS = {"tran": ("RCON3485", "RIAD4508"), "sav": ("RCONB563", "RIAD0093"), "time": ("TD_AVG", "TD_IE")}
+# Product legs: (balance column, interest-expense column) in the hybrid frame.
+# QE_PRODUCTS are Schedule RC / RC-E quarter-end balances: folded pro forma first, then two-point averaged (as the
+# origin does for DEP); nmd + time + for tile the interest-bearing base exactly.
+# AVG_PRODUCTS are RC-K quarterly averages (folded as averages): the RC-K split of nmd, kept for reference only,
+# unreliable at banks with reclassification (sweep) programs (doc 6.4, 6.5 test D, P11).
+QE_PRODUCTS = {"nmd": ("NMD_Q", "NMD_IE"), "time": ("TD_Q", "TD_IE"), "for": ("FOR_Q", "FOR_IE")}
+AVG_PRODUCTS = {"tran": ("RCON3485", "RIAD4508"), "sav": ("RCONB563", "RIAD0093")}
+PRODUCTS = {**QE_PRODUCTS, **AVG_PRODUCTS}
 log = logging.getLogger("build_ffiec")
 
 
@@ -46,7 +52,14 @@ def load_fdic_module(root=ROOT):
 def hybrid_denominator(w):
     """Interest-bearing average balance A_t (dollars) per (rssd, period); NaN when a required piece is missing.
 
-    A_t = NMD_ib + FOR + TD_avg.  NMD_ib = RCON3485 + RCONB563 (RC-K averages). FOR = RCFN3404 (RC-K average, 031
+    A_t (Schedule RC base, owner decision 2026-11-25, doc 6.4/6.5) = two-point average of quarter-end
+    RCON6636 + RCFN6636 (RCFN6636 missing counts as 0 only when RCFN2200 is absent or 0). Same prior-quarter rule
+    and 2012Q1 one-point fallback as below. It splits exactly into NMD_RC (two-point RCON6636 less TD_avg), TD_AVG
+    and FOR_RC (two-point RCFN6636). Schedule RC reports swept (Reg D reclassification) balances as
+    noninterest-bearing, which the RC-K savings average does not.
+
+    A_HYB (former hybrid, kept for reference) = NMD_ib + FOR + TD_avg.
+    NMD_ib = RCON3485 + RCONB563 (RC-K averages). FOR = RCFN3404 (RC-K average, 031
     filers); missing counts as 0 only when RIAD4172 is absent or 0, otherwise A_t is NaN (never zero-filled).
     TD_avg = mean of this and the prior quarter-end time deposits (RC-E): 6648 + J473 + J474 to 2016Q4,
     HK16 + HK17 from 2017Q1. A prior quarter-end that is not the previous calendar quarter gives NaN.
@@ -81,21 +94,34 @@ def hybrid_denominator(w):
     w["NMD_IB"] = w.RCON3485 + w.RCONB563
     w["TD_AVG"] = (td + td_prev) / 2
     w["TD_IE"] = (w.RIADHK03 + w.RIADHK04).where(new, w.RIADA517 + w.RIADA518)
-    w["A"] = w.NMD_IB + foreign + w.TD_AVG
-    # Reconciling total-deposit leg: noninterest-bearing quarter-end balances (Schedule RC), two-point average.
-    # RCFN6631 missing counts as 0 only when the filer reports no foreign-office deposits (RCFN2200 absent or 0).
-    for c in ("RCON6631", "RCFN6631", "RCFN2200"):
+    w["A_HYB"] = w.NMD_IB + foreign + w.TD_AVG
+    # Schedule RC quarter-end split. RCFN6631/6636 missing count as 0 only when the filer reports no
+    # foreign-office deposits (RCFN2200 absent or 0); otherwise NaN, never filled.
+    for c in ("RCON6631", "RCFN6631", "RCON6636", "RCFN6636", "RCFN2200"):
         if c not in w:
             w[c] = float("nan")
-    nib = w.RCON6631 + w.RCFN6631.where(w.RCFN6631.notna() | w.RCFN2200.fillna(0).ne(0), 0.0)
+    no_for = w.RCFN2200.fillna(0).eq(0)
+    w["TD_Q"] = td
+    w["FOR_Q"] = w.RCFN6636.where(w.RCFN6636.notna() | ~no_for, 0.0)
+    w["NMD_Q"] = w.RCON6636 - td
+    w["IB_Q"] = w.RCON6636 + w.FOR_Q
+    w["FOR_RC"] = two_point(w.FOR_Q)
+    w["NMD_RC"] = two_point(w.RCON6636) - w.TD_AVG
+    w["A"] = two_point(w.IB_Q)
+    w["NMD_IE"] = w.RIAD4508 + w.RIAD0093
+    w["FOR_IE"] = w.RIAD4172.fillna(0.0)                 # as EDEPFORQ in financials_from_items
+    # Reconciling total-deposit leg: noninterest-bearing quarter-end balances, two-point average.
+    nib = w.RCON6631 + w.RCFN6631.where(w.RCFN6631.notna() | ~no_for, 0.0)
     w["NIB_AVG"] = two_point(nib)
     w["TOT_AVG"] = w.A + w.NIB_AVG
+    w["TOT_Q"] = w.IB_Q + nib
     return w
 
 
 def financials_from_items(quarterly, cert_rssd, cert_quarters=None, extra=None, hybrid=False):
     """Wide FDIC-shaped frame (CERT, REPDTE, DEP, EDEPDOMQ, EDEPFORQ) in $ thousands from quarterly long items.
-    hybrid=True adds A (hybrid interest-bearing average balance, $ thousands) and RATE_NMD_NUM/DEN columns."""
+    hybrid=True adds A (Schedule RC interest-bearing average balance, $ thousands), A_HYB (former hybrid base),
+    the RC-K NMD_IB/NMD_IE pair and the product legs of PRODUCTS."""
     w = quarterly.pivot_table(index=["rssd", "period"], columns="item", values="value", aggfunc="first")
     w = w.reset_index()
     if hybrid:
@@ -123,13 +149,15 @@ def financials_from_items(quarterly, cert_rssd, cert_quarters=None, extra=None, 
                         "EDEPFORQ": w.EDEPFORQ / UNIT_DIVISOR})
     if hybrid:
         out["A"] = w.A / UNIT_DIVISOR
+        out["A_HYB"] = w.A_HYB / UNIT_DIVISOR
         out["NMD_IB"] = w.NMD_IB / UNIT_DIVISOR
         out["NMD_IE"] = (w.RIAD4508 + w.RIAD0093) / UNIT_DIVISOR
         for name, (bal, ie) in PRODUCTS.items():
             out[f"{name.upper()}_BAL"] = w[bal] / UNIT_DIVISOR
             out[f"{name.upper()}_IE"] = w[ie] / UNIT_DIVISOR
         out["TD_FALLBACK"] = w.TD_FALLBACK.astype(float)
-        out["TOT_AVG"] = w.TOT_AVG / UNIT_DIVISOR
+        out["IB_Q"] = w.IB_Q / UNIT_DIVISOR
+        out["TOT_Q"] = w.TOT_Q / UNIT_DIVISOR
     # A cert can have several RSSDs and an RSSD several certs (the FDIC API sometimes gives a cert another cert's
     # RSSD, or the RSSD of a later charter). `extra` adds the known further RSSDs per cert. Where a cert or an RSSD
     # is ambiguous, a filing is assigned to a cert only if the cert existed that quarter and the filing's total
@@ -147,8 +175,8 @@ def financials_from_items(quarterly, cert_rssd, cert_quarters=None, extra=None, 
         out["gap"] = ((out.DEP - ref).abs() / ref.abs().where(ref != 0))
         out = out[~is_amb | (ref.notna() & (out.gap <= 0.10))]
         out = out.sort_values("gap").drop_duplicates(["CERT", "REPDTE"], keep="first")
-    hy = ["A", "NMD_IB", "NMD_IE", "TD_FALLBACK", "TOT_AVG"] + [f"{n.upper()}_{x}" for n in PRODUCTS for x in ("BAL", "IE")]
-    cols = ["CERT", "REPDTE", "DEP", "EDEPDOMQ", "EDEPFORQ"] + (hy if hybrid else [])
+    hy = ["A", "A_HYB", "NMD_IB", "NMD_IE", "TD_FALLBACK", "IB_Q", "TOT_Q"] + [f"{n.upper()}_{x}" for n in PRODUCTS for x in ("BAL", "IE")]
+    cols = ["CERT", "REPDTE", "DEP", "EDEPDOMQ", "EDEPFORQ"] + (list(dict.fromkeys(hy)) if hybrid else [])
     return out.drop(columns=[c for c in ("rssd", "gap") if c in out])[cols].astype({"CERT": int})
 
 
@@ -219,43 +247,71 @@ def pro_forma_ib(src, cert, modes, depth=0):
 
 
 def build_hybrid(data, events, fin, hist, bd, supplementary, outdir=OUT):
-    """Interest-bearing deposit-rate dataset on the hybrid denominator A_t (doc 5.4), plus pro forma product
-    rates (transaction, savings incl. MMDA, time). Each balance is already a quarterly average (RC-K, or the
-    two-point time-deposit average), so no further averaging. Every series is folded with `pro_forma_ib` using the
-    Mode A/B decisions of the total-deposit build (made on DEP), so the event set is identical by construction."""
+    """Interest-bearing deposit-rate dataset on the Schedule RC base (doc 6.4, owner decision 2026-11-25), plus pro
+    forma product rates. Every series is folded with `pro_forma_ib` using the Mode A/B decisions of the total-deposit
+    build (made on DEP), so the event set is identical by construction.
+
+    Quarter-end series (interest-bearing RCON6636 + RCFN6636, its legs nmd / time / for, and the reconciling total
+    IB + NIB) are folded first and then two-point averaged on the pro forma series, exactly as the origin averages
+    DEP, so the reconciling total equals the origin's dep_avg_pf. 2012Q1 one-point fallback: a predecessor whose
+    first Call Report is 2012Q1 (thrifts, TFR to 2011Q4) gets its 2012Q1 quarter-end balances as its 2011Q4 value
+    (balances only; doc 5.4). RC-K series (former hybrid A_HYB, tran, sav) are averages and are folded as such."""
     modes = {}
     for r in events.itertuples():
         modes.setdefault((int(r.predecessor_cert), int(r.survivor_cert), str(r.effective_date)), r.mode_applied)
 
-    def source(bal, ie=None, ie_for=True):
-        f = fin.assign(DEP=fin[bal], EDEPDOMQ=fin[ie] if ie else 0.0,
-                       EDEPFORQ=fin["EDEPFORQ"] if ie_for else 0.0)
+    qcols = ["IB_Q", "TOT_Q"] + [f"{n.upper()}_BAL" for n in QE_PRODUCTS]
+    fb = fin[(fin.REPDTE == int(TD_FALLBACK_PERIOD.replace("-", ""))) & (fin.TD_FALLBACK > 0)]
+    synth = fb[["CERT"] + qcols].assign(REPDTE=int(pd.Period(TD_FALLBACK_PERIOD, "Q").__sub__(1)
+                                                   .end_time.strftime("%Y%m%d")))
+    fin_q = pd.concat([fin, synth], ignore_index=True)       # interest expense of the synthetic rows: never used
+
+    def source(bal, ie=None, ie_for=True, frame=fin):
+        f = frame.assign(DEP=frame[bal], EDEPDOMQ=frame[ie] if ie else 0.0,
+                         EDEPFORQ=frame["EDEPFORQ"] if ie_for else 0.0)
         return make_source_class(bd, f, hist)(False, supplementary)
 
-    src = source("A", "EDEPDOMQ")                              # all interest-bearing deposits, incl. foreign
-    prod = {n: source(f"{n.upper()}_BAL", f"{n.upper()}_IE", ie_for=False) for n in PRODUCTS}
+    def averaged(pf):                                        # two-point average on the pro forma quarter-ends
+        prev = pf["DEP"].reindex(pf.index - 1)              # the previous calendar quarter only, else NaN
+        return (pf["DEP"] + prev.values) / 2
+
+    src = source("IB_Q", "EDEPDOMQ", frame=fin_q)              # all interest-bearing deposits, incl. foreign
+    qprod = {n: source(f"{n.upper()}_BAL", f"{n.upper()}_IE", ie_for=False, frame=fin_q) for n in QE_PRODUCTS}
+    aprod = {n: source(f"{n.upper()}_BAL", f"{n.upper()}_IE", ie_for=False) for n in AVG_PRODUCTS}
     flag = source("TD_FALLBACK", None, ie_for=False)
-    tot = source("TOT_AVG", "EDEPDOMQ")                         # reconciling total: A_t + NIB average
+    tot = source("TOT_Q", "EDEPDOMQ", frame=fin_q)             # reconciling total: IB + NIB quarter-ends
+    hyb = source("A_HYB", "EDEPDOMQ")                           # former hybrid base (RC-K averages), reference only
+    std = source("A", "EDEPDOMQ")                               # standalone entity-level two-point average
     rows = []
     for cert, name in bd.TARGETS.items():
-        sa, pf = src.series(cert), pro_forma_ib(src, cert, modes)
+        sa, pf = std.series(cert), pro_forma_ib(src, cert, modes)
+        a_pf = averaged(pf)
         d = pd.DataFrame({"bank_name": name, "cert_number": cert,
                           "quarter": sa.index.to_timestamp(how="end").strftime("%Y-%m-%d"),
-                          "ie": sa["ie"], "A": sa["DEP"], "rate_ib": 400 * sa["ie"] / sa["DEP"],
-                          "ie_ann_pf": 4 * pf["ie"], "A_pf": pf["DEP"], "rate_ib_pf": 400 * pf["ie"] / pf["DEP"],
-                          "n_predecessors_included": pf["n_pred"].astype(int)}, index=sa.index)
-        for n, s in prod.items():
+                          "ie": sa["ie"], "A": sa["DEP"], "rate_ib": 400 * sa["ie"] / sa["DEP"]}, index=sa.index)
+        d = d.join(pd.DataFrame({"ie_ann_pf": 4 * pf["ie"], "A_pf": a_pf, "rate_ib_pf": 400 * pf["ie"] / a_pf,
+                                 "n_predecessors_included": pf["n_pred"]}), how="left")
+        for n, s in qprod.items():
+            ppf = pro_forma_ib(s, cert, modes)
+            avg = averaged(ppf)
+            d[f"{n}_avg_pf"] = avg
+            d[f"{n}_ie_ann_pf"] = 4 * ppf["ie"]
+            d[f"rate_{n}_pf"] = (400 * ppf["ie"] / avg).where(avg != 0)
+        for n, s in aprod.items():
             ppf = pro_forma_ib(s, cert, modes)
             d[f"{n}_avg_pf"] = ppf["DEP"]
             d[f"{n}_ie_ann_pf"] = 4 * ppf["ie"]
             d[f"rate_{n}_pf"] = 400 * ppf["ie"] / ppf["DEP"]
         tpf = pro_forma_ib(tot, cert, modes)
-        d["tot_avg_pf"] = tpf["DEP"]
-        d["rate_total_recon_pf"] = 400 * tpf["ie"] / tpf["DEP"]
+        d["tot_avg_pf"] = averaged(tpf)
+        d["rate_total_recon_pf"] = 400 * tpf["ie"] / d["tot_avg_pf"]
+        hpf = pro_forma_ib(hyb, cert, modes)
+        d["A_hyb_pf"] = hpf["DEP"]
+        d["rate_ib_hyb_pf"] = 400 * hpf["ie"] / hpf["DEP"]
         d["td_fallback_in_pf"] = pro_forma_ib(flag, cert, modes)["DEP"].gt(0).astype(int)
         f = fin[fin.CERT == cert].assign(q=lambda x: pd.to_datetime(x.REPDTE.astype(str)).dt.to_period("Q"))
         f = f.set_index("q").sort_index()
-        d["rate_nmd"] = 400 * f["NMD_IE"] / f["NMD_IB"]
+        d["rate_nmd_rck"] = 400 * f["NMD_IE"] / f["NMD_IB"]
         rows.append(d)
     out = pd.concat(rows).reset_index(drop=True)
     out = out[out.quarter >= HYBRID_START]

@@ -1,0 +1,64 @@
+Test A: gap = (base + NIB average) / dep_avg_pf - 1, %; rate vs RC base, bp
+  hybrid                   gap median   12.0 (p5   -1.1, p95   27.2); bp vs RC, bank medians  -11.7 to   -3.0
+per            2012-19  2020-21  2022-26
+bank                                    
+First             14.4     14.9     19.0
+Glacier           13.5     22.7     -0.1
+Huntington         7.2     12.2      2.5
+KeyBank           23.0     27.5     -0.1
+Manufacturers     21.8     29.2     20.8
+Old               10.0      7.9     -0.4
+SouthState         8.5      8.1     -0.8
+  hybrid - lower bound     gap median    0.9 (p5   -4.3, p95   15.8); bp vs RC, bank medians   -5.4 to    1.5
+per            2012-19  2020-21  2022-26
+bank                                    
+First              6.9      2.6     16.9
+Glacier            3.0      4.8     -0.8
+Huntington         0.1     -1.7      1.2
+KeyBank           -1.4      4.5     -0.1
+Manufacturers      6.1     11.1      8.3
+Old                2.1      1.7     -0.5
+SouthState        -2.8     -7.0     -0.8
+  hybrid - point estimate  gap median   -0.8 (p5   -8.7, p95    6.0); bp vs RC, bank medians   -2.6 to    3.8
+per            2012-19  2020-21  2022-26
+bank                                    
+First              2.8     -9.4      7.1
+Glacier           -1.6     -2.6     -1.2
+Huntington        -2.2     -4.5     -1.1
+KeyBank           -2.7      2.8     -0.2
+Manufacturers      2.8      4.2      3.1
+Old               -0.8     -0.1     -0.7
+SouthState        -6.6    -10.8     -1.0
+  RC 6636                  gap median    0.0 (p5   -3.4, p95    0.0); bp vs RC, bank medians    0.0 to    0.0
+per            2012-19  2020-21  2022-26
+bank                                    
+First             -0.0      0.0      0.0
+Glacier           -0.0      0.0      0.0
+Huntington        -0.1     -0.0      0.0
+KeyBank            0.0      0.0      0.0
+Manufacturers      0.0      0.0      0.0
+Old               -0.0      0.0      0.0
+SouthState        -0.7      0.0      0.0
+
+Test B: rate rise as % of the RC-base rise
+  2015-12-31 to 2019-06-30
+               hybrid  hybrid - lower bound  hybrid - point estimate
+First            80.0                  89.0                     96.0
+Glacier          68.0                  86.0                    101.0
+Huntington       81.0                 100.0                    105.0
+KeyBank          77.0                  97.0                     99.0
+Manufacturers    79.0                  89.0                    100.0
+Old              86.0                  93.0                     95.0
+SouthState       79.0                 103.0                    116.0
+  2021-12-31 to 2023-12-31
+               hybrid  hybrid - lower bound  hybrid - point estimate
+First            77.0                  80.0                     88.0
+Glacier         101.0                 104.0                    104.0
+Huntington       97.0                  99.0                    101.0
+KeyBank         101.0                 100.0                    100.0
+Manufacturers    76.0                  81.0                     93.0
+Old              99.0                  99.0                     99.0
+SouthState      101.0                 100.0                    101.0
+
+Test D: KeyBank transaction share of NMD balance and interest, %
+  balance 1.1 to 2.1; interest 8.2 to 29.5; max transaction rate 9.51%
