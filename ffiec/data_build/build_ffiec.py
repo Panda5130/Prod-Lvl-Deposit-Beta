@@ -19,6 +19,7 @@ import logging
 import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 HERE = Path(__file__).resolve().parent
@@ -180,6 +181,103 @@ def financials_from_items(quarterly, cert_rssd, cert_quarters=None, extra=None, 
     return out.drop(columns=[c for c in ("rssd", "gap") if c in out])[cols].astype({"CERT": int})
 
 
+# Interest-expense series repaired by repair_ytd_breaks: (interest column, balance column used for the rate).
+# NMD_IE, EDEPDOMQ and EDEPFORQ are recomputed from them afterwards.
+YTD_REPAIR_COLS = {"TRAN_IE": "TRAN_BAL", "SAV_IE": "SAV_BAL", "TIME_IE": "TIME_BAL", "FOR_IE": "FOR_BAL"}
+
+
+def repair_ytd_breaks(fin, hist):
+    """Repair quarterly interest expense where year-to-date reporting breaks (doc 6.8). Quarterly flows are derived
+    as YTD_t - YTD_t-1 (ffiec_pull.to_quarterly), which fails in two documented cases:
+
+    1. Restart. When a bank is acquired and applies push-down accounting, its YTD income restarts at the
+       acquisition date, so YTD_t - YTD_t-1 is too small or negative (First Niagara 2016Q3). Detected where the
+       derived domestic deposit interest (EDEPDOMQ) is negative. Each product's interest is replaced by the
+       entity's previous-quarter interest scaled by the change in that product's balance (previous-quarter rate
+       carried forward); with no previous quarter the values are set to NaN (the quarter is dropped).
+    2. Restatement. Combinations of entities under common control are reported from the start of the year, so in
+       the merger quarter the survivor's YTD includes the absorbed affiliates' earlier quarters, which the pro forma
+       already counts from the affiliates' own filings (Bremer Bank NA 2014Q4). Detected for a merger quarter mq
+       after Q1 from the rate on interest-bearing quarter-end balances (IB_Q, available from 2011Q4): the survivor's
+       mq rate is at least 1.25 x both the combined (survivor + predecessors) mq-1 rate and its mq+1 rate, AND
+       removing the predecessors' YTD brings it closer to those neighbours (log distance to their geometric mean).
+       A rate-driven rise lies between its neighbours and is not flagged; interest expense alone cannot tell a
+       Q2 restatement from one quarter of rate drift. The predecessors' YTD at mq-1, plus the pro-rata pre-merger
+       part of mq that the pro forma adds (frac x predecessor mq-1), is subtracted per product.
+
+    Returns the repaired frame and a log (one row per repaired cert-quarter). Never zero-fills."""
+    if not set(YTD_REPAIR_COLS) <= set(fin.columns):
+        return fin, pd.DataFrame(columns=["CERT", "REPDTE", "case", "detail"])
+    f = fin.copy()
+    f["q"] = pd.to_datetime(f.REPDTE.astype(str)).dt.to_period("Q")
+    f["_order"] = range(len(f))
+    t = f.set_index(["CERT", "q"]).sort_index()
+    log = []
+
+    def derive():
+        t["NMD_IE"] = t.TRAN_IE + t.SAV_IE
+        t["EDEPDOMQ"] = t.TRAN_IE + t.SAV_IE + t.TIME_IE
+        t["EDEPFORQ"] = t.FOR_IE
+
+    for c, q in list(t.index[t.EDEPDOMQ < 0]):
+        before = t.at[(c, q), "EDEPDOMQ"]
+        if (c, q - 1) in t.index:
+            for ie, bal in YTD_REPAIR_COLS.items():
+                pb, cb, pi = t.at[(c, q - 1), bal], t.at[(c, q), bal], t.at[(c, q - 1), ie]
+                t.at[(c, q), ie] = pi * cb / pb if pb else (0.0 if pi == 0 and cb == 0 else float("nan"))
+            how = "previous-quarter rate carried forward" if pd.notna(t.at[(c, q), "TIME_IE"] + t.at[(c, q), "TRAN_IE"]
+                                                                     + t.at[(c, q), "SAV_IE"]) else "balance missing: set missing"
+        else:
+            for ie in YTD_REPAIR_COLS:
+                t.at[(c, q), ie] = float("nan")
+            how = "no previous quarter: set missing"
+        derive()
+        log.append({"CERT": c, "REPDTE": int(q.end_time.strftime("%Y%m%d")), "case": "restart",
+                    "detail": f"EDEPDOMQ {before:.0f} -> {t.at[(c, q), 'EDEPDOMQ']:.0f} ({how})"})
+    derive()
+    tot = t.EDEPDOMQ + t.EDEPFORQ
+    h = hist.assign(eff=pd.to_datetime(hist.EFFDATE).dt.tz_localize(None))
+    h["mq"] = h.eff.dt.to_period("Q")
+    for (s, mq), g in h.groupby(["ACQ_CERT", "mq"]):
+        if mq.quarter == 1 or any((s, x) not in t.index for x in (mq - 1, mq, mq + 1)):
+            continue
+        preds = [int(p) for p in g.OUT_CERT if (int(p), mq - 1) in t.index]
+        if not preds:
+            continue
+        prior = [pd.Period(f"{mq.year}Q{k}") for k in range(1, mq.quarter)]
+        ytd = sum(tot.get((p, k), 0.0) for p in preds for k in prior)
+        days = (mq.end_time.normalize() - mq.start_time).days + 1
+        pro_rata = sum((e.eff - mq.start_time).days / days * tot.get((int(e.OUT_CERT), mq - 1), 0.0)
+                       for _, e in g.iterrows())
+        ib = t.IB_Q
+        r_prev = (tot[(s, mq - 1)] + sum(tot[(p, mq - 1)] for p in preds)) / (
+            ib[(s, mq - 1)] + sum(ib[(p, mq - 1)] for p in preds))
+        r_cur, r_next = tot[(s, mq)] / ib[(s, mq)], tot[(s, mq + 1)] / ib[(s, mq + 1)]
+        r_cor = (tot[(s, mq)] - ytd - pro_rata) / ib[(s, mq)]
+        if not (ytd > 0 and r_prev > 0 and r_next > 0 and r_cor > 0 and r_cur >= 1.25 * max(r_prev, r_next)):
+            continue
+        mid = np.sqrt(r_prev * r_next)
+        if abs(np.log(r_cor / mid)) >= abs(np.log(r_cur / mid)):
+            continue
+        before = tot[(s, mq)]
+        for ie in YTD_REPAIR_COLS:
+            sub = 0.0
+            for _, e in g.iterrows():
+                p = int(e.OUT_CERT)
+                if (p, mq - 1) not in t.index:
+                    continue
+                frac = (e.eff - mq.start_time).days / days
+                sub += sum(t[ie].get((p, k), 0.0) for k in prior) + frac * t.at[(p, mq - 1), ie]
+            t.at[(s, mq), ie] -= sub
+        derive()
+        log.append({"CERT": s, "REPDTE": int(mq.end_time.strftime("%Y%m%d")), "case": "restatement",
+                    "detail": f"total IE {before:.0f} -> {t.at[(s, mq), 'EDEPDOMQ'] + t.at[(s, mq), 'EDEPFORQ']:.0f};"
+                              f" predecessors {preds}; their YTD {ytd:.0f}; quarterly rate % {400 * r_prev:.2f} /"
+                              f" {400 * r_cur:.2f} -> {400 * r_cor:.2f} / {400 * r_next:.2f} (mq-1 / mq / mq+1)"})
+    out = t.reset_index().sort_values("_order").set_index(fin.index)[fin.columns]
+    return out, pd.DataFrame(log, columns=["CERT", "REPDTE", "case", "detail"])
+
+
 def make_source_class(bd, fin, hist, prior_fallback=None):
     """`prior_fallback` ({CERT: DEP at TD_FALLBACK_PERIOD}, $ thousands): one-point 2012Q1 fallback for the
     total-deposit build (owner decision 2026-11-25, doc P12). Such a cert gets a quarter-end the quarter before,
@@ -215,6 +313,7 @@ def build_ffiec(items_path=None, cert_rssd_path=None, hist_path=None, outdir=OUT
     fin = financials_from_items(quarterly, cert_rssd, dict(zip(zip(fdic_fin.CERT, fdic_fin.REPDTE), fdic_fin.DEP)),
                                 load_extra_rssd(), hybrid=True)
     hist = pd.read_csv(hist_path or root / "data_build" / "raw" / "history_targets.csv")
+    fin, ytd_log = repair_ytd_breaks(fin, hist)
     fb = fin[(fin.REPDTE == int(TD_FALLBACK_PERIOD.replace("-", ""))) & (fin.TD_FALLBACK > 0)]
     src = make_source_class(bd, fin, hist, prior_fallback=dict(zip(fb.CERT, fb.DEP)))
     outdir.mkdir(parents=True, exist_ok=True)
@@ -226,6 +325,7 @@ def build_ffiec(items_path=None, cert_rssd_path=None, hist_path=None, outdir=OUT
     bd.write(data, events, checks)
     supp = root / "data_build" / "raw" / "supplementary_transfer_events.csv"
     build_hybrid(data, events, fin, hist, bd, supp, outdir)
+    ytd_log.to_csv(outdir / f"ytd_repairs_{bd.VINTAGE}.csv", index=False)
     return data, events, checks
 
 

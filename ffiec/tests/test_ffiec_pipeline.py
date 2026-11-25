@@ -388,3 +388,50 @@ def test_total_deposit_one_point_fallback_for_first_call_report_in_2012q1():
     assert pf.loc[pd.Period("2011Q3"), "DEP"] == 1000.0                             # earlier quarters untouched
     plain = bf.make_source_class(bd, fin, hist)(False, None)
     assert pd.Period("2011Q4") not in plain.series(2).index                         # off unless passed
+
+
+def _ytd_frame(rows):
+    cols = {"TRAN_IE": 0.0, "SAV_IE": 0.0, "TIME_IE": 0.0, "FOR_IE": 0.0, "TRAN_BAL": 100.0, "SAV_BAL": 100.0,
+            "TIME_BAL": 100.0, "FOR_BAL": 0.0, "IB_Q": 300.0}
+    f = pd.DataFrame([{**cols, **r} for r in rows])
+    f["NMD_IE"] = f.TRAN_IE + f.SAV_IE
+    f["EDEPDOMQ"] = f.NMD_IE + f.TIME_IE
+    f["EDEPFORQ"] = f.FOR_IE
+    return f
+
+
+def test_ytd_restart_carries_previous_quarter_rate_forward():
+    f = _ytd_frame([{"CERT": 1, "REPDTE": 20160630, "SAV_IE": 10.0, "TIME_IE": 5.0},
+                    {"CERT": 1, "REPDTE": 20160930, "SAV_IE": -6.0, "TIME_IE": -3.0, "TIME_BAL": 120.0},  # YTD restarted
+                    {"CERT": 2, "REPDTE": 20160930, "SAV_IE": -1.0}])                                      # no prior quarter
+    g, log = bf.repair_ytd_breaks(f, pd.DataFrame(columns=["ACQ_CERT", "OUT_CERT", "EFFDATE"]))
+    r = g[(g.CERT == 1) & (g.REPDTE == 20160930)].iloc[0]
+    assert r.SAV_IE == pytest.approx(10.0) and r.TIME_IE == pytest.approx(6.0)          # 5 x 120 / 100
+    assert r.EDEPDOMQ == pytest.approx(16.0) and r.NMD_IE == pytest.approx(10.0)
+    assert pd.isna(g[g.CERT == 2].SAV_IE.iloc[0])                                     # never zero-filled
+    assert list(log.case) == ["restart", "restart"]
+
+
+def test_ytd_restatement_removes_affiliates_prior_ytd_only_when_rate_spikes():
+    rows = []
+    for q, d in [(1, 20140331), (2, 20140630), (3, 20140930), (4, 20141231), (5, 20150331)]:
+        if q <= 3:
+            rows.append({"CERT": 2, "REPDTE": d, "SAV_IE": 3.0, "IB_Q": 300.0})          # affiliate, 1% a quarter
+        rows.append({"CERT": 1, "REPDTE": d, "SAV_IE": 1.0 if q <= 3 else 4.0, "IB_Q": 100.0 if q <= 3 else 400.0})
+    f = _ytd_frame(rows)
+    f.loc[(f.CERT == 1) & (f.REPDTE == 20141231), "SAV_IE"] += 9.0                        # restated: affiliate Q1-Q3
+    f["NMD_IE"] = f.TRAN_IE + f.SAV_IE
+    f["EDEPDOMQ"] = f.NMD_IE + f.TIME_IE
+    hist = pd.DataFrame([{"ACQ_CERT": 1, "OUT_CERT": 2, "EFFDATE": "2014-10-01T00:00:00"}])
+    g, log = bf.repair_ytd_breaks(f, hist)
+    assert g[(g.CERT == 1) & (g.REPDTE == 20141231)].SAV_IE.iloc[0] == pytest.approx(4.0)
+    assert list(log.case) == ["restatement"]
+    # a rate-driven rise (no fall-back next quarter) is left alone
+    f2 = f.copy()
+    f2.loc[(f2.CERT == 1) & (f2.REPDTE == 20150331), "SAV_IE"] = 14.0
+    f2["NMD_IE"] = f2.TRAN_IE + f2.SAV_IE
+    f2["EDEPDOMQ"] = f2.NMD_IE + f2.TIME_IE
+    g2, log2 = bf.repair_ytd_breaks(f2, hist)
+    key = ["CERT", "REPDTE"]
+    pd.testing.assert_frame_equal(g2.sort_values(key).reset_index(drop=True), f2.sort_values(key).reset_index(drop=True))
+    assert log2.empty
