@@ -28,6 +28,7 @@
 ### 0.2 Revision History
 | Version | Date | Description | Validation |
 | :--- | :--- | :--- | :--- |
+| 0.7 (draft) | 2026-11-25 | 2012Q1 one-point fallback applied to the total-deposit build as well (owner decision; P12 resolved): `rate_total_pf` 2012Q1 corrected for five banks; their 2011Q4 rows leave the total-deposit outputs | Reconciling total equals `dep_avg_pf` in all 413 rows; BankFind reconciliation in window 21 of 406 (was 25); 26 tests |
 | 0.6 (draft) | 2026-11-25 | Schedule RC interest-bearing base built (owner decision, 6.4): quarter-end `RCON6636 + RCFN6636` folded pro forma, then two-point averaged; product legs non-maturity / time / foreign tile it; sensitivity script committed (6.5, O6); product lines and sweep sourcing (6.7); finding on the 2012Q1 total-deposit rate (P12) | Reconciliation exact in 408 of 413 rows (6.6); 25 tests |
 | 0.5 (draft) | 2026-11-16 | One-point 2011Q4 fallback for thrift predecessors (all 7 banks now 59 quarters); pro forma product rates (transaction, savings including MMDA, time); reconciling total-deposit series built after the `6631`/`6636` pull; finding: RC-K savings averages include noninterest-bearing reclassified balances (section 6.4), denominator decision reopened (O1) | Quarter-end identities `6631 + 6636 = 2200` hold; reconciliation fails by a median 13% to 2021, section 6.4 |
 | 0.4 (draft) | 2026-11-14 | Hybrid denominator built and validated on the Call Report data (J473/J474 re-pull complete); results of the build in section 6; P7 and O1 updated | Four build checks in section 6.2; estimation not yet rerun |
@@ -105,7 +106,7 @@ The origin merger logic (`data_build/build_dataset.py`) is reused unchanged, fed
 ### 4.3 Reconciliation With the Origin Source (pilot)
 - Total deposits: 0 of 8,503 shared bank-quarters differ.
 - Interest expense: 63 bank-quarters differ by more than $1 thousand. The Call Report quarterly series ties to the filed year-to-date; BankFind's own quarterly field does not tie to its year-to-date field in those quarters. The Call Report is the reference.
-- Window: savings institutions filed Thrift Financial Reports to the OTS until 2011 and Call Reports from March 2012, so quarters before 2012 lack some predecessors. The reference window is 2012Q1 onward (decision 2026-11-13). Earlier quarters are kept in the outputs for reference only. Inside the window, 25 of 406 bank-quarters differ from the origin pro forma rate by more than 0.005 points (median 0.000, 95th percentile 0.0074, maximum 0.160); the differences trace to the two documented origin-side items (predecessors without Call Reports: Wilmington Trust NA, Federal Trust Bank; BankFind quarterly interest expense).
+- Window: savings institutions filed Thrift Financial Reports to the OTS until 2011 and Call Reports from March 2012, so quarters before 2012 lack some predecessors. The reference window is 2012Q1 onward (decision 2026-11-13). Earlier quarters are kept in the outputs for reference only. Inside the window, 21 of 406 bank-quarters differ from the origin pro forma rate by more than 0.005 points (median 0.000, 95th percentile 0.0051, maximum 0.160; 25 of 406 and 95th percentile 0.0074 before the 2012Q1 fallback of P12 was applied to the total-deposit build on 2026-11-25); the differences trace to the two documented origin-side items (predecessors without Call Reports: Wilmington Trust NA, Federal Trust Bank; BankFind quarterly interest expense).
 - Evidence files: `ffiec/outputs/reconciliation_summary.csv`, `reconciliation_quarters.csv`, `nic_event_differences.csv`, `missing_filings_check.csv`.
 
 ### 4.4 Sample
@@ -303,7 +304,7 @@ Code `ffiec/data_build/build_ffiec.py` (`hybrid_denominator`, `build_hybrid`). O
 *Checks.*
 | # | Check | Result |
 | :-: | :-- | :-- |
-| 9 | Reconciling base `tot_avg_pf` vs `dep_avg_pf` | Equal to 2e-5% in 408 rows; the 5 differing rows are the 2012Q1 fallback rows (P12) |
+| 9 | Reconciling base `tot_avg_pf` vs `dep_avg_pf` | Equal to 2e-5% in all 413 rows (after P12 was resolved; before, the five 2012Q1 fallback rows differed) |
 | 10 | Legs non-maturity + time + foreign vs `A_pf`; their interest expense vs total | Equal to 1e-16 in all rows |
 | 11 | `A_pf` / `dep_avg_pf`, outside the fallback rows | 0.568 to 0.863, median 0.729; never above 1 |
 | 12 | Huntington around TCF (2021Q2) | `A_pf` / `dep_avg_pf` 0.685 (2021Q1), 0.671 (2021Q2), 0.668 (2021Q3); the hybrid fell to 0.436. The 6.3 Huntington outlier was the reclassification effect and is gone |
@@ -347,7 +348,7 @@ Code `ffiec/data_build/build_ffiec.py` (`hybrid_denominator`, `build_hybrid`). O
 | P9 | 2012Q1 time-deposit and NIB averages of the 14 thrift predecessors are one-point (2012Q1 quarter-end), not two-point; 5 bank-quarters flagged | Low |
 | P10 | RC-K savings averages include noninterest-bearing reclassified balances; the former hybrid `A_t` overstated the interest-bearing base by up to about 30% to 2021, with a level shift in 2021 to 2022 (section 6.4). Resolved by the Schedule RC base, built 2026-11-25 (6.6). Still applies to the RC-K reference columns (`A_hyb_pf`, `rate_ib_hyb_pf`, `rate_tran_pf`, `rate_sav_pf`, `rate_nmd_rck`) | Resolved for the model series |
 | P11 | Transaction/savings product split unreliable during reclassification programs (KeyBank 2017 to 2021, sections 6.3, 6.5 test D); no reporting-consistent split exists (6.7), so the model's non-maturity line is the combined interest-bearing non-maturity deposits | Medium |
-| P12 | `rate_total_pf` (total-deposit series) in 2012Q1 has no 2011Q4 balance for the 14 thrift predecessors, so its two-point average is understated and the rate overstated: M&T +13.7 bp, SouthState +5.7 bp, Old National +2.2 bp, First Horizon +0.9 bp, Huntington +0.8 bp. The interest-bearing series applies the one-point fallback; the total-deposit build does not | Low |
+| P12 | `rate_total_pf` in 2012Q1 had no 2011Q4 balance for the 14 thrift predecessors (two-point average understated, rate overstated: M&T +13.7 bp, SouthState +5.7 bp, Old National +2.2 bp, First Horizon +0.9 bp, Huntington +0.8 bp). Resolved 2026-11-25 (owner decision): the total-deposit build applies the same one-point fallback (predecessor's 2011Q4 `DEP` = its own 2012Q1 `DEP`, interest expense not filled). Effect: those five 2012Q1 rates now match the BankFind origin within 0.005 points except SouthState (0.014, was 0.071); the 2011Q4 rows of the five banks (outside the sample) drop from the total-deposit outputs because their pro forma interest expense is incomplete (525 to 520 rows). Event set and Mode A/B decisions unchanged | Resolved |
 
 ---
 

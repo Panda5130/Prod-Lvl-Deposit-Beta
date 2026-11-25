@@ -367,3 +367,24 @@ def test_schedule_rc_base_two_point_split_and_missing_rules():
     assert pd.isna(w.loc[(1, "2017-09-30"), "A"])                              # foreign offices, no RCFN6636: not filled
     assert w.loc[(2, "2017-06-30"), "A"] == pytest.approx(40.0)                # RCFN2200 absent: foreign = 0
     assert w.loc[(3, "2012-03-31"), "A"] == pytest.approx(20.0)                # one-point fallback applies
+
+
+def test_total_deposit_one_point_fallback_for_first_call_report_in_2012q1():
+    bd = bf.load_fdic_module()
+    qs = pd.period_range("2011Q3", "2013Q4", freq="Q")
+    rows = [{"CERT": 1, "REPDTE": int(q.end_time.strftime("%Y%m%d")), "DEP": 1000.0, "EDEPDOMQ": 5.0, "EDEPFORQ": 0.0}
+            for q in qs]
+    rows += [{"CERT": 2, "REPDTE": int(q.end_time.strftime("%Y%m%d")), "DEP": 400.0, "EDEPDOMQ": 2.0, "EDEPFORQ": 0.0}
+             for q in qs if pd.Period("2012Q1") <= q <= pd.Period("2012Q4")]          # thrift: first filing 2012Q1
+    fin = pd.DataFrame(rows)
+    hist = pd.DataFrame([{"CERT": 2, "ACQ_CERT": 1, "OUT_CERT": 2, "OUT_INSTNAME": "T", "CHANGECODE": 223,
+                          "CHANGECODE_DESC": "Merger", "EFFDATE": "2013-02-14"}])
+    src = bf.make_source_class(bd, fin, hist, prior_fallback={2: 400.0})(False, None)
+    s2 = src.series(2)
+    assert s2.loc[pd.Period("2011Q4"), "DEP"] == 400.0 and pd.isna(s2.loc[pd.Period("2011Q4"), "ie"])
+    pf = bd.rate_frame(bd.pro_forma(src, 1, []))
+    assert pf.loc[pd.Period("2012Q1"), "avg_dep"] == pytest.approx(1400.0)          # (1400 + 1400) / 2
+    assert pd.isna(pf.loc[pd.Period("2011Q4"), "rate"])                              # no interest: not filled
+    assert pf.loc[pd.Period("2011Q3"), "DEP"] == 1000.0                             # earlier quarters untouched
+    plain = bf.make_source_class(bd, fin, hist)(False, None)
+    assert pd.Period("2011Q4") not in plain.series(2).index                         # off unless passed

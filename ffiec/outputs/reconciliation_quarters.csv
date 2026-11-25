@@ -14,8 +14,6 @@ cert_number,quarter,status,measures,d_total_deposits,d_deposit_interest_expense,
 588,2011-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.31797798300415225,False
 588,2011-06-30,differs,rate_pf_clean,0.0,0.0,0.0,0.3247964331726182,False
 588,2011-09-30,differs,rate_pf_clean,0.0,0.0,0.0,0.31360716823178364,False
-588,2011-12-31,differs,rate_pf_clean,0.0,0.0,0.0,0.30138522130313633,False
-588,2012-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.1407127921658518,True
 3832,2008-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.09357938801978793,False
 3832,2008-06-30,differs,rate_pf_clean,0.0,0.0,0.0,0.10219050602239843,False
 3832,2008-09-30,differs,rate_pf_clean,0.0,0.0,0.0,0.11399039027298308,False
@@ -31,8 +29,6 @@ cert_number,quarter,status,measures,d_total_deposits,d_deposit_interest_expense,
 3832,2011-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.04654719597106782,False
 3832,2011-06-30,differs,rate_pf_clean,0.0,0.0,0.0,0.037435397107970836,False
 3832,2011-09-30,differs,rate_pf_clean,0.0,0.0,0.0,0.03848191975087767,False
-3832,2011-12-31,differs,rate_pf_clean,0.0,0.0,0.0,0.04095649771772891,False
-3832,2012-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.023763982915711357,True
 3832,2014-12-31,differs,rate_pf_clean,0.0,0.0,0.0,0.1166103822962217,True
 4977,2008-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.27948466744857203,False
 4977,2008-06-30,differs,rate_pf_clean,0.0,0.0,0.0,0.2022753082385127,False
@@ -49,8 +45,6 @@ cert_number,quarter,status,measures,d_total_deposits,d_deposit_interest_expense,
 4977,2011-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.008393185392198688,False
 4977,2011-06-30,differs,rate_pf_clean,0.0,0.0,0.0,0.023780205811209765,False
 4977,2011-09-30,differs,rate_pf_clean,0.0,0.0,0.0,0.012820484472107485,False
-4977,2011-12-31,differs,rate_pf_clean,0.0,0.0,0.0,0.07022005565212541,False
-4977,2012-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.006519468882638102,True
 4977,2015-12-31,differs,"deposit_interest_expense,deposit_rate,rate_pf_clean",0.0,2210.0,0.045077878153679404,0.018002130299602376,True
 6560,2008-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.0076957234828278764,False
 6560,2008-12-31,differs,rate_pf_clean,0.0,0.0,0.0,0.006475239706130509,False
@@ -59,8 +53,6 @@ cert_number,quarter,status,measures,d_total_deposits,d_deposit_interest_expense,
 6560,2010-09-30,differs,rate_pf_clean,0.0,0.0,0.0,0.015936898477890815,False
 6560,2011-06-30,differs,rate_pf_clean,0.0,0.0,0.0,0.011433967327046823,False
 6560,2011-09-30,differs,rate_pf_clean,0.0,0.0,0.0,0.007084261742067444,False
-6560,2011-12-31,differs,rate_pf_clean,0.0,0.0,0.0,0.005351936698905546,False
-6560,2012-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.00877627625585159,True
 6560,2012-09-30,differs,rate_pf_clean,0.0,0.0,0.0,0.010594664025050604,True
 6560,2015-12-31,differs,rate_pf_clean,0.0,0.0,0.0,0.006527581180813924,True
 6560,2016-09-30,differs,rate_pf_clean,0.0,0.0,0.0,0.027158455444191182,True
@@ -100,8 +92,7 @@ cert_number,quarter,status,measures,d_total_deposits,d_deposit_interest_expense,
 33555,2011-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.07463647230089354,False
 33555,2011-06-30,differs,rate_pf_clean,0.0,0.0,0.0,0.04891471939207892,False
 33555,2011-09-30,differs,rate_pf_clean,0.0,0.0,0.0,0.04980385913606522,False
-33555,2011-12-31,differs,rate_pf_clean,0.0,0.0,0.0,0.014772130882391932,False
-33555,2012-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.07106038697545525,True
+33555,2012-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.014296341289720682,True
 33555,2012-06-30,differs,"deposit_interest_expense,deposit_rate",0.0,217.0,0.042966383260138685,0.002890074533457354,True
 33555,2012-09-30,differs,rate_pf_clean,0.0,0.0,0.0,0.04207653591438881,True
 33555,2012-12-31,differs,rate_pf_clean,0.0,0.0,0.0,0.03134144233211167,True
@@ -110,10 +101,15 @@ cert_number,quarter,status,measures,d_total_deposits,d_deposit_interest_expense,
 33555,2015-03-31,differs,rate_pf_clean,0.0,0.0,0.0,0.005361079134273139,True
 33555,2015-12-31,differs,rate_pf_clean,0.0,0.0,0.0,0.010080140829896889,True
 33555,2016-12-31,differs,rate_pf_clean,0.0,0.0,0.0,0.014127616312867908,True
+588,2011-12-31,fdic_only,,,,,,False
 588,2026-09-30,ffiec_only,,,,,,True
+3832,2011-12-31,fdic_only,,,,,,False
 3832,2026-09-30,ffiec_only,,,,,,True
+4977,2011-12-31,fdic_only,,,,,,False
 4977,2026-09-30,ffiec_only,,,,,,True
+6560,2011-12-31,fdic_only,,,,,,False
 6560,2026-09-30,ffiec_only,,,,,,True
 17534,2026-09-30,ffiec_only,,,,,,True
 30788,2026-09-30,ffiec_only,,,,,,True
+33555,2011-12-31,fdic_only,,,,,,False
 33555,2026-09-30,ffiec_only,,,,,,True

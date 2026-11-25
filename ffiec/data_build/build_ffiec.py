@@ -180,11 +180,25 @@ def financials_from_items(quarterly, cert_rssd, cert_quarters=None, extra=None, 
     return out.drop(columns=[c for c in ("rssd", "gap") if c in out])[cols].astype({"CERT": int})
 
 
-def make_source_class(bd, fin, hist):
+def make_source_class(bd, fin, hist, prior_fallback=None):
+    """`prior_fallback` ({CERT: DEP at TD_FALLBACK_PERIOD}, $ thousands): one-point 2012Q1 fallback for the
+    total-deposit build (owner decision 2026-11-25, doc P12). Such a cert gets a quarter-end the quarter before,
+    with DEP equal to its own 2012Q1 DEP and interest expense missing (NaN, never 0). The survivor's two-point
+    average for 2012Q1 then includes the predecessor; its 2011Q4 pro forma rate is NaN and the row is dropped
+    (2011Q4 is outside the sample, doc 4.4)."""
+    fb_q = pd.Period(TD_FALLBACK_PERIOD, "Q") - 1
+
     class FfiecSource(bd.Fdic):
         def __init__(self, refresh=False, supplementary=None):   # no FDIC loader: no network, no raw cache
             self.refresh, self.fin, self.hist = refresh, fin, hist
             self.supp = bd.load_supplementary(supplementary)      # FDIC supplementary transfers (issue #20), read only
+
+        def series(self, cert):
+            s = super().series(cert)
+            if prior_fallback and cert in prior_fallback and fb_q not in s.index:
+                s.loc[fb_q] = [prior_fallback[cert], float("nan")]
+                s = s.sort_index()
+            return s
 
         def extend(self, certs):                    # predecessors come from the pre-pulled FFIEC items
             missing = sorted(set(certs) - set(self.fin.CERT))
@@ -201,7 +215,8 @@ def build_ffiec(items_path=None, cert_rssd_path=None, hist_path=None, outdir=OUT
     fin = financials_from_items(quarterly, cert_rssd, dict(zip(zip(fdic_fin.CERT, fdic_fin.REPDTE), fdic_fin.DEP)),
                                 load_extra_rssd(), hybrid=True)
     hist = pd.read_csv(hist_path or root / "data_build" / "raw" / "history_targets.csv")
-    src = make_source_class(bd, fin, hist)
+    fb = fin[(fin.REPDTE == int(TD_FALLBACK_PERIOD.replace("-", ""))) & (fin.TD_FALLBACK > 0)]
+    src = make_source_class(bd, fin, hist, prior_fallback=dict(zip(fb.CERT, fb.DEP)))
     outdir.mkdir(parents=True, exist_ok=True)
     bd.Fdic, bd.ROOT = src, outdir                  # in-memory only; build_dataset.py on disk is untouched
     data, events = bd.build(False, root / "data_build" / "raw" / "supplementary_transfer_events.csv")
