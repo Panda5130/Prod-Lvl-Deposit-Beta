@@ -28,6 +28,7 @@
 ### 0.2 Revision History
 | Version | Date | Description | Validation |
 | :--- | :--- | :--- | :--- |
+| 0.10 (draft) | 2026-11-26 | Time-deposit rate denominator switched to the pro forma end-of-quarter balance (owner decision; 6.9, P15); `time_bal_pf` added; no other series changed | Matches the tested variant exactly; legs still tile `A_pf`; 28 tests |
 | 0.9 (draft) | 2026-11-26 | Scope decided: five banks estimated (O7, 1.2); sample end decided 2026Q3 and FFT rebuilt to 2026Q3 (1.3, 3.1, 4.4); dataset unchanged | FFT equals origin on every common quarter |
 | 0.8 (draft) | 2026-11-25 | Year-to-date breaks in the quarterly interest expense repaired (6.8): push-down restarts (previous-quarter rate carried forward) and common-control restatements (affiliates' prior YTD removed); M&T 2022Q2-Q3 time-deposit dip confirmed as reported data (P13) | BankFind reconciliation in window 13 of 406 (was 21), max 0.045 (was 0.160); 28 tests |
 | 0.7 (draft) | 2026-11-25 | 2012Q1 one-point fallback applied to the total-deposit build as well (owner decision; P12 resolved): `rate_total_pf` 2012Q1 corrected for five banks; their 2011Q4 rows leave the total-deposit outputs | Reconciling total equals `dep_avg_pf` in all 413 rows; BankFind reconciliation in window 21 of 406 (was 25); 26 tests |
@@ -323,7 +324,7 @@ Code `ffiec/data_build/build_ffiec.py` (`hybrid_denominator`, `build_hybrid`). O
 | Line | Interest expense (Schedule RI) | Balance (quarter-end, two-point averaged) | Share of `A_pf`, median | Status |
 | :-- | :-- | :-- | :-: | :-- |
 | Interest-bearing non-maturity (interest-bearing transaction accounts + savings incl. MMDA) | `RIAD4508 + RIAD0093` | `RCON6636` (RC) less time deposits | 80% to 86% | Model line; `rate_nmd_pf` |
-| Time deposits | `RIADA517 + RIADA518` to 2016; `RIADHK03 + RIADHK04` from 2017 | `RCON6648 + RCONJ473 + RCONJ474` to 2016; `RCONHK16 + RCONHK17` from 2017 (RC-E) | 14% to 20% | Model line; `rate_time_pf` |
+| Time deposits | `RIADA517 + RIADA518` to 2016; `RIADHK03 + RIADHK04` from 2017 | `RCON6648 + RCONJ473 + RCONJ474` to 2016; `RCONHK16 + RCONHK17` from 2017 (RC-E); the rate uses the end-of-quarter balance (6.9) | 14% to 20% | Model line; `rate_time_pf` |
 | Foreign offices | `RIAD4172` | `RCFN6636` (RC) | 0% to 2.9%; none after 2016Q4 (Huntington), 2015Q4 (KeyBank), 2021Q2 (M&T); never for First Horizon, Old National | Kept inside `rate_ib_pf`; not a model line |
 | Noninterest-bearing | none (zero rate) | `RCON6631 + RCFN6631` (RC) | outside `A_pf` | Mix and weights only |
 
@@ -347,6 +348,23 @@ Code `ffiec/data_build/build_ffiec.py` (`hybrid_denominator`, `build_hybrid`). O
 
 *Not repaired: M&T 2022Q2 and 2022Q3 time deposits (0.087%, 0.085%).* M&T's own Call Report time-deposit interest is $1.2M and $1.1M on $5.0 to $5.5 billion, and its 10-Q reports the same figures ($1,227 thousand and $1,124 thousand), so this is reported data, not a pipeline error. The likely cause is amortization of the fair-value premium on the time deposits assumed from People's United (2022-04-01), which lowers reported interest expense; the 10-Q note was not checked. Huntington 2021Q3 (negative time-deposit interest of $0.8M after TCF) has the same signature but no visible dip. See P13.
 
+### 6.9 Time-deposit denominator: end-of-quarter balance (owner decision 2026-11-26)
+*Why.* No reported time-deposit average exists after 2016 (RC-K items `RCONA529`/`RCONA514` ended 2016Q4; the FR Y-9C has quarter-end time deposits and their interest but no average). The two-point average misstates the average in quarters of fast intra-quarter growth: First Horizon 2023Q3 5.22% (First Horizon's own period-end balances imply 4.42%) and KeyBank 2023Q2 4.68%, which fell to 4.14% in Q3 while the Fed was still raising rates.
+
+*Test (2026-11-26, scratch, not committed).* The pro forma time legs were rebuilt with the production code (two-point reproduced `rate_time_pf` exactly) and three denominators compared:
+
+| Denominator | Quarters changed (7 banks) | Spikes above 0.3 points, 5 banks | First Horizon 2023 Q2/Q3/Q4 | KeyBank 2023 Q1/Q2/Q3 | First Horizon 2024 Q2/Q3/Q4 |
+| :-- | --: | --: | :-- | :-- | :-- |
+| Two-point average (previous) | 0 | 25 | 4.42 / 5.22 / 4.25 | 4.20 / 4.68 / 4.14 | 4.45 / 5.12 / 4.16 |
+| End balance where growth > 10% | 39 | 15 | 3.55 / 4.39 / 4.25 | 3.32 / 3.95 / 4.14 | 4.45 / 4.65 / 4.16 |
+| End balance always (chosen) | 413 | 11 | 3.55 / 4.39 / 4.45 | 3.32 / 3.95 / 4.15 | 4.43 / 4.65 / 4.37 |
+
+A spike is a quarter more than 0.3 points away from the mean of the quarters either side; several remaining spikes are genuine turns of the 2022 to 2023 cycle. Thresholds of 10% to 35% gave the same 2023 results.
+
+*Implementation.* `rate_time_pf = 400 x time-deposit interest / time_bal_pf`, where `time_bal_pf` is the pro forma end-of-quarter time-deposit balance (`build_ffiec.END_BALANCE_LEGS`). `time_avg_pf` (two-point) is kept so non-maturity + time + foreign still tile `A_pf`; `rate_ib_pf`, `rate_nmd_pf`, `rate_total_pf` and the reconciling series are unchanged. Change in `rate_time_pf`: median +0.008 points (5th to 95th percentile -0.25 to +0.12).
+
+*Known weaknesses (P15).* Huntington 2026Q2 (time deposits +32%) becomes 3.10%, between 3.87% and 3.06%, which would be an artefact if the growth came late in the quarter; First Horizon 2024Q3 becomes 4.65% where its own balances imply 4.91%; KeyBank 2023Q1 (3.32%) depends on whether its CD growth came before or after March. M&T 2022Q2 to Q3 (P13) is unchanged at about 0.09%.
+
 ---
 
 ## 7. Limitations and Assumptions
@@ -365,6 +383,7 @@ Code `ffiec/data_build/build_ffiec.py` (`hybrid_denominator`, `build_hybrid`). O
 | P10 | RC-K savings averages include noninterest-bearing reclassified balances; the former hybrid `A_t` overstated the interest-bearing base by up to about 30% to 2021, with a level shift in 2021 to 2022 (section 6.4). Resolved by the Schedule RC base, built 2026-11-25 (6.6). Still applies to the RC-K reference columns (`A_hyb_pf`, `rate_ib_hyb_pf`, `rate_tran_pf`, `rate_sav_pf`, `rate_nmd_rck`) | Resolved for the model series |
 | P11 | Transaction/savings product split unreliable during reclassification programs (KeyBank 2017 to 2021, sections 6.3, 6.5 test D); no reporting-consistent split exists (6.7), so the model's non-maturity line is the combined interest-bearing non-maturity deposits | Medium |
 | P13 | Purchase-accounting effects in reported interest expense are kept as reported: M&T 2022Q2 to Q3 time-deposit rate 0.09% (People's United), likely fair-value premium amortization (6.8). Treat as candidate outliers (dummy) in the time-deposit model | Medium |
+| P15 | The time-deposit rate divides by the pro forma end-of-quarter balance (6.9). It is exact only when balances are flat within the quarter: it understates the rate when balances grew late in a quarter (candidate: Huntington 2026Q2, 3.10%) and overstates it when balances fell late (2020 to 2021 run-off). The time leg in `A_pf` stays a two-point average, so `rate_time_pf` is not on the same base as `time_avg_pf` | Medium |
 | P14 | YTD repairs (6.8) change 18 entity-quarters from 2011Q4: 12 previous-rate carry-forwards, 1 set missing (cert 5950, 2011Q4, outside the sample) and 5 restatement corrections; a restart that leaves a positive but understated quarter is not detected | Low |
 | P12 | `rate_total_pf` in 2012Q1 had no 2011Q4 balance for the 14 thrift predecessors (two-point average understated, rate overstated: M&T +13.7 bp, SouthState +5.7 bp, Old National +2.2 bp, First Horizon +0.9 bp, Huntington +0.8 bp). Resolved 2026-11-25 (owner decision): the total-deposit build applies the same one-point fallback (predecessor's 2011Q4 `DEP` = its own 2012Q1 `DEP`, interest expense not filled). Effect: those five 2012Q1 rates now match the BankFind origin within 0.005 points except SouthState (0.014, was 0.071); the 2011Q4 rows of the five banks (outside the sample) drop from the total-deposit outputs because their pro forma interest expense is incomplete (525 to 520 rows). Event set and Mode A/B decisions unchanged | Resolved |
 

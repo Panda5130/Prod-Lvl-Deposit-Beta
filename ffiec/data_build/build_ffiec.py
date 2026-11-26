@@ -40,6 +40,11 @@ TD_FALLBACK_PERIOD = "2012-03-31"
 QE_PRODUCTS = {"nmd": ("NMD_Q", "NMD_IE"), "time": ("TD_Q", "TD_IE"), "for": ("FOR_Q", "FOR_IE")}
 AVG_PRODUCTS = {"tran": ("RCON3485", "RIAD4508"), "sav": ("RCONB563", "RIAD0093")}
 PRODUCTS = {**QE_PRODUCTS, **AVG_PRODUCTS}
+# Denominator of the time-deposit rate (owner decision 2026-11-26, doc 6.9): the pro forma end-of-quarter balance,
+# not the two-point average, because no reported time-deposit average exists after 2016 and the two-point average
+# misstates the average in quarters of fast intra-quarter growth (First Horizon 2023, KeyBank 2023).
+# time_avg_pf (two-point) is still written so the legs keep tiling the interest-bearing base A_pf.
+END_BALANCE_LEGS = {"time"}
 log = logging.getLogger("build_ffiec")
 
 
@@ -411,7 +416,11 @@ def build_hybrid(data, events, fin, hist, bd, supplementary, outdir=OUT):
             avg = averaged(ppf)
             d[f"{n}_avg_pf"] = avg
             d[f"{n}_ie_ann_pf"] = 4 * ppf["ie"]
-            d[f"rate_{n}_pf"] = (400 * ppf["ie"] / avg).where(avg != 0)
+            den = avg
+            if n in END_BALANCE_LEGS:
+                den = ppf["DEP"]                                 # pro forma end-of-quarter balance
+                d[f"{n}_bal_pf"] = den
+            d[f"rate_{n}_pf"] = (400 * ppf["ie"] / den).where(den != 0)
         for n, s in aprod.items():
             ppf = pro_forma_ib(s, cert, modes)
             d[f"{n}_avg_pf"] = ppf["DEP"]
