@@ -1,6 +1,6 @@
 """Cumulative (balance-weighted) beta of the two Prod-Lvl segments and its gap to the High-Level beta (doc 6.11).
 
-    python -I ffiec/cumulative_beta.py --segment-betas <csv: bank_name, segment (nmd|time), beta>
+    python -I ffiec/cumulative_beta.py --segment-betas <csv: bank_name, segment (nmd|time), beta> --out <csv>
 
 To be run only after the segment ECMs are estimated: the segment betas are the champions' long-run coefficients.
 Weights are each bank's pro forma two-point average balances from ffiec/outputs/ffiec_deposit_rates_hybrid_v2.csv,
@@ -10,7 +10,7 @@ averaged over the estimation sample 2012Q1 to 2026Q3:
                                                                       deposits and foreign offices at beta 0
 B_nmd = mean(nmd_avg_pf), B_time = mean(time_avg_pf), B_total = mean(dep_avg_pf). The High-Level beta (champion
 long-run beta of the total-deposit rate, ffiec/reference/high_level_champion_betas.csv) compares with cum_beta_total.
-Writes ffiec/outputs/cumulative_beta_v2.csv.
+Writes the csv given by --out (nothing is written under ffiec/outputs).
 """
 import argparse
 import sys
@@ -43,10 +43,12 @@ def cumulative(rates, segment_betas, hl):
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--segment-betas", required=True, help="csv with bank_name, segment (nmd/time), beta")
+    ap.add_argument("--out", required=True, help="output csv path (development runs write to their own vintage dir)")
     a = ap.parse_args(argv)
     out = cumulative(pd.read_csv(FFIEC / "outputs" / "ffiec_deposit_rates_hybrid_v2.csv"),
                      pd.read_csv(a.segment_betas), pd.read_csv(FFIEC / "reference" / "high_level_champion_betas.csv"))
-    out.to_csv(FFIEC / "outputs" / "cumulative_beta_v2.csv", index=False)
+    Path(a.out).parent.mkdir(parents=True, exist_ok=True)
+    out.to_csv(a.out, index=False)
     print(out.round(3).to_string(index=False))
     return 0
 

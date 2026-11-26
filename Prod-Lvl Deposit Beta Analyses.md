@@ -403,7 +403,7 @@ Owner instruction 2026-11-26: hold off on the comparison and record only the pro
    - Interest-bearing: `(B_nmd b_nmd + B_time b_time) / (B_nmd + B_time)`. The weights are the segments' shares of interest-bearing deposits and sum to 1.
    - Total deposits: `(B_nmd b_nmd + B_time b_time) / B_total`. The weights are the segments' shares of all deposits. Noninterest-bearing deposits (and foreign offices) enter the denominator with beta 0, because their rate is zero, so the weights sum to less than 1.
 3. **Comparison with the High-Level betas** (champion long-run betas, High-Level document rev 2.1, section 1.3; copied to `ffiec/reference/high_level_champion_betas.csv`). The High-Level beta is the beta of the total-deposit rate, so the like-for-like figure is the total-deposit basis; the interest-bearing basis is reported alongside. The comparison is run only once the segment betas exist (step 1).
-4. **Tool.** `ffiec/cumulative_beta.py --fft <file> --segment-betas <csv: bank_name, segment (nmd|time), beta>` computes both bases and the gap to the High-Level beta; it does not run without the segment betas.
+4. **Tool.** `ffiec/cumulative_beta.py --segment-betas <csv: bank_name, segment (nmd|time), beta> --out <csv>` computes both bases and the gap to the High-Level beta. It does not run without the segment betas, and it writes only to `--out` (the Prod-Lvl vintage output directory), never under `ffiec/outputs`.
 
 *Open (O8).* Which basis is reported as the cumulative beta, and whether the weights are the sample average (as above) or the latest quarter's balances.
 
