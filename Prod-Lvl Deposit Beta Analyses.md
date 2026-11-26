@@ -28,7 +28,7 @@
 ### 0.2 Revision History
 | Version | Date | Description | Validation |
 | :--- | :--- | :--- | :--- |
-| 0.9 (draft) | 2026-11-26 | Scope decided: five banks estimated (O7, 1.2); dataset unchanged | None needed (no data change) |
+| 0.9 (draft) | 2026-11-26 | Scope decided: five banks estimated (O7, 1.2); sample end decided 2026Q3 and FFT rebuilt to 2026Q3 (1.3, 3.1, 4.4); dataset unchanged | FFT equals origin on every common quarter |
 | 0.8 (draft) | 2026-11-25 | Year-to-date breaks in the quarterly interest expense repaired (6.8): push-down restarts (previous-quarter rate carried forward) and common-control restatements (affiliates' prior YTD removed); M&T 2022Q2-Q3 time-deposit dip confirmed as reported data (P13) | BankFind reconciliation in window 13 of 406 (was 21), max 0.045 (was 0.160); 28 tests |
 | 0.7 (draft) | 2026-11-25 | 2012Q1 one-point fallback applied to the total-deposit build as well (owner decision; P12 resolved): `rate_total_pf` 2012Q1 corrected for five banks; their 2011Q4 rows leave the total-deposit outputs | Reconciling total equals `dep_avg_pf` in all 413 rows; BankFind reconciliation in window 21 of 406 (was 25); 26 tests |
 | 0.6 (draft) | 2026-11-25 | Schedule RC interest-bearing base built (owner decision, 6.4): quarter-end `RCON6636 + RCFN6636` folded pro forma, then two-point averaged; product legs non-maturity / time / foreign tile it; sensitivity script committed (6.5, O6); product lines and sweep sourcing (6.7); finding on the 2012Q1 total-deposit rate (P12) | Reconciliation exact in 408 of 413 rows (6.6); 25 tests |
@@ -52,8 +52,8 @@ Estimated (owner decision 2026-11-26, O7): First Horizon Bank (cert 4977), Hunti
 | Item | Origin (High-Level) | Prod-Lvl |
 | :-- | :-- | :-- |
 | Source of deposits and interest expense | FDIC BankFind Financials API | FFIEC Call Reports, CDR Public Web Service |
-| Sample | 2011Q1 to 2026Q2 (62 quarters) | 2012Q1 to 2026Q2 (58 quarters) |
-| Dependent variable | `rate_pf_clean` (two-point average denominator) | Numerator from Call Report items; denominator moves to RC-K average balances (approved), form pending (section 5.4) |
+| Sample | 2011Q1 to 2026Q2 (62 quarters) | 2012Q1 to 2026Q3 (59 quarters; end decided 2026-11-26, section 4.4) |
+| Dependent variable | `rate_pf_clean` (two-point average denominator) | Numerator from Call Report items; interest-bearing denominator on the Schedule RC base (sections 6.4 to 6.6); model variable to confirm (O1) |
 | Regressor, model form, selection, backtests | As origin | Unchanged; rerun on the new data |
 | Merger events | FDIC `/history` plus 7 NIC-found transfers | Same event list (read from the origin repository's shared file), cross-checked to NIC Transformations |
 
@@ -86,7 +86,7 @@ Per bank: estimated one-step ECM (speed of adjustment, long-run beta with delta-
 | Role | Variable | Definition | Source |
 | :-- | :-- | :-- | :-- |
 | Dependent (y) | `rate_pf_clean` | 400 x quarterly deposit interest expense / average of current and prior quarter-end total deposits, pro forma for mergers | FFIEC Call Reports |
-| Regressor (x) | `FFT` | Quarterly average of the monthly effective federal funds rate | FRED `FEDFUNDS` |
+| Regressor (x) | `FFT` | Quarterly average of the monthly effective federal funds rate | FRED `FEDFUNDS`; Prod-Lvl series rebuilt to 2026Q3 (section 4.4) |
 
 Call Report items (fixed in `ffiec/data_build/items.py`, each checked against the current MDRM): total deposits `RCFD2200` if present, else `RCON2200 + RCFN2200` (domestic plus foreign offices); deposit interest expense from the Schedule RI domestic codes plus `RIAD4172` (foreign offices). Call Report income items are year to date and are converted to quarterly values; dollars are divided by 1,000.
 
@@ -112,7 +112,7 @@ The origin merger logic (`data_build/build_dataset.py`) is reused unchanged, fed
 - Evidence files: `ffiec/outputs/reconciliation_summary.csv`, `reconciliation_quarters.csv`, `nic_event_differences.csv`, `missing_filings_check.csv`.
 
 ### 4.4 Sample
-2012Q1 to 2026Q3: 59 quarters per bank, about 56 usable after lags and differencing. This is shorter than the origin sample (62), which lowers test power further (limitation L1). Seven-bank results from the two sources are compared on the common window before any conclusion about the change in estimates.
+2012Q1 to 2026Q3: 59 quarters per bank, about 56 usable after lags and differencing. Sample end decided by the owner 2026-11-26 ("Rebuild FFT to 2026Q3"). FFT was rebuilt for Prod-Lvl with `build_fft.py --end 2026Q3 --out-dir ffiec/model_dev/inputs/v2-rc-3` from the committed `FEDFUNDS.csv`, with no data refresh: it equals the origin FFT in every quarter both cover, and 2026Q3 = 3.67. Hashes: FFT_2011-2026 `337ebe2f18a7cd1d`, FFT_2008-2026 `6e74cafb3f63f4d0`. The origin FFT files at the repository root are unchanged. The rebuilt files were produced by the Prod-Lvl session and are not committed from this worktree. This is shorter than the origin sample (62), which lowers test power further (limitation L1). Seven-bank results from the two sources are compared on the common window before any conclusion about the change in estimates.
 
 ---
 
