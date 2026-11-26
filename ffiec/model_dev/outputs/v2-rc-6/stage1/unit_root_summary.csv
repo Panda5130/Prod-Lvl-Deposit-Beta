@@ -1,0 +1,12 @@
+segment,bank_name,n,I(0) ADF c/AIC p,I(0) KPSS c/auto p,I(0) default verdict,I(0) ADF robustness,I(0) KPSS robustness,I(1) ADF c/AIC p,I(1) KPSS c/auto p,I(1) default verdict,I(1) ADF robustness,I(1) KPSS robustness,classification
+nmd,First Horizon Bank,59,0.22663810827578035,0.01,non-stationary,6/6,1/6,0.009070364419019605,0.1,stationary,6/6,6/6,I(1)
+nmd,Huntington National Bank,59,0.5238201051453488,0.01,non-stationary,6/6,2/6,0.010284036566476357,0.1,stationary,6/6,6/6,I(1)
+nmd,KeyBank National Association,59,0.40964908218628643,0.01,non-stationary,6/6,2/6,0.006023909512753962,0.1,stationary,5/6,6/6,I(1)
+nmd,Manufacturers and Traders Trust Company,59,0.5957672795983273,0.01,non-stationary,6/6,2/6,0.01494519752643045,0.1,stationary,6/6,6/6,I(1)
+nmd,Old National Bank,59,0.3685405415917279,0.01,non-stationary,6/6,2/6,0.002879573866516924,0.1,stationary,6/6,6/6,I(1)
+time,First Horizon Bank,59,0.6230789566611193,0.015776311204624922,non-stationary,6/6,2/6,0.0009569551108645823,0.1,stationary,6/6,6/6,I(1)
+time,Huntington National Bank,59,0.2636639456472609,0.011854290535715397,non-stationary,6/6,2/6,0.0009485669481921428,0.1,stationary,6/6,6/6,I(1)
+time,KeyBank National Association,59,0.16858865711564514,0.0205191000707278,non-stationary,6/6,1/6,0.017874344234653963,0.1,stationary,6/6,6/6,I(1)
+time,Manufacturers and Traders Trust Company,59,0.38073528831154285,0.018140003303998294,non-stationary,6/6,2/6,0.0005666010475025866,0.1,stationary,6/6,6/6,I(1)
+time,Old National Bank,59,0.3234888606833334,0.013287535128029665,non-stationary,6/6,2/6,0.022455849518903157,0.1,stationary,5/6,6/6,I(1)
+FFT,FFT,59,0.32984739767059545,0.01,non-stationary,6/6,1/6,0.032292092030943506,0.1,stationary,6/6,6/6,I(1)

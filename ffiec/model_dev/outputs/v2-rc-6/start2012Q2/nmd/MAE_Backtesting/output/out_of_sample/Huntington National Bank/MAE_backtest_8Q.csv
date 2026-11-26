@@ -1,0 +1,9 @@
+bank_name,test_name,IC/selected lag,trend type,horizon_q,origin,start,end,n_obs,mae,naive_mae
+Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms),1Q,2026Q2,2026Q3,2026Q3,1,0.00624873209412069,0.02906981374357276
+Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms),2Q,2026Q1,2026Q2,2026Q3,2,0.35575961945431844,0.2360946912570212
+Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms),3Q,2025Q4,2026Q1,2026Q3,3,0.1989563108660027,0.08578964883467848
+Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms),4Q,2025Q3,2025Q4,2026Q3,4,0.1405517240440724,0.2771036987830268
+Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms),5Q,2025Q2,2025Q3,2026Q3,5,0.11293131632370232,0.21574746000119222
+Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms),6Q,2025Q1,2025Q2,2026Q3,6,0.18127895660786167,0.1527039957359411
+Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms),7Q,2024Q4,2025Q1,2026Q3,7,0.4953255243647778,0.19586816048358804
+Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms),8Q,2024Q3,2024Q4,2026Q3,8,0.1379587734087158,0.506372843965734

@@ -1,0 +1,197 @@
+bank_name,test_name,IC/selected lag,trend type,asymmetric,term,p_value,tested_on,qualifying_case,action,remaining_form,form_differs_from_qualifying_test
+First Horizon Bank,EG_LongRun,"AIC / ADF lag=1, ECM lag=4",c (constant),False,const,5.6026479260983774e-08,LR: const,c,kept (significant),c,False
+First Horizon Bank,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 0 (constant),False,const,6.2567698949886645e-12,LR: const,det_order 0,kept (significant),det_order 0,False
+Huntington National Bank,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 0 (constant),False,const,8.524683537608304e-16,LR: const,det_order 0,kept (significant),det_order 0,False
+Huntington National Bank,"ARDL bounds F (ARDL(2,3), case 3)","AIC / ARDL(2,3)",c - case 3 (unrestricted constant),False,const,7.088786880905355e-06,const,case 3,kept (significant),case 3,False
+KeyBank National Association,EG_LongRun,"AIC / ADF lag=1, ECM lag=4",c (constant),False,const,4.75115963710846e-10,LR: const,c,kept (significant),c,False
+KeyBank National Association,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 0 (constant),False,const,1.1601976256564535e-09,LR: const,det_order 0,kept (significant),det_order 0,False
+First Horizon Bank,EG_LongRun,"BIC / ADF lag=1, ECM lag=3",c (constant),False,const,1.8264661044812585e-08,LR: const,c,kept (significant),c,False
+First Horizon Bank,EG_LongRun,"t-stat / ADF lag=1, ECM lag=3",c (constant),False,const,1.8264661044812585e-08,LR: const,c,kept (significant),c,False
+First Horizon Bank,EG_LongRun,"AIC / ADF lag=1, ECM lag=4",ct (constant + trend),False,trend,0.1318010935397197,LR: trend,ct,dropped trend; refit,c,True
+First Horizon Bank,EG_LongRun,"AIC / ADF lag=1, ECM lag=4",ct (constant + trend),False,const,5.6026479260983774e-08,LR: const,ct,kept (significant),c,True
+First Horizon Bank,EG_LongRun,"BIC / ADF lag=1, ECM lag=3",ct (constant + trend),False,trend,0.1092547403996038,LR: trend,ct,dropped trend; refit,c,True
+First Horizon Bank,EG_LongRun,"BIC / ADF lag=1, ECM lag=3",ct (constant + trend),False,const,1.8264661044812585e-08,LR: const,ct,kept (significant),c,True
+First Horizon Bank,EG_LongRun,"t-stat / ADF lag=1, ECM lag=3",ct (constant + trend),False,trend,0.1092547403996038,LR: trend,ct,dropped trend; refit,c,True
+First Horizon Bank,EG_LongRun,"t-stat / ADF lag=1, ECM lag=3",ct (constant + trend),False,const,1.8264661044812585e-08,LR: const,ct,kept (significant),c,True
+First Horizon Bank,Johansen VECM (rank 1),BIC / k_ar_diff=1,det_order 0 (constant),False,const,6.2567698949886645e-12,LR: const,det_order 0,kept (significant),det_order 0,False
+First Horizon Bank,Johansen VECM (rank 1),HQIC / k_ar_diff=1,det_order 0 (constant),False,const,6.2567698949886645e-12,LR: const,det_order 0,kept (significant),det_order 0,False
+First Horizon Bank,Johansen VECM (rank 1),BIC / k_ar_diff=1,det_order 1 (linear trend),False,trend,0.0158430856058485,LR: trend,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1),BIC / k_ar_diff=1,det_order 1 (linear trend),False,const,2.2885076825435475e-10,LR: const,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1),HQIC / k_ar_diff=1,det_order 1 (linear trend),False,trend,0.0158430856058485,LR: trend,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1),HQIC / k_ar_diff=1,det_order 1 (linear trend),False,const,2.2885076825435475e-10,LR: const,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 1 (linear trend),False,trend,0.0158430856058485,LR: trend,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 1 (linear trend),False,const,2.2885076825435475e-10,LR: const,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend),False,trend,0.0030044639369539,LR: trend,ct,kept (significant),ct,False
+Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend),False,const,7.931912876905939e-14,LR: const,ct,kept (significant),ct,False
+Huntington National Bank,Johansen VECM (rank 1),AIC / k_ar_diff=0,det_order 0 (constant),False,const,8.524683537608304e-16,LR: const,det_order 0,kept (significant),det_order 0,False
+Huntington National Bank,Johansen VECM (rank 1),BIC / k_ar_diff=0,det_order 0 (constant),False,const,8.524683537608304e-16,LR: const,det_order 0,kept (significant),det_order 0,False
+Huntington National Bank,Johansen VECM (rank 1),HQIC / k_ar_diff=0,det_order 0 (constant),False,const,8.524683537608304e-16,LR: const,det_order 0,kept (significant),det_order 0,False
+Huntington National Bank,Johansen VECM (rank 1),FPE / k_ar_diff=0,det_order 0 (constant),False,const,8.524683537608304e-16,LR: const,det_order 0,kept (significant),det_order 0,False
+Huntington National Bank,Johansen VECM (rank 1),AIC / k_ar_diff=1,det_order 1 (linear trend),False,trend,0.0030044639369539,LR: trend,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1),AIC / k_ar_diff=1,det_order 1 (linear trend),False,const,7.931912876905939e-14,LR: const,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1),BIC / k_ar_diff=0,det_order 1 (linear trend),False,trend,0.0030044639369539,LR: trend,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1),BIC / k_ar_diff=0,det_order 1 (linear trend),False,const,7.931912876905939e-14,LR: const,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1),HQIC / k_ar_diff=0,det_order 1 (linear trend),False,trend,0.0030044639369539,LR: trend,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1),HQIC / k_ar_diff=0,det_order 1 (linear trend),False,const,7.931912876905939e-14,LR: const,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1),FPE / k_ar_diff=1,det_order 1 (linear trend),False,trend,0.0030044639369539,LR: trend,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1),FPE / k_ar_diff=1,det_order 1 (linear trend),False,const,7.931912876905939e-14,LR: const,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 1 (linear trend),False,trend,0.0030044639369539,LR: trend,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 1 (linear trend),False,const,7.931912876905939e-14,LR: const,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 2)","BIC / ARDL(1,1)",c - case 2 (restricted constant),False,const,8.524683537608304e-16,LR: const,case 2,kept (significant),case 2,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 3)","BIC / ARDL(1,1)",c - case 3 (unrestricted constant),False,const,1.702429624648923e-10,const,case 3,kept (significant),case 3,False
+Huntington National Bank,"ARDL bounds F (ARDL(2,3), case 3)","HQIC / ARDL(2,3)",c - case 3 (unrestricted constant),False,const,7.088786880905355e-06,const,case 3,kept (significant),case 3,False
+Huntington National Bank,"ARDL bounds F (ARDL(2,3), case 4)","AIC / ARDL(2,3)","ct - case 4 (unrestricted constant, restricted trend)",False,trend,0.0362777254402577,LR: trend,case 4,kept (significant),case 4,False
+Huntington National Bank,"ARDL bounds F (ARDL(2,3), case 4)","AIC / ARDL(2,3)","ct - case 4 (unrestricted constant, restricted trend)",False,const,4.228343997432375e-05,const,case 4,kept (significant),case 4,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 4)","BIC / ARDL(1,1)","ct - case 4 (unrestricted constant, restricted trend)",False,trend,0.0030044639369539,LR: trend,case 4,kept (significant),case 4,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 4)","BIC / ARDL(1,1)","ct - case 4 (unrestricted constant, restricted trend)",False,const,3.9072966964672816e-11,const,case 4,kept (significant),case 4,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 4)","HQIC / ARDL(1,1)","ct - case 4 (unrestricted constant, restricted trend)",False,trend,0.0030044639369539,LR: trend,case 4,kept (significant),case 4,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 4)","HQIC / ARDL(1,1)","ct - case 4 (unrestricted constant, restricted trend)",False,const,3.9072966964672816e-11,const,case 4,kept (significant),case 4,False
+Huntington National Bank,"ARDL bounds F (ARDL(2,3), case 5)","AIC / ARDL(2,3)",ct - case 5 (unrestricted constant and trend),False,trend,0.0511916395431214,trend,case 5,dropped trend; refit,case 3,True
+Huntington National Bank,"ARDL bounds F (ARDL(2,3), case 5)","AIC / ARDL(2,3)",ct - case 5 (unrestricted constant and trend),False,const,7.088786880905355e-06,const,case 5,kept (significant),case 3,True
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 5)","BIC / ARDL(1,1)",ct - case 5 (unrestricted constant and trend),False,trend,0.0027025141367226,trend,case 5,kept (significant),case 5,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 5)","BIC / ARDL(1,1)",ct - case 5 (unrestricted constant and trend),False,const,3.9072966964672816e-11,const,case 5,kept (significant),case 5,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 5)","HQIC / ARDL(1,1)",ct - case 5 (unrestricted constant and trend),False,trend,0.0027025141367226,trend,case 5,kept (significant),case 5,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 5)","HQIC / ARDL(1,1)",ct - case 5 (unrestricted constant and trend),False,const,3.9072966964672816e-11,const,case 5,kept (significant),case 5,False
+KeyBank National Association,EG_LongRun,"BIC / ADF lag=1, ECM lag=2",c (constant),False,const,0.0044822153803363,LR: const,c,kept (significant),c,False
+KeyBank National Association,Johansen VECM (rank 1),AIC / k_ar_diff=2,det_order 0 (constant),False,const,5.6346229959966425e-08,LR: const,det_order 0,kept (significant),det_order 0,False
+KeyBank National Association,Johansen VECM (rank 1),BIC / k_ar_diff=1,det_order 0 (constant),False,const,1.1601976256564535e-09,LR: const,det_order 0,kept (significant),det_order 0,False
+KeyBank National Association,Johansen VECM (rank 1),HQIC / k_ar_diff=2,det_order 0 (constant),False,const,5.6346229959966425e-08,LR: const,det_order 0,kept (significant),det_order 0,False
+KeyBank National Association,Johansen VECM (rank 1),FPE / k_ar_diff=2,det_order 0 (constant),False,const,5.6346229959966425e-08,LR: const,det_order 0,kept (significant),det_order 0,False
+KeyBank National Association,Johansen VECM (rank 1),AIC / k_ar_diff=2,det_order 1 (linear trend),False,trend,0.0963588685331265,LR: trend,det_order 1,dropped trend; refit,det_order 0,True
+KeyBank National Association,Johansen VECM (rank 1),AIC / k_ar_diff=2,det_order 1 (linear trend),False,const,5.6346229959966425e-08,LR: const,det_order 1,kept (significant),det_order 0,True
+KeyBank National Association,Johansen VECM (rank 1),BIC / k_ar_diff=1,det_order 1 (linear trend),False,trend,0.3171788353114644,LR: trend,det_order 1,dropped trend; refit,det_order 0,True
+KeyBank National Association,Johansen VECM (rank 1),BIC / k_ar_diff=1,det_order 1 (linear trend),False,const,1.1601976256564535e-09,LR: const,det_order 1,kept (significant),det_order 0,True
+KeyBank National Association,Johansen VECM (rank 1),HQIC / k_ar_diff=2,det_order 1 (linear trend),False,trend,0.0963588685331265,LR: trend,det_order 1,dropped trend; refit,det_order 0,True
+KeyBank National Association,Johansen VECM (rank 1),HQIC / k_ar_diff=2,det_order 1 (linear trend),False,const,5.6346229959966425e-08,LR: const,det_order 1,kept (significant),det_order 0,True
+KeyBank National Association,Johansen VECM (rank 1),FPE / k_ar_diff=2,det_order 1 (linear trend),False,trend,0.0963588685331265,LR: trend,det_order 1,dropped trend; refit,det_order 0,True
+KeyBank National Association,Johansen VECM (rank 1),FPE / k_ar_diff=2,det_order 1 (linear trend),False,const,5.6346229959966425e-08,LR: const,det_order 1,kept (significant),det_order 0,True
+KeyBank National Association,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 1 (linear trend),False,trend,0.3171788353114644,LR: trend,det_order 1,dropped trend; refit,det_order 0,True
+KeyBank National Association,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 1 (linear trend),False,const,1.1601976256564535e-09,LR: const,det_order 1,kept (significant),det_order 0,True
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 2)","BIC / ARDL(3,1)",c - case 2 (restricted constant),False,const,5.302132039636474e-07,LR: const,case 2,kept (significant),case 2,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 3)","BIC / ARDL(3,1)",c - case 3 (unrestricted constant),False,const,0.0109559411540184,const,case 3,kept (significant),case 3,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 4)","AIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",False,trend,0.0031413562489299,LR: trend,case 4,kept (significant),case 4,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 4)","AIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",False,const,0.0001393844178034,const,case 4,kept (significant),case 4,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 4)","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",False,trend,0.0031413562489299,LR: trend,case 4,kept (significant),case 4,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 4)","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",False,const,0.0001393844178034,const,case 4,kept (significant),case 4,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 4)","HQIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",False,trend,0.0031413562489299,LR: trend,case 4,kept (significant),case 4,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 4)","HQIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",False,const,0.0001393844178034,const,case 4,kept (significant),case 4,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 5)","AIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),False,trend,0.0041780342673974,trend,case 5,kept (significant),case 5,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 5)","AIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),False,const,0.0001393844178034,const,case 5,kept (significant),case 5,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 5)","BIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),False,trend,0.0041780342673974,trend,case 5,kept (significant),case 5,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 5)","BIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),False,const,0.0001393844178034,const,case 5,kept (significant),case 5,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 5)","HQIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),False,trend,0.0041780342673974,trend,case 5,kept (significant),case 5,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 5)","HQIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),False,const,0.0001393844178034,const,case 5,kept (significant),case 5,False
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 4)","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",False,trend,0.0474020116992615,LR: trend,case 4,kept (significant),case 4,False
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 4)","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",False,const,0.0012688093536027,const,case 4,kept (significant),case 4,False
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 5)","BIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),False,trend,0.0444684100751767,trend,case 5,kept (significant),case 5,False
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 5)","BIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),False,const,0.0012688093536027,const,case 5,kept (significant),case 5,False
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 2)","BIC / ARDL(2,1)",c - case 2 (restricted constant),False,const,9.583503568681028e-06,LR: const,case 2,kept (significant),case 2,False
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 3)","BIC / ARDL(2,1)",c - case 3 (unrestricted constant),False,const,0.0026804271462096,const,case 3,kept (significant),case 3,False
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 4)","BIC / ARDL(2,1)","ct - case 4 (unrestricted constant, restricted trend)",False,trend,0.0485637488702103,LR: trend,case 4,kept (significant),case 4,False
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 4)","BIC / ARDL(2,1)","ct - case 4 (unrestricted constant, restricted trend)",False,const,0.0005689766067767,const,case 4,kept (significant),case 4,False
+Old National Bank,"ARDL bounds F (ARDL(3,1), case 4)","HQIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",False,trend,0.0485637488702103,LR: trend,case 4,kept (significant),case 4,False
+Old National Bank,"ARDL bounds F (ARDL(3,1), case 4)","HQIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",False,const,0.0005689766067767,const,case 4,kept (significant),case 4,False
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 5)","BIC / ARDL(2,1)",ct - case 5 (unrestricted constant and trend),False,trend,0.0542103162904753,trend,case 5,dropped trend; refit,case 3,True
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 5)","BIC / ARDL(2,1)",ct - case 5 (unrestricted constant and trend),False,const,0.0026804271462096,const,case 5,kept (significant),case 3,True
+Old National Bank,"ARDL bounds F (ARDL(3,1), case 5)","HQIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),False,trend,0.0542103162904753,trend,case 5,dropped trend; refit,case 3,True
+Old National Bank,"ARDL bounds F (ARDL(3,1), case 5)","HQIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),False,const,0.0026804271462096,const,case 5,kept (significant),case 3,True
+First Horizon Bank,EG_LongRun | asymmetric,"AIC / ADF lag=1, ECM lag=4",c (constant),True,const,0.00033975796271399115,LR: const,c,kept (significant),c,False
+First Horizon Bank,Johansen VECM (rank 1) | asymmetric,fixed / k_ar_diff=1,det_order 0 (constant),True,const,8.344233732421253e-14,LR: const,det_order 0,kept (significant),det_order 0,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,fixed / k_ar_diff=1,det_order 0 (constant),True,const,8.524683537608304e-16,LR: const,det_order 0,kept (significant),det_order 0,False
+Huntington National Bank,"ARDL bounds F (ARDL(2,3), case 3) | asymmetric","AIC / ARDL(2,3)",c - case 3 (unrestricted constant),True,const,1.7089772155798214e-15,LR: const,case 3,kept (significant),case 3,False
+KeyBank National Association,EG_LongRun | asymmetric,"AIC / ADF lag=1, ECM lag=4",c (constant),True,const,1.6331544196978313e-06,LR: const,c,kept (significant),c,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,fixed / k_ar_diff=1,det_order 0 (constant),True,const,0.0001101957191794235,LR: const,det_order 0,kept (significant),det_order 0,False
+First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=3",c (constant),True,const,0.00033975796271399115,LR: const,c,kept (significant),c,False
+First Horizon Bank,EG_LongRun | asymmetric,"t-stat / ADF lag=1, ECM lag=3",c (constant),True,const,0.00033975796271399115,LR: const,c,kept (significant),c,False
+First Horizon Bank,EG_LongRun | asymmetric,"AIC / ADF lag=1, ECM lag=4",ct (constant + trend),True,trend,1.196684307633348e-19,LR: trend,ct,kept (significant),ct,False
+First Horizon Bank,EG_LongRun | asymmetric,"AIC / ADF lag=1, ECM lag=4",ct (constant + trend),True,const,1.2376871798363824e-34,LR: const,ct,kept (significant),ct,False
+First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=3",ct (constant + trend),True,trend,1.196684307633348e-19,LR: trend,ct,kept (significant),ct,False
+First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=3",ct (constant + trend),True,const,1.2376871798363824e-34,LR: const,ct,kept (significant),ct,False
+First Horizon Bank,EG_LongRun | asymmetric,"t-stat / ADF lag=1, ECM lag=3",ct (constant + trend),True,trend,1.196684307633348e-19,LR: trend,ct,kept (significant),ct,False
+First Horizon Bank,EG_LongRun | asymmetric,"t-stat / ADF lag=1, ECM lag=3",ct (constant + trend),True,const,1.2376871798363824e-34,LR: const,ct,kept (significant),ct,False
+First Horizon Bank,Johansen VECM (rank 1) | asymmetric,BIC / k_ar_diff=1,det_order 0 (constant),True,const,8.344233732421253e-14,LR: const,det_order 0,kept (significant),det_order 0,False
+First Horizon Bank,Johansen VECM (rank 1) | asymmetric,HQIC / k_ar_diff=1,det_order 0 (constant),True,const,8.344233732421253e-14,LR: const,det_order 0,kept (significant),det_order 0,False
+First Horizon Bank,Johansen VECM (rank 1) | asymmetric,AIC / k_ar_diff=4,det_order 1 (linear trend),True,trend,1.196684307633348e-19,LR: trend,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1) | asymmetric,AIC / k_ar_diff=4,det_order 1 (linear trend),True,const,1.2376871798363824e-34,LR: const,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1) | asymmetric,BIC / k_ar_diff=1,det_order 1 (linear trend),True,trend,4.746433062632137e-11,LR: trend,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1) | asymmetric,BIC / k_ar_diff=1,det_order 1 (linear trend),True,const,3.5431620172882872e-25,LR: const,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1) | asymmetric,HQIC / k_ar_diff=1,det_order 1 (linear trend),True,trend,4.746433062632137e-11,LR: trend,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1) | asymmetric,HQIC / k_ar_diff=1,det_order 1 (linear trend),True,const,3.5431620172882872e-25,LR: const,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1) | asymmetric,FPE / k_ar_diff=4,det_order 1 (linear trend),True,trend,1.196684307633348e-19,LR: trend,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1) | asymmetric,FPE / k_ar_diff=4,det_order 1 (linear trend),True,const,1.2376871798363824e-34,LR: const,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1) | asymmetric,fixed / k_ar_diff=1,det_order 1 (linear trend),True,trend,4.746433062632137e-11,LR: trend,det_order 1,kept (significant),det_order 1,False
+First Horizon Bank,Johansen VECM (rank 1) | asymmetric,fixed / k_ar_diff=1,det_order 1 (linear trend),True,const,3.5431620172882872e-25,LR: const,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,EG_ShortRun | asymmetric,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend),True,trend,5.282089170334637e-07,LR: trend,ct,kept (significant),ct,False
+Huntington National Bank,EG_ShortRun | asymmetric,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend),True,const,5.890830700899179e-17,LR: const,ct,kept (significant),ct,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,AIC / k_ar_diff=0,det_order 0 (constant),True,const,8.524683537608304e-16,LR: const,det_order 0,kept (significant),det_order 0,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,BIC / k_ar_diff=0,det_order 0 (constant),True,const,8.524683537608304e-16,LR: const,det_order 0,kept (significant),det_order 0,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,HQIC / k_ar_diff=0,det_order 0 (constant),True,const,8.524683537608304e-16,LR: const,det_order 0,kept (significant),det_order 0,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,FPE / k_ar_diff=0,det_order 0 (constant),True,const,8.524683537608304e-16,LR: const,det_order 0,kept (significant),det_order 0,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,AIC / k_ar_diff=1,det_order 1 (linear trend),True,trend,5.253643530347333e-10,LR: trend,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,AIC / k_ar_diff=1,det_order 1 (linear trend),True,const,1.5962898887405262e-22,LR: const,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,BIC / k_ar_diff=0,det_order 1 (linear trend),True,trend,5.282089170334637e-07,LR: trend,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,BIC / k_ar_diff=0,det_order 1 (linear trend),True,const,5.890830700899179e-17,LR: const,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,HQIC / k_ar_diff=0,det_order 1 (linear trend),True,trend,5.282089170334637e-07,LR: trend,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,HQIC / k_ar_diff=0,det_order 1 (linear trend),True,const,5.890830700899179e-17,LR: const,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,FPE / k_ar_diff=1,det_order 1 (linear trend),True,trend,5.253643530347333e-10,LR: trend,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,FPE / k_ar_diff=1,det_order 1 (linear trend),True,const,1.5962898887405262e-22,LR: const,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,fixed / k_ar_diff=1,det_order 1 (linear trend),True,trend,5.253643530347333e-10,LR: trend,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,Johansen VECM (rank 1) | asymmetric,fixed / k_ar_diff=1,det_order 1 (linear trend),True,const,1.5962898887405262e-22,LR: const,det_order 1,kept (significant),det_order 1,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 2) | asymmetric","BIC / ARDL(1,1)",c - case 2 (restricted constant),True,const,8.524683537608304e-16,LR: const,case 2,kept (significant),case 2,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 3) | asymmetric","BIC / ARDL(1,1)",c - case 3 (unrestricted constant),True,const,1.702429624648923e-10,const,case 3,kept (significant),case 3,False
+Huntington National Bank,"ARDL bounds F (ARDL(2,3), case 3) | asymmetric","HQIC / ARDL(2,3)",c - case 3 (unrestricted constant),True,const,1.7089772155798214e-15,LR: const,case 3,kept (significant),case 3,False
+Huntington National Bank,"ARDL bounds F (ARDL(2,3), case 4) | asymmetric","AIC / ARDL(2,3)","ct - case 4 (unrestricted constant, restricted trend)",True,trend,6.017408950066391e-09,LR: trend,case 4,kept (significant),case 4,False
+Huntington National Bank,"ARDL bounds F (ARDL(2,3), case 4) | asymmetric","AIC / ARDL(2,3)","ct - case 4 (unrestricted constant, restricted trend)",True,const,5.021341648973591e-24,LR: const,case 4,kept (significant),case 4,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 4) | asymmetric","BIC / ARDL(1,1)","ct - case 4 (unrestricted constant, restricted trend)",True,trend,5.282089170334637e-07,LR: trend,case 4,kept (significant),case 4,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 4) | asymmetric","BIC / ARDL(1,1)","ct - case 4 (unrestricted constant, restricted trend)",True,const,9.87938096781404e-13,const,case 4,kept (significant),case 4,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 4) | asymmetric","HQIC / ARDL(1,1)","ct - case 4 (unrestricted constant, restricted trend)",True,trend,5.282089170334637e-07,LR: trend,case 4,kept (significant),case 4,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 4) | asymmetric","HQIC / ARDL(1,1)","ct - case 4 (unrestricted constant, restricted trend)",True,const,9.87938096781404e-13,const,case 4,kept (significant),case 4,False
+Huntington National Bank,"ARDL bounds F (ARDL(2,3), case 5) | asymmetric","AIC / ARDL(2,3)",ct - case 5 (unrestricted constant and trend),True,trend,6.017408950066391e-09,LR: trend,case 5,kept (significant),case 5,False
+Huntington National Bank,"ARDL bounds F (ARDL(2,3), case 5) | asymmetric","AIC / ARDL(2,3)",ct - case 5 (unrestricted constant and trend),True,const,5.021341648973591e-24,LR: const,case 5,kept (significant),case 5,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 5) | asymmetric","BIC / ARDL(1,1)",ct - case 5 (unrestricted constant and trend),True,trend,2.623357519790744e-06,trend,case 5,kept (significant),case 5,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 5) | asymmetric","BIC / ARDL(1,1)",ct - case 5 (unrestricted constant and trend),True,const,9.87938096781404e-13,const,case 5,kept (significant),case 5,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 5) | asymmetric","HQIC / ARDL(1,1)",ct - case 5 (unrestricted constant and trend),True,trend,2.623357519790744e-06,trend,case 5,kept (significant),case 5,False
+Huntington National Bank,"ARDL bounds F (ARDL(1,1), case 5) | asymmetric","HQIC / ARDL(1,1)",ct - case 5 (unrestricted constant and trend),True,const,9.87938096781404e-13,const,case 5,kept (significant),case 5,False
+KeyBank National Association,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=2",c (constant),True,const,3.86093243804697e-05,LR: const,c,kept (significant),c,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,AIC / k_ar_diff=2,det_order 0 (constant),True,const,0.020337413814875253,LR: const,det_order 0,kept (significant),det_order 0,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,BIC / k_ar_diff=1,det_order 0 (constant),True,const,0.0001101957191794235,LR: const,det_order 0,kept (significant),det_order 0,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,HQIC / k_ar_diff=2,det_order 0 (constant),True,const,0.020337413814875253,LR: const,det_order 0,kept (significant),det_order 0,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,FPE / k_ar_diff=2,det_order 0 (constant),True,const,0.020337413814875253,LR: const,det_order 0,kept (significant),det_order 0,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,AIC / k_ar_diff=2,det_order 1 (linear trend),True,trend,1.1677534601721655e-10,LR: trend,det_order 1,kept (significant),det_order 1,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,AIC / k_ar_diff=2,det_order 1 (linear trend),True,const,1.4515765187064577e-18,LR: const,det_order 1,kept (significant),det_order 1,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,BIC / k_ar_diff=1,det_order 1 (linear trend),True,trend,2.516204561201525e-09,LR: trend,det_order 1,kept (significant),det_order 1,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,BIC / k_ar_diff=1,det_order 1 (linear trend),True,const,2.3181042916232954e-16,LR: const,det_order 1,kept (significant),det_order 1,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,HQIC / k_ar_diff=2,det_order 1 (linear trend),True,trend,1.1677534601721655e-10,LR: trend,det_order 1,kept (significant),det_order 1,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,HQIC / k_ar_diff=2,det_order 1 (linear trend),True,const,1.4515765187064577e-18,LR: const,det_order 1,kept (significant),det_order 1,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,FPE / k_ar_diff=2,det_order 1 (linear trend),True,trend,1.1677534601721655e-10,LR: trend,det_order 1,kept (significant),det_order 1,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,FPE / k_ar_diff=2,det_order 1 (linear trend),True,const,1.4515765187064577e-18,LR: const,det_order 1,kept (significant),det_order 1,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,fixed / k_ar_diff=1,det_order 1 (linear trend),True,trend,2.516204561201525e-09,LR: trend,det_order 1,kept (significant),det_order 1,False
+KeyBank National Association,Johansen VECM (rank 1) | asymmetric,fixed / k_ar_diff=1,det_order 1 (linear trend),True,const,2.3181042916232954e-16,LR: const,det_order 1,kept (significant),det_order 1,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 2) | asymmetric","BIC / ARDL(3,1)",c - case 2 (restricted constant),True,const,1.8092948872767908e-05,LR: const,case 2,kept (significant),case 2,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 3) | asymmetric","BIC / ARDL(3,1)",c - case 3 (unrestricted constant),True,const,1.8092948872767908e-05,LR: const,case 3,kept (significant),case 3,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","AIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",True,trend,1.1677534601721655e-10,LR: trend,case 4,kept (significant),case 4,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","AIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",True,const,1.4515765187064577e-18,LR: const,case 4,kept (significant),case 4,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",True,trend,1.1677534601721655e-10,LR: trend,case 4,kept (significant),case 4,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",True,const,1.4515765187064577e-18,LR: const,case 4,kept (significant),case 4,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","HQIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",True,trend,1.1677534601721655e-10,LR: trend,case 4,kept (significant),case 4,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","HQIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",True,const,1.4515765187064577e-18,LR: const,case 4,kept (significant),case 4,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 5) | asymmetric","AIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),True,trend,1.1677534601721655e-10,LR: trend,case 5,kept (significant),case 5,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 5) | asymmetric","AIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),True,const,1.4515765187064577e-18,LR: const,case 5,kept (significant),case 5,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 5) | asymmetric","BIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),True,trend,1.1677534601721655e-10,LR: trend,case 5,kept (significant),case 5,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 5) | asymmetric","BIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),True,const,1.4515765187064577e-18,LR: const,case 5,kept (significant),case 5,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 5) | asymmetric","HQIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),True,trend,1.1677534601721655e-10,LR: trend,case 5,kept (significant),case 5,False
+KeyBank National Association,"ARDL bounds F (ARDL(3,1), case 5) | asymmetric","HQIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),True,const,1.4515765187064577e-18,LR: const,case 5,kept (significant),case 5,False
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",True,trend,3.987612694350419e-15,LR: trend,case 4,kept (significant),case 4,False
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",True,const,1.157576648863724e-23,LR: const,case 4,kept (significant),case 4,False
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 5) | asymmetric","BIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),True,trend,3.987612694350419e-15,LR: trend,case 5,kept (significant),case 5,False
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 5) | asymmetric","BIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),True,const,1.157576648863724e-23,LR: const,case 5,kept (significant),case 5,False
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant),True,const,0.13379672109702825,LR: const,case 2,dropped const; refit,case 1,True
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 3) | asymmetric","BIC / ARDL(2,1)",c - case 3 (unrestricted constant),True,const,0.13379672109702825,LR: const,case 3,dropped const; refit,case 1,True
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 4) | asymmetric","BIC / ARDL(2,1)","ct - case 4 (unrestricted constant, restricted trend)",True,trend,6.0843936650542085e-15,LR: trend,case 4,kept (significant),case 4,False
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 4) | asymmetric","BIC / ARDL(2,1)","ct - case 4 (unrestricted constant, restricted trend)",True,const,4.1781809428839964e-16,const,case 4,kept (significant),case 4,False
+Old National Bank,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","HQIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",True,trend,6.0843936650542085e-15,LR: trend,case 4,kept (significant),case 4,False
+Old National Bank,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","HQIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",True,const,4.1781809428839964e-16,const,case 4,kept (significant),case 4,False
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 5) | asymmetric","BIC / ARDL(2,1)",ct - case 5 (unrestricted constant and trend),True,trend,2.484652482448993e-12,trend,case 5,kept (significant),case 5,False
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 5) | asymmetric","BIC / ARDL(2,1)",ct - case 5 (unrestricted constant and trend),True,const,4.1781809428839964e-16,const,case 5,kept (significant),case 5,False
+Old National Bank,"ARDL bounds F (ARDL(3,1), case 5) | asymmetric","HQIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),True,trend,2.484652482448993e-12,trend,case 5,kept (significant),case 5,False
+Old National Bank,"ARDL bounds F (ARDL(3,1), case 5) | asymmetric","HQIC / ARDL(3,1)",ct - case 5 (unrestricted constant and trend),True,const,4.1781809428839964e-16,const,case 5,kept (significant),case 5,False

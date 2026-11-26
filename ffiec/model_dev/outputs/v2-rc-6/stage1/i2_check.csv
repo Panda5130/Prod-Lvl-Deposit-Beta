@@ -1,0 +1,12 @@
+segment,bank_name,D2 ADF c/AIC p,D2 KPSS c/auto p,D2 ADF stationary share,D2 KPSS stationary share,I(2) under default
+nmd,First Horizon Bank,1.9577337642410222e-14,0.1,6/6,5/6,False
+nmd,Huntington National Bank,7.011153402415286e-09,0.1,6/6,6/6,False
+nmd,KeyBank National Association,3.9164601117283405e-10,0.1,6/6,6/6,False
+nmd,Manufacturers and Traders Trust Company,1.4857273709578956e-14,0.1,6/6,6/6,False
+nmd,Old National Bank,0.011929069422194988,0.1,6/6,6/6,False
+time,First Horizon Bank,3.048378996062171e-07,0.1,6/6,6/6,False
+time,Huntington National Bank,1.1825769864600187e-16,0.1,6/6,6/6,False
+time,KeyBank National Association,0.010031279682719742,0.1,6/6,6/6,False
+time,Manufacturers and Traders Trust Company,1.2728584963065728e-09,0.1,6/6,6/6,False
+time,Old National Bank,3.9416266598432325e-09,0.1,6/6,6/6,False
+FFT,FFT,4.449121843534397e-12,0.1,6/6,6/6,False

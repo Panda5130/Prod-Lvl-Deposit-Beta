@@ -1,0 +1,9 @@
+bank_name,test_name,IC/selected lag,trend type,horizon_q,origin,start,end,n_obs,mae,naive_mae
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",1Q,2026Q2,2026Q3,2026Q3,1,0.20959660150400738,0.20191433948629545
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",2Q,2026Q1,2026Q2,2026Q3,2,0.39439308771114945,0.14256305392847768
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",3Q,2025Q4,2026Q1,2026Q3,3,0.18105481335058174,0.15764982975394645
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",4Q,2025Q3,2025Q4,2026Q3,4,0.1993488140748424,0.325075344627081
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",5Q,2025Q2,2025Q3,2026Q3,5,0.21013494359464513,0.27461131228416313
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",6Q,2025Q1,2025Q2,2026Q3,6,0.19853211611365293,0.27403873534003464
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",7Q,2024Q4,2025Q1,2026Q3,7,0.29017868200645935,0.7197631429032132
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric","BIC / ARDL(3,1)","ct - case 4 (unrestricted constant, restricted trend)",8Q,2024Q3,2024Q4,2026Q3,8,0.39977723858495146,0.8725141906409986

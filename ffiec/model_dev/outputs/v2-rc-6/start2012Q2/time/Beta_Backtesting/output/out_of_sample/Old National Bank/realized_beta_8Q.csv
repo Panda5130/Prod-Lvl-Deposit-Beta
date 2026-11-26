@@ -1,0 +1,9 @@
+horizon_q,n_pairs,n_skipped,mean_actual_beta,mean_implied_beta,mean_theta_ref_theta,bank_name,test_name,IC/selected lag,trend type
+1Q,16,22,0.6849361304634585,0.5757222083505718,1.6092692476719208,Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant)
+2Q,24,13,0.6967341245183448,0.6036233618288959,1.6496251392489985,Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant)
+3Q,27,9,0.7107528518306934,0.6160810308351229,1.5580309041390976,Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant)
+4Q,30,5,0.7188677170479607,0.6617435565876798,1.4865192055576903,Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant)
+5Q,31,3,0.6870008194473182,0.4873286203049789,1.4647850915616483,Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant)
+6Q,30,3,0.4993705420890855,0.318883381199682,1.4443232892865903,Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant)
+7Q,29,3,0.4542839472417654,0.22562449313925434,1.3669652996597437,Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant)
+8Q,29,2,0.5609072674441176,0.435185959681553,1.3654805538565151,Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant)

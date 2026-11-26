@@ -1,0 +1,265 @@
+segment,bank_name,test,order,regression,lag_rule,stat,p_value,lags,indicates_stationary
+nmd,First Horizon Bank,ADF,I(0),c,AIC,-2.145443934715891,0.22663810827578035,3,False
+nmd,First Horizon Bank,ADF,I(0),c,BIC,-2.145443934715891,0.22663810827578035,3,False
+nmd,First Horizon Bank,ADF,I(0),c,t-stat,-2.145443934715891,0.22663810827578035,3,False
+nmd,First Horizon Bank,ADF,I(0),n,AIC,-1.1564053299833428,0.22556199573722602,3,False
+nmd,First Horizon Bank,ADF,I(0),n,BIC,-0.5715612529796051,0.4664987579772604,1,False
+nmd,First Horizon Bank,ADF,I(0),n,t-stat,-1.1564053299833428,0.22556199573722602,3,False
+nmd,First Horizon Bank,KPSS,I(0),c,auto,0.7721856285612154,0.01,4,False
+nmd,First Horizon Bank,KPSS,I(0),c,short,0.4333467318802504,0.06278158108609896,11,True
+nmd,First Horizon Bank,KPSS,I(0),c,long,0.4333467318802504,0.06278158108609896,11,True
+nmd,First Horizon Bank,KPSS,I(0),ct,auto,0.13874010326714697,0.06344425320898707,4,True
+nmd,First Horizon Bank,KPSS,I(0),ct,short,0.10815970069692804,0.1,11,True
+nmd,First Horizon Bank,KPSS,I(0),ct,long,0.10815970069692804,0.1,11,True
+nmd,First Horizon Bank,ADF,I(1),c,AIC,-3.46018894134359,0.009070364419019605,4,True
+nmd,First Horizon Bank,ADF,I(1),c,BIC,-3.8516875337845122,0.0024206156156746646,0,True
+nmd,First Horizon Bank,ADF,I(1),c,t-stat,-3.46018894134359,0.009070364419019605,4,True
+nmd,First Horizon Bank,ADF,I(1),n,AIC,-3.361831209308947,0.0007899081340252683,4,True
+nmd,First Horizon Bank,ADF,I(1),n,BIC,-3.822538538288346,0.00014599019363303357,0,True
+nmd,First Horizon Bank,ADF,I(1),n,t-stat,-3.361831209308947,0.0007899081340252683,4,True
+nmd,First Horizon Bank,KPSS,I(1),c,auto,0.08920780029604357,0.1,3,True
+nmd,First Horizon Bank,KPSS,I(1),c,short,0.09455482558254821,0.1,11,True
+nmd,First Horizon Bank,KPSS,I(1),c,long,0.09455482558254821,0.1,11,True
+nmd,First Horizon Bank,KPSS,I(1),ct,auto,0.06245849870735075,0.1,3,True
+nmd,First Horizon Bank,KPSS,I(1),ct,short,0.06964830399793058,0.1,11,True
+nmd,First Horizon Bank,KPSS,I(1),ct,long,0.06964830399793058,0.1,11,True
+nmd,Huntington National Bank,ADF,I(0),c,AIC,-1.5195478204057278,0.5238201051453488,1,False
+nmd,Huntington National Bank,ADF,I(0),c,BIC,-1.5195478204057278,0.5238201051453488,1,False
+nmd,Huntington National Bank,ADF,I(0),c,t-stat,-1.5195478204057278,0.5238201051453488,1,False
+nmd,Huntington National Bank,ADF,I(0),n,AIC,-0.723392153740364,0.40275342074519904,1,False
+nmd,Huntington National Bank,ADF,I(0),n,BIC,-0.723392153740364,0.40275342074519904,1,False
+nmd,Huntington National Bank,ADF,I(0),n,t-stat,-0.723392153740364,0.40275342074519904,1,False
+nmd,Huntington National Bank,KPSS,I(0),c,auto,0.8262404872605077,0.01,4,False
+nmd,Huntington National Bank,KPSS,I(0),c,short,0.44690236116453524,0.05693863742907965,11,True
+nmd,Huntington National Bank,KPSS,I(0),c,long,0.44690236116453524,0.05693863742907965,11,True
+nmd,Huntington National Bank,KPSS,I(0),ct,auto,0.1730057261289408,0.02749522822588266,4,False
+nmd,Huntington National Bank,KPSS,I(0),ct,short,0.12085602327014565,0.09656291987010064,11,True
+nmd,Huntington National Bank,KPSS,I(0),ct,long,0.12085602327014565,0.09656291987010064,11,True
+nmd,Huntington National Bank,ADF,I(1),c,AIC,-3.4203611932300495,0.010284036566476357,4,True
+nmd,Huntington National Bank,ADF,I(1),c,BIC,-2.949150857479219,0.03992372042460423,0,True
+nmd,Huntington National Bank,ADF,I(1),c,t-stat,-3.4203611932300495,0.010284036566476357,4,True
+nmd,Huntington National Bank,ADF,I(1),n,AIC,-3.2884249797971012,0.0010190989221459052,4,True
+nmd,Huntington National Bank,ADF,I(1),n,BIC,-2.897041083066515,0.003694066372084622,0,True
+nmd,Huntington National Bank,ADF,I(1),n,t-stat,-3.2884249797971012,0.0010190989221459052,4,True
+nmd,Huntington National Bank,KPSS,I(1),c,auto,0.10691159630846396,0.1,4,True
+nmd,Huntington National Bank,KPSS,I(1),c,short,0.1184043822302607,0.1,11,True
+nmd,Huntington National Bank,KPSS,I(1),c,long,0.1184043822302607,0.1,11,True
+nmd,Huntington National Bank,KPSS,I(1),ct,auto,0.05639060316137211,0.1,4,True
+nmd,Huntington National Bank,KPSS,I(1),ct,short,0.06835489755624885,0.1,11,True
+nmd,Huntington National Bank,KPSS,I(1),ct,long,0.06835489755624885,0.1,11,True
+nmd,KeyBank National Association,ADF,I(0),c,AIC,-1.7419289602323837,0.40964908218628643,1,False
+nmd,KeyBank National Association,ADF,I(0),c,BIC,-1.7419289602323837,0.40964908218628643,1,False
+nmd,KeyBank National Association,ADF,I(0),c,t-stat,-1.7419289602323837,0.40964908218628643,1,False
+nmd,KeyBank National Association,ADF,I(0),n,AIC,-0.954964526671898,0.30630169626569137,1,False
+nmd,KeyBank National Association,ADF,I(0),n,BIC,-0.954964526671898,0.30630169626569137,1,False
+nmd,KeyBank National Association,ADF,I(0),n,t-stat,-0.954964526671898,0.30630169626569137,1,False
+nmd,KeyBank National Association,KPSS,I(0),c,auto,0.787693859435733,0.01,4,False
+nmd,KeyBank National Association,KPSS,I(0),c,short,0.4333638159454594,0.06277421726488819,11,True
+nmd,KeyBank National Association,KPSS,I(0),c,long,0.4333638159454594,0.06277421726488819,11,True
+nmd,KeyBank National Association,KPSS,I(0),ct,auto,0.16749164521644452,0.03209029565296289,4,False
+nmd,KeyBank National Association,KPSS,I(0),ct,short,0.11787773831178075,0.1,11,True
+nmd,KeyBank National Association,KPSS,I(0),ct,long,0.11787773831178075,0.1,11,True
+nmd,KeyBank National Association,ADF,I(1),c,AIC,-3.5865259439152424,0.006023909512753962,4,True
+nmd,KeyBank National Association,ADF,I(1),c,BIC,-2.782749539827419,0.06078043627333186,0,False
+nmd,KeyBank National Association,ADF,I(1),c,t-stat,-3.5865259439152424,0.006023909512753962,4,True
+nmd,KeyBank National Association,ADF,I(1),n,AIC,-3.4443274827727555,0.0005904042512687028,4,True
+nmd,KeyBank National Association,ADF,I(1),n,BIC,-2.7394444346090303,0.005991980291105487,0,True
+nmd,KeyBank National Association,ADF,I(1),n,t-stat,-3.4443274827727555,0.0005904042512687028,4,True
+nmd,KeyBank National Association,KPSS,I(1),c,auto,0.0926435965112756,0.1,4,True
+nmd,KeyBank National Association,KPSS,I(1),c,short,0.10092434196640632,0.1,11,True
+nmd,KeyBank National Association,KPSS,I(1),c,long,0.10092434196640632,0.1,11,True
+nmd,KeyBank National Association,KPSS,I(1),ct,auto,0.059535778061201895,0.1,4,True
+nmd,KeyBank National Association,KPSS,I(1),ct,short,0.06922331058308175,0.1,11,True
+nmd,KeyBank National Association,KPSS,I(1),ct,long,0.06922331058308175,0.1,11,True
+nmd,Manufacturers and Traders Trust Company,ADF,I(0),c,AIC,-1.371696892561721,0.5957672795983273,1,False
+nmd,Manufacturers and Traders Trust Company,ADF,I(0),c,BIC,-1.371696892561721,0.5957672795983273,1,False
+nmd,Manufacturers and Traders Trust Company,ADF,I(0),c,t-stat,-1.371696892561721,0.5957672795983273,1,False
+nmd,Manufacturers and Traders Trust Company,ADF,I(0),n,AIC,-0.5739493842869806,0.4655036572450521,1,False
+nmd,Manufacturers and Traders Trust Company,ADF,I(0),n,BIC,-0.5739493842869806,0.4655036572450521,1,False
+nmd,Manufacturers and Traders Trust Company,ADF,I(0),n,t-stat,-0.5739493842869806,0.4655036572450521,1,False
+nmd,Manufacturers and Traders Trust Company,KPSS,I(0),c,auto,0.7783904529464675,0.01,4,False
+nmd,Manufacturers and Traders Trust Company,KPSS,I(0),c,short,0.4277471121893141,0.0651952102632267,11,True
+nmd,Manufacturers and Traders Trust Company,KPSS,I(0),c,long,0.4277471121893141,0.0651952102632267,11,True
+nmd,Manufacturers and Traders Trust Company,KPSS,I(0),ct,auto,0.16759724758796266,0.03200229367669778,4,False
+nmd,Manufacturers and Traders Trust Company,KPSS,I(0),ct,short,0.1183949241567613,0.1,11,True
+nmd,Manufacturers and Traders Trust Company,KPSS,I(0),ct,long,0.1183949241567613,0.1,11,True
+nmd,Manufacturers and Traders Trust Company,ADF,I(1),c,AIC,-3.29851025678224,0.01494519752643045,0,True
+nmd,Manufacturers and Traders Trust Company,ADF,I(1),c,BIC,-3.29851025678224,0.01494519752643045,0,True
+nmd,Manufacturers and Traders Trust Company,ADF,I(1),c,t-stat,-3.3695511192069145,0.012041716252392549,4,True
+nmd,Manufacturers and Traders Trust Company,ADF,I(1),n,AIC,-3.2486820982851725,0.0011678267216878526,0,True
+nmd,Manufacturers and Traders Trust Company,ADF,I(1),n,BIC,-3.2486820982851725,0.0011678267216878526,0,True
+nmd,Manufacturers and Traders Trust Company,ADF,I(1),n,t-stat,-3.2310557823158086,0.0012400795793500823,4,True
+nmd,Manufacturers and Traders Trust Company,KPSS,I(1),c,auto,0.09945331354417451,0.1,4,True
+nmd,Manufacturers and Traders Trust Company,KPSS,I(1),c,short,0.10890991617294733,0.1,11,True
+nmd,Manufacturers and Traders Trust Company,KPSS,I(1),c,long,0.10890991617294733,0.1,11,True
+nmd,Manufacturers and Traders Trust Company,KPSS,I(1),ct,auto,0.059233398152276004,0.1,4,True
+nmd,Manufacturers and Traders Trust Company,KPSS,I(1),ct,short,0.06991703918961745,0.1,11,True
+nmd,Manufacturers and Traders Trust Company,KPSS,I(1),ct,long,0.06991703918961745,0.1,11,True
+nmd,Old National Bank,ADF,I(0),c,AIC,-1.8241478884912272,0.3685405415917279,3,False
+nmd,Old National Bank,ADF,I(0),c,BIC,-1.3542480526495835,0.6040032073946962,1,False
+nmd,Old National Bank,ADF,I(0),c,t-stat,-1.8241478884912272,0.3685405415917279,3,False
+nmd,Old National Bank,ADF,I(0),n,AIC,-1.0609928969435813,0.2603339917555565,3,False
+nmd,Old National Bank,ADF,I(0),n,BIC,-0.6461571612360366,0.4352717921056856,1,False
+nmd,Old National Bank,ADF,I(0),n,t-stat,-1.0609928969435813,0.2603339917555565,3,False
+nmd,Old National Bank,KPSS,I(0),c,auto,0.8058536985741691,0.01,4,False
+nmd,Old National Bank,KPSS,I(0),c,short,0.43308938294699556,0.06289250735043295,11,True
+nmd,Old National Bank,KPSS,I(0),c,long,0.43308938294699556,0.06289250735043295,11,True
+nmd,Old National Bank,KPSS,I(0),ct,auto,0.19167662286198728,0.01912126642675477,4,False
+nmd,Old National Bank,KPSS,I(0),ct,short,0.12688085953056558,0.08540581568413781,11,True
+nmd,Old National Bank,KPSS,I(0),ct,long,0.12688085953056558,0.08540581568413781,11,True
+nmd,Old National Bank,ADF,I(1),c,AIC,-3.8027233770012514,0.002879573866516924,4,True
+nmd,Old National Bank,ADF,I(1),c,BIC,-3.8027233770012514,0.002879573866516924,4,True
+nmd,Old National Bank,ADF,I(1),c,t-stat,-3.8027233770012514,0.002879573866516924,4,True
+nmd,Old National Bank,ADF,I(1),n,AIC,-3.6267749637284745,0.0003047110363062418,4,True
+nmd,Old National Bank,ADF,I(1),n,BIC,-3.6267749637284745,0.0003047110363062418,4,True
+nmd,Old National Bank,ADF,I(1),n,t-stat,-3.6267749637284745,0.0003047110363062418,4,True
+nmd,Old National Bank,KPSS,I(1),c,auto,0.11856163615847613,0.1,4,True
+nmd,Old National Bank,KPSS,I(1),c,short,0.12589044182975984,0.1,11,True
+nmd,Old National Bank,KPSS,I(1),c,long,0.12589044182975984,0.1,11,True
+nmd,Old National Bank,KPSS,I(1),ct,auto,0.06081006457688785,0.1,4,True
+nmd,Old National Bank,KPSS,I(1),ct,short,0.07165411103765883,0.1,11,True
+nmd,Old National Bank,KPSS,I(1),ct,long,0.07165411103765883,0.1,11,True
+time,First Horizon Bank,ADF,I(0),c,AIC,-1.3132714335082771,0.6230789566611193,2,False
+time,First Horizon Bank,ADF,I(0),c,BIC,-1.9923488475581934,0.28993790673477327,1,False
+time,First Horizon Bank,ADF,I(0),c,t-stat,-1.3132714335082771,0.6230789566611193,2,False
+time,First Horizon Bank,ADF,I(0),n,AIC,-0.29638170410615444,0.5774621398594001,2,False
+time,First Horizon Bank,ADF,I(0),n,BIC,-0.29638170410615444,0.5774621398594001,2,False
+time,First Horizon Bank,ADF,I(0),n,t-stat,-0.29638170410615444,0.5774621398594001,2,False
+time,First Horizon Bank,KPSS,I(0),c,auto,0.6754605767491259,0.015776311204624922,4,False
+time,First Horizon Bank,KPSS,I(0),c,short,0.3949478132839913,0.07933283910172789,11,True
+time,First Horizon Bank,KPSS,I(0),c,long,0.3949478132839913,0.07933283910172789,11,True
+time,First Horizon Bank,KPSS,I(0),ct,auto,0.15065150885371045,0.04612374262190795,4,False
+time,First Horizon Bank,KPSS,I(0),ct,short,0.11542204459674921,0.1,11,True
+time,First Horizon Bank,KPSS,I(0),ct,long,0.11542204459674921,0.1,11,True
+time,First Horizon Bank,ADF,I(1),c,AIC,-4.1031562406765065,0.0009569551108645823,1,True
+time,First Horizon Bank,ADF,I(1),c,BIC,-4.1031562406765065,0.0009569551108645823,1,True
+time,First Horizon Bank,ADF,I(1),c,t-stat,-4.1031562406765065,0.0009569551108645823,1,True
+time,First Horizon Bank,ADF,I(1),n,AIC,-4.089478988544668,5.135497644332812e-05,1,True
+time,First Horizon Bank,ADF,I(1),n,BIC,-4.089478988544668,5.135497644332812e-05,1,True
+time,First Horizon Bank,ADF,I(1),n,t-stat,-4.089478988544668,5.135497644332812e-05,1,True
+time,First Horizon Bank,KPSS,I(1),c,auto,0.10365213525414745,0.1,3,True
+time,First Horizon Bank,KPSS,I(1),c,short,0.12124284749930148,0.1,11,True
+time,First Horizon Bank,KPSS,I(1),c,long,0.12124284749930148,0.1,11,True
+time,First Horizon Bank,KPSS,I(1),ct,auto,0.053077574311734335,0.1,3,True
+time,First Horizon Bank,KPSS,I(1),ct,short,0.06859026625260235,0.1,11,True
+time,First Horizon Bank,KPSS,I(1),ct,long,0.06859026625260235,0.1,11,True
+time,Huntington National Bank,ADF,I(0),c,AIC,-2.0533918826830417,0.2636639456472609,2,False
+time,Huntington National Bank,ADF,I(0),c,BIC,-2.0533918826830417,0.2636639456472609,2,False
+time,Huntington National Bank,ADF,I(0),c,t-stat,-2.0533918826830417,0.2636639456472609,2,False
+time,Huntington National Bank,ADF,I(0),n,AIC,-0.8359087493747042,0.35547907100197035,2,False
+time,Huntington National Bank,ADF,I(0),n,BIC,-0.29071945711076974,0.5796443530660558,1,False
+time,Huntington National Bank,ADF,I(0),n,t-stat,-0.29071945711076974,0.5796443530660558,1,False
+time,Huntington National Bank,KPSS,I(0),c,auto,0.7186028041071306,0.011854290535715397,4,False
+time,Huntington National Bank,KPSS,I(0),c,short,0.41234395411397107,0.07183450253708144,11,True
+time,Huntington National Bank,KPSS,I(0),c,long,0.41234395411397107,0.07183450253708144,11,True
+time,Huntington National Bank,KPSS,I(0),ct,auto,0.15049832850904177,0.046251392909131855,4,False
+time,Huntington National Bank,KPSS,I(0),ct,short,0.11560431955733541,0.1,11,True
+time,Huntington National Bank,KPSS,I(0),ct,long,0.11560431955733541,0.1,11,True
+time,Huntington National Bank,ADF,I(1),c,AIC,-4.105467030106463,0.0009485669481921428,0,True
+time,Huntington National Bank,ADF,I(1),c,BIC,-4.105467030106463,0.0009485669481921428,0,True
+time,Huntington National Bank,ADF,I(1),c,t-stat,-4.105467030106463,0.0009485669481921428,0,True
+time,Huntington National Bank,ADF,I(1),n,AIC,-2.7670405240374545,0.005513583911414865,1,True
+time,Huntington National Bank,ADF,I(1),n,BIC,-4.088758268969561,5.150323471943347e-05,0,True
+time,Huntington National Bank,ADF,I(1),n,t-stat,-4.088758268969561,5.150323471943347e-05,0,True
+time,Huntington National Bank,KPSS,I(1),c,auto,0.09382422748245871,0.1,4,True
+time,Huntington National Bank,KPSS,I(1),c,short,0.10949924131511067,0.1,11,True
+time,Huntington National Bank,KPSS,I(1),c,long,0.10949924131511067,0.1,11,True
+time,Huntington National Bank,KPSS,I(1),ct,auto,0.05725182851454431,0.1,4,True
+time,Huntington National Bank,KPSS,I(1),ct,short,0.07188443571555196,0.1,11,True
+time,Huntington National Bank,KPSS,I(1),ct,long,0.07188443571555196,0.1,11,True
+time,KeyBank National Association,ADF,I(0),c,AIC,-2.3105478086396003,0.16858865711564514,4,False
+time,KeyBank National Association,ADF,I(0),c,BIC,-1.9445000168239297,0.311424973294838,3,False
+time,KeyBank National Association,ADF,I(0),c,t-stat,-1.9445000168239297,0.311424973294838,3,False
+time,KeyBank National Association,ADF,I(0),n,AIC,-0.6123919096789352,0.4494395662124958,3,False
+time,KeyBank National Association,ADF,I(0),n,BIC,-0.2225114742464986,0.6055330880872515,2,False
+time,KeyBank National Association,ADF,I(0),n,t-stat,-0.6123919096789352,0.4494395662124958,3,False
+time,KeyBank National Association,KPSS,I(0),c,auto,0.6232898992219942,0.0205191000707278,4,False
+time,KeyBank National Association,KPSS,I(0),c,short,0.3738490550372899,0.08842713144944402,11,True
+time,KeyBank National Association,KPSS,I(0),c,long,0.3738490550372899,0.08842713144944402,11,True
+time,KeyBank National Association,KPSS,I(0),ct,auto,0.1410726004505329,0.0591248139804946,4,True
+time,KeyBank National Association,KPSS,I(0),ct,short,0.1148556915409411,0.1,11,True
+time,KeyBank National Association,KPSS,I(0),ct,long,0.1148556915409411,0.1,11,True
+time,KeyBank National Association,ADF,I(1),c,AIC,-3.2382561444292057,0.017874344234653963,4,True
+time,KeyBank National Association,ADF,I(1),c,BIC,-4.252521700483071,0.0005362566577219381,1,True
+time,KeyBank National Association,ADF,I(1),c,t-stat,-3.2382561444292057,0.017874344234653963,4,True
+time,KeyBank National Association,ADF,I(1),n,AIC,-3.205162902617776,0.001353816616198348,4,True
+time,KeyBank National Association,ADF,I(1),n,BIC,-4.249797073155474,2.682881626570782e-05,1,True
+time,KeyBank National Association,ADF,I(1),n,t-stat,-3.205162902617776,0.001353816616198348,4,True
+time,KeyBank National Association,KPSS,I(1),c,auto,0.10899476637247778,0.1,4,True
+time,KeyBank National Association,KPSS,I(1),c,short,0.13154557254096072,0.1,11,True
+time,KeyBank National Association,KPSS,I(1),c,long,0.13154557254096072,0.1,11,True
+time,KeyBank National Association,KPSS,I(1),ct,auto,0.058614118150469165,0.1,4,True
+time,KeyBank National Association,KPSS,I(1),ct,short,0.07723625277262809,0.1,11,True
+time,KeyBank National Association,KPSS,I(1),ct,long,0.07723625277262809,0.1,11,True
+time,Manufacturers and Traders Trust Company,ADF,I(0),c,AIC,-1.7994489915364444,0.38073528831154285,3,False
+time,Manufacturers and Traders Trust Company,ADF,I(0),c,BIC,-1.35939189831937,0.6015820116500703,2,False
+time,Manufacturers and Traders Trust Company,ADF,I(0),c,t-stat,-1.7994489915364444,0.38073528831154285,3,False
+time,Manufacturers and Traders Trust Company,ADF,I(0),n,AIC,-0.3220477985522951,0.5675099926882806,2,False
+time,Manufacturers and Traders Trust Company,ADF,I(0),n,BIC,-0.3220477985522951,0.5675099926882806,2,False
+time,Manufacturers and Traders Trust Company,ADF,I(0),n,t-stat,-0.3220477985522951,0.5675099926882806,2,False
+time,Manufacturers and Traders Trust Company,KPSS,I(0),c,auto,0.6494599636560188,0.018140003303998294,4,False
+time,Manufacturers and Traders Trust Company,KPSS,I(0),c,short,0.3842004143425228,0.08396533864546432,11,True
+time,Manufacturers and Traders Trust Company,KPSS,I(0),c,long,0.3842004143425228,0.08396533864546432,11,True
+time,Manufacturers and Traders Trust Company,KPSS,I(0),ct,auto,0.1557545578473619,0.04187120179386508,4,False
+time,Manufacturers and Traders Trust Company,KPSS,I(0),ct,short,0.12085324480045427,0.09656806518434394,11,True
+time,Manufacturers and Traders Trust Company,KPSS,I(0),ct,long,0.12085324480045427,0.09656806518434394,11,True
+time,Manufacturers and Traders Trust Company,ADF,I(1),c,AIC,-4.238547149011538,0.0005666010475025866,1,True
+time,Manufacturers and Traders Trust Company,ADF,I(1),c,BIC,-4.238547149011538,0.0005666010475025866,1,True
+time,Manufacturers and Traders Trust Company,ADF,I(1),c,t-stat,-4.238547149011538,0.0005666010475025866,1,True
+time,Manufacturers and Traders Trust Company,ADF,I(1),n,AIC,-4.230915290152878,2.8984708954705735e-05,1,True
+time,Manufacturers and Traders Trust Company,ADF,I(1),n,BIC,-4.230915290152878,2.8984708954705735e-05,1,True
+time,Manufacturers and Traders Trust Company,ADF,I(1),n,t-stat,-4.230915290152878,2.8984708954705735e-05,1,True
+time,Manufacturers and Traders Trust Company,KPSS,I(1),c,auto,0.08693112065622749,0.1,3,True
+time,Manufacturers and Traders Trust Company,KPSS,I(1),c,short,0.11572356215065459,0.1,11,True
+time,Manufacturers and Traders Trust Company,KPSS,I(1),c,long,0.11572356215065459,0.1,11,True
+time,Manufacturers and Traders Trust Company,KPSS,I(1),ct,auto,0.05218252884686989,0.1,3,True
+time,Manufacturers and Traders Trust Company,KPSS,I(1),ct,short,0.07534672920658596,0.1,11,True
+time,Manufacturers and Traders Trust Company,KPSS,I(1),ct,long,0.07534672920658596,0.1,11,True
+time,Old National Bank,ADF,I(0),c,AIC,-1.918327801001424,0.3234888606833334,1,False
+time,Old National Bank,ADF,I(0),c,BIC,-1.918327801001424,0.3234888606833334,1,False
+time,Old National Bank,ADF,I(0),c,t-stat,-1.918327801001424,0.3234888606833334,1,False
+time,Old National Bank,ADF,I(0),n,AIC,-0.39152598910450953,0.540100345701928,2,False
+time,Old National Bank,ADF,I(0),n,BIC,-0.7497512664078165,0.39164893724768185,1,False
+time,Old National Bank,ADF,I(0),n,t-stat,-0.7497512664078165,0.39164893724768185,1,False
+time,Old National Bank,KPSS,I(0),c,auto,0.7028371135916737,0.013287535128029665,4,False
+time,Old National Bank,KPSS,I(0),c,short,0.3972318846017439,0.07834832560269658,11,True
+time,Old National Bank,KPSS,I(0),c,long,0.3972318846017439,0.07834832560269658,11,True
+time,Old National Bank,KPSS,I(0),ct,auto,0.1761608619569139,0.02493967676615728,4,False
+time,Old National Bank,KPSS,I(0),ct,short,0.12555357956693178,0.08786374154271892,11,True
+time,Old National Bank,KPSS,I(0),ct,long,0.12555357956693178,0.08786374154271892,11,True
+time,Old National Bank,ADF,I(1),c,AIC,-3.1594392573478935,0.022455849518903157,1,True
+time,Old National Bank,ADF,I(1),c,BIC,-2.7304756607039424,0.06891147827551664,0,False
+time,Old National Bank,ADF,I(1),c,t-stat,-3.1594392573478935,0.022455849518903157,1,True
+time,Old National Bank,ADF,I(1),n,AIC,-3.130244952582449,0.001740033854326673,1,True
+time,Old National Bank,ADF,I(1),n,BIC,-2.7036397294409418,0.006668708079036885,0,True
+time,Old National Bank,ADF,I(1),n,t-stat,-3.130244952582449,0.001740033854326673,1,True
+time,Old National Bank,KPSS,I(1),c,auto,0.12941310454956975,0.1,4,True
+time,Old National Bank,KPSS,I(1),c,short,0.14301700558213348,0.1,11,True
+time,Old National Bank,KPSS,I(1),c,long,0.14301700558213348,0.1,11,True
+time,Old National Bank,KPSS,I(1),ct,auto,0.05597818688765884,0.1,4,True
+time,Old National Bank,KPSS,I(1),ct,short,0.07041151903358767,0.1,11,True
+time,Old National Bank,KPSS,I(1),ct,long,0.07041151903358767,0.1,11,True
+FFT,FFT,ADF,I(0),c,AIC,-1.9047126327855093,0.32984739767059545,1,False
+FFT,FFT,ADF,I(0),c,BIC,-1.9047126327855093,0.32984739767059545,1,False
+FFT,FFT,ADF,I(0),c,t-stat,-1.9047126327855093,0.32984739767059545,1,False
+FFT,FFT,ADF,I(0),n,AIC,-1.0922186060709325,0.24863788487048172,1,False
+FFT,FFT,ADF,I(0),n,BIC,-1.0922186060709325,0.24863788487048172,1,False
+FFT,FFT,ADF,I(0),n,t-stat,-1.0922186060709325,0.24863788487048172,1,False
+FFT,FFT,KPSS,I(0),c,auto,0.8320750509579236,0.01,4,False
+FFT,FFT,KPSS,I(0),c,short,0.4603851655208855,0.051127083827204545,11,True
+FFT,FFT,KPSS,I(0),c,long,0.4603851655208855,0.051127083827204545,11,True
+FFT,FFT,KPSS,I(0),ct,auto,0.10596602042707036,0.1,4,True
+FFT,FFT,KPSS,I(0),ct,short,0.09019449585770598,0.1,11,True
+FFT,FFT,KPSS,I(0),ct,long,0.09019449585770598,0.1,11,True
+FFT,FFT,ADF,I(1),c,AIC,-3.0287872692182436,0.032292092030943506,0,True
+FFT,FFT,ADF,I(1),c,BIC,-3.0287872692182436,0.032292092030943506,0,True
+FFT,FFT,ADF,I(1),c,t-stat,-3.0287872692182436,0.032292092030943506,0,True
+FFT,FFT,ADF,I(1),n,AIC,-3.0128713422031126,0.002555501107351876,0,True
+FFT,FFT,ADF,I(1),n,BIC,-3.0128713422031126,0.002555501107351876,0,True
+FFT,FFT,ADF,I(1),n,t-stat,-3.0128713422031126,0.002555501107351876,0,True
+FFT,FFT,KPSS,I(1),c,auto,0.06361416757639533,0.1,4,True
+FFT,FFT,KPSS,I(1),c,short,0.07280075703251405,0.1,11,True
+FFT,FFT,KPSS,I(1),c,long,0.07280075703251405,0.1,11,True
+FFT,FFT,KPSS,I(1),ct,auto,0.05971199375028841,0.1,4,True
+FFT,FFT,KPSS,I(1),ct,short,0.06894536586851191,0.1,11,True
+FFT,FFT,KPSS,I(1),ct,long,0.06894536586851191,0.1,11,True

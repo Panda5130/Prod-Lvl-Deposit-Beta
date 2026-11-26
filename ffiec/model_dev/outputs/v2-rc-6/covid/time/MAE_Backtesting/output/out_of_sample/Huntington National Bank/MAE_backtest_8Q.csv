@@ -1,0 +1,9 @@
+bank_name,test_name,IC/selected lag,trend type,horizon_q,origin,start,end,n_obs,mae,naive_mae
+Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend),1Q,2026Q2,2026Q3,2026Q3,1,0.3403004315818161,0.35063564057382335
+Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend),2Q,2026Q1,2026Q2,2026Q3,2,0.2885342170598528,0.8189054134583371
+Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend),3Q,2025Q4,2026Q1,2026Q3,3,0.3191791760545281,0.47694170444698525
+Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend),4Q,2025Q3,2025Q4,2026Q3,4,0.2892643567236314,0.35770627833523894
+Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend),5Q,2025Q2,2025Q3,2026Q3,5,0.23655728866069356,0.298820362243175
+Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend),6Q,2025Q1,2025Q2,2026Q3,6,0.19627864811856943,0.37676045586459445
+Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend),7Q,2024Q4,2025Q1,2026Q3,7,0.22356010589643027,0.8359133820716854
+Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend),8Q,2024Q3,2024Q4,2026Q3,8,0.22451650691249647,0.8711273839860716

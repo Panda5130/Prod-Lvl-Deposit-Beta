@@ -1,0 +1,9 @@
+bank_name,test_name,IC/selected lag,trend type,horizon_q,origin,start,end,n_obs,mae,naive_mae
+First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none),1Q,2026Q2,2026Q3,2026Q3,1,0.10810973100267462,0.20807198809885152
+First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none),2Q,2026Q1,2026Q2,2026Q3,2,0.08694424537290768,0.10403599404942576
+First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none),3Q,2025Q4,2026Q1,2026Q3,3,0.12975173069073107,0.22785785507537634
+First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none),4Q,2025Q3,2025Q4,2026Q3,4,0.2100682654106022,0.5097399372638238
+First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none),5Q,2025Q2,2025Q3,2026Q3,5,0.1395653835679763,0.31587921993087964
+First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none),6Q,2025Q1,2025Q2,2026Q3,6,0.13557072748447596,0.26313561285433135
+First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none),7Q,2024Q4,2025Q1,2026Q3,7,0.22559390172275995,0.571633862835777
+First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none),8Q,2024Q3,2024Q4,2026Q3,8,0.22566940567888233,0.7877207027551527

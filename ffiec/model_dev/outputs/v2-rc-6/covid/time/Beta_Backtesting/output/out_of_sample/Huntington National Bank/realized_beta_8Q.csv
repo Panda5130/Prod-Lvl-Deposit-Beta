@@ -1,0 +1,9 @@
+horizon_q,n_pairs,n_skipped,mean_actual_beta,mean_implied_beta,mean_theta_ref_theta,bank_name,test_name,IC/selected lag,trend type
+1Q,17,22,0.5399478293012632,0.47895287712260276,0.8185033097412361,Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend)
+2Q,25,13,0.7444755921763098,0.6043028487450104,0.7967470816577257,Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend)
+3Q,28,9,0.716782685090445,0.6223954965907652,0.7959021191436426,Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend)
+4Q,31,5,0.7417105466886632,0.6411123843924369,0.7996083101390461,Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend)
+5Q,32,3,0.7104494853271384,0.5528543365389871,0.7976230025082941,Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend)
+6Q,31,3,0.5766171250791527,0.44896035751508767,0.7943702862479828,Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend)
+7Q,30,3,0.5303325788171889,0.41961327545547994,0.7991502059498498,Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend)
+8Q,30,2,0.6397884084848767,0.5223869188176152,0.7978146138970964,Huntington National Bank,EG_ShortRun,"BIC / ADF lag=0, ECM lag=0",ct (constant + trend)

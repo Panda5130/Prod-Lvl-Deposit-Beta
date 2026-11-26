@@ -1,0 +1,9 @@
+horizon_q,n_pairs,n_skipped,mean_actual_beta,mean_implied_beta,mean_theta_ref_theta,bank_name,test_name,IC/selected lag,trend type
+1Q,16,22,0.7693324709118965,0.46490088891574877,0.6303639511403657,First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none)
+2Q,24,13,0.6906341413352215,0.47552440453243355,0.6444051907998073,First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none)
+3Q,27,9,0.626602147414908,0.4870571981417366,0.639855522234433,First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none)
+4Q,30,5,0.6452308258239892,0.5164604454494095,0.6360865887626589,First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none)
+5Q,31,3,0.6431755804611717,0.46975113914938027,0.6359377086950042,First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none)
+6Q,30,3,0.468779054265692,0.3501441109346473,0.6326986982116085,First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none)
+7Q,29,3,0.45571119486585887,0.3429004775182652,0.6447810053763455,First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none)
+8Q,29,2,0.5095316050960947,0.37122048771928456,0.6456633918950473,First Horizon Bank,EG_LongRun | asymmetric,"BIC / ADF lag=1, ECM lag=0",n (none)

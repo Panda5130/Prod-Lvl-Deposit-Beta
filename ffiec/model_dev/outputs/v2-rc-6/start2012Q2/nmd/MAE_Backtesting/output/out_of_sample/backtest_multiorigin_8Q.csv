@@ -1,0 +1,41 @@
+horizon_q,first_origin,last_origin,n_windows,mae,naive_mae,bank_name,model
+1Q,2017Q1,2026Q2,38,0.10023540860489243,0.19275210118650885,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+2Q,2017Q1,2026Q1,37,0.16547671788663315,0.3565450698595806,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+3Q,2017Q1,2025Q4,36,0.19609461443988563,0.4964765155396191,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+4Q,2017Q1,2025Q3,35,0.22105835855965744,0.6664457726774083,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+5Q,2017Q1,2025Q2,34,0.24066789538416417,0.8273946819318762,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+6Q,2017Q1,2025Q1,33,0.25899915332313633,0.9755048572744878,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+7Q,2017Q1,2024Q4,32,0.2653849334477226,1.0967943046421198,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+8Q,2017Q1,2024Q3,31,0.279489269671077,1.1968864869534814,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+1Q,2017Q1,2026Q2,38,0.08261922011966338,0.12053575851875466,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+2Q,2017Q1,2026Q1,37,0.16384792122946865,0.23421904210097264,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+3Q,2017Q1,2025Q4,36,0.24076910477486535,0.3333689166336551,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+4Q,2017Q1,2025Q3,35,0.297718687233425,0.4410015301342779,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+5Q,2017Q1,2025Q2,34,0.393529529786583,0.5410771048610236,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+6Q,2017Q1,2025Q1,33,0.5105666268523805,0.6294715952007603,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+7Q,2017Q1,2024Q4,32,0.5901282576896709,0.7223139825028382,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+8Q,2017Q1,2024Q3,31,0.6883067530955408,0.8101695888231374,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+1Q,2017Q1,2026Q2,38,0.07891452949922817,0.12844503644848052,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+2Q,2017Q1,2026Q1,37,0.12709576609476034,0.24947498622148165,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+3Q,2017Q1,2025Q4,36,0.1741273869388761,0.3675107470642674,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+4Q,2017Q1,2025Q3,35,0.22870463922096457,0.48423906625967905,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+5Q,2017Q1,2025Q2,34,0.28937502345487537,0.5978730734607539,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+6Q,2017Q1,2025Q1,33,0.3420585235372742,0.6974540539227693,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+7Q,2017Q1,2024Q4,32,0.3783339954436057,0.7995664146929286,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+8Q,2017Q1,2024Q3,31,0.4240293028033765,0.8882826594270327,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+1Q,2017Q1,2026Q2,38,0.08297836175641975,0.13630759255423044,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+2Q,2017Q1,2026Q1,37,0.1449975654201445,0.25934030466059593,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+3Q,2017Q1,2025Q4,36,0.19362086983446075,0.3760334058343984,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+4Q,2017Q1,2025Q3,35,0.24775580377683804,0.5003392147094717,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+5Q,2017Q1,2025Q2,34,0.29056017451002497,0.6168113118539772,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+6Q,2017Q1,2025Q1,33,0.33820752627179185,0.7122185246519213,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+7Q,2017Q1,2024Q4,32,0.36311687231395745,0.8147149479272995,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+8Q,2017Q1,2024Q3,31,0.40321355532305464,0.9013036541491237,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+1Q,2017Q1,2026Q2,38,0.06058713859027104,0.14218321129184647,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1) | AIC / ARDL(4,1) | n - case 1 (no deterministic terms)"
+2Q,2017Q1,2026Q1,37,0.12627234247805466,0.27045751115666683,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1) | AIC / ARDL(4,1) | n - case 1 (no deterministic terms)"
+3Q,2017Q1,2025Q4,36,0.15914194141402238,0.3857684644904495,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1) | AIC / ARDL(4,1) | n - case 1 (no deterministic terms)"
+4Q,2017Q1,2025Q3,35,0.19267767582738715,0.5096775352507621,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1) | AIC / ARDL(4,1) | n - case 1 (no deterministic terms)"
+5Q,2017Q1,2025Q2,34,0.24623103127152146,0.6210311573631531,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1) | AIC / ARDL(4,1) | n - case 1 (no deterministic terms)"
+6Q,2017Q1,2025Q1,33,0.28410012319044087,0.7239728445216256,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1) | AIC / ARDL(4,1) | n - case 1 (no deterministic terms)"
+7Q,2017Q1,2024Q4,32,0.3156932771455524,0.8323019664306561,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1) | AIC / ARDL(4,1) | n - case 1 (no deterministic terms)"
+8Q,2017Q1,2024Q3,31,0.30737971177334406,0.9305266256950985,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1) | AIC / ARDL(4,1) | n - case 1 (no deterministic terms)"

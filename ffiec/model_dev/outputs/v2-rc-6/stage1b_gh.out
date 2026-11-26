@@ -1,0 +1,27 @@
+model                                               C   C/S  C/S/T   C/T C break C/S break C/S/T break C/T break  any_reject_5_sim (any stat)  ADF*_reject_5_sim
+segment bank_name                                                                                                                                               
+nmd     First Horizon Bank                      -4.45 -4.67  -4.90 -4.76  2024Q2    2024Q2      2024Q2    2024Q2                        False              False
+        Huntington National Bank                -4.52 -4.52  -4.62 -4.68  2023Q3    2023Q3      2023Q3    2023Q3                        False              False
+        KeyBank National Association            -4.94 -5.15  -5.40 -5.31  2024Q1    2024Q1      2024Q1    2024Q1                        False              False
+        Manufacturers and Traders Trust Company -4.57 -5.16  -5.59 -5.68  2024Q2    2024Q3      2024Q3    2024Q3                         True               True
+        Old National Bank                       -5.07 -5.89  -5.97 -5.39  2023Q3    2023Q3      2023Q3    2023Q3                         True               True
+time    First Horizon Bank                      -4.97 -5.07  -5.57 -5.59  2024Q1    2024Q1      2024Q1    2024Q1                         True               True
+        Huntington National Bank                -4.04 -4.07  -4.24 -4.23  2024Q3    2024Q3      2024Q3    2024Q3                        False              False
+        KeyBank National Association            -4.10 -4.37  -4.23 -4.22  2023Q4    2021Q4      2023Q4    2023Q4                        False              False
+        Manufacturers and Traders Trust Company -4.17 -4.88  -4.84 -4.59  2023Q4    2021Q4      2021Q4    2023Q4                        False              False
+        Old National Bank                       -3.91 -3.91  -4.19 -4.22  2024Q3    2024Q1      2024Q3    2024Q1                        False              False
+   segment                                bank_name  ...   cv_5_sim break_quarter
+39     nmd  Manufacturers and Traders Trust Company  ...  -5.533736        2024Q3
+49     nmd                        Old National Bank  ...  -4.836402        2023Q3
+50     nmd                        Old National Bank  ... -33.228209        2023Q3
+52     nmd                        Old National Bank  ...  -5.348986        2023Q3
+53     nmd                        Old National Bank  ... -37.355973        2023Q3
+54     nmd                        Old National Bank  ...  -5.290032        2023Q3
+55     nmd                        Old National Bank  ...  -5.145098        2023Q3
+56     nmd                        Old National Bank  ... -35.668594        2023Q3
+57     nmd                        Old National Bank  ...  -5.865333        2023Q3
+58     nmd                        Old National Bank  ...  -5.677359        2023Q3
+59     nmd                        Old National Bank  ... -40.355466        2023Q3
+63    time                       First Horizon Bank  ...  -5.533736        2024Q1
+
+[12 rows x 7 columns]

@@ -1,0 +1,9 @@
+horizon_q,n_pairs,n_skipped,mean_actual_beta,mean_implied_beta,mean_theta_ref_theta,bank_name,test_name,IC/selected lag,trend type
+1Q,16,22,0.4917075343230695,0.41260134555321615,0.5133504528267646,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms)
+2Q,24,13,0.4292781547982562,0.42985684979632827,0.553595544350031,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms)
+3Q,27,9,0.4466493565600907,0.43623778608535596,0.5573559942726293,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms)
+4Q,30,5,0.46766615255811567,0.4242624426865038,0.561273435765549,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms)
+5Q,31,3,0.4446122473858679,0.34303086963816626,0.5577061785764905,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms)
+6Q,30,3,0.3355427419051654,0.29125847316614056,0.5481052688337179,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms)
+7Q,29,3,0.31003166700182444,0.2652598690868352,0.5539223217273078,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms)
+8Q,29,2,0.365012983978027,0.2806168259543406,0.5467588960190234,Huntington National Bank,"ARDL bounds F (ARDL(4,1), case 1)","AIC / ARDL(4,1)",n - case 1 (no deterministic terms)

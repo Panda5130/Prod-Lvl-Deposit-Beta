@@ -1,0 +1,6 @@
+bank_name,model,mean_mae,max_mae,naive_mean_mae,horizons_beating_naive,rating
+First Horizon Bank,"EG_LongRun | AIC / ADF lag=1, ECM lag=4 | c (constant)",0.2615663750856656,0.43702001674758817,0.37933935854096773,5/8,Red
+Huntington National Bank,"EG_ShortRun | BIC / ADF lag=0, ECM lag=0 | ct (constant + trend)",0.26292946977510273,0.3353826580410595,0.5483513276224888,8/8,Red
+KeyBank National Association,Johansen VECM (rank 1) | fixed / k_ar_diff=1 | det_order 0 (constant),0.13364278311874273,0.2695361501713309,0.4585149364867023,6/8,Green
+Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(3,1), case 4) | asymmetric | BIC / ARDL(3,1) | ct - case 4 (unrestricted constant, restricted trend)",0.26037703711753624,0.39977723858495146,0.3710162436205262,5/8,Red
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric | BIC / ARDL(2,1) | c - case 2 (restricted constant)",0.18218746408920078,0.31900124715880274,0.37576127039921475,6/8,Amber

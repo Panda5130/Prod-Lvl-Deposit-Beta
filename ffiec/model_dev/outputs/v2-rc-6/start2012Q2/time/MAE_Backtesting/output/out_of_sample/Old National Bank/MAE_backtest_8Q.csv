@@ -1,0 +1,9 @@
+bank_name,test_name,IC/selected lag,trend type,horizon_q,origin,start,end,n_obs,mae,naive_mae
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant),1Q,2026Q2,2026Q3,2026Q3,1,0.16394020078361127,0.1224890738530906
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant),2Q,2026Q1,2026Q2,2026Q3,2,0.11172457488629406,0.0612445369265453
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant),3Q,2025Q4,2026Q1,2026Q3,3,0.09676797230945455,0.1912011193587868
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant),4Q,2025Q3,2025Q4,2026Q3,4,0.1169044008510377,0.3540773202042812
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant),5Q,2025Q2,2025Q3,2026Q3,5,0.24421716729368975,0.5285170799430715
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant),6Q,2025Q1,2025Q2,2026Q3,6,0.11513421841896965,0.32717875074911135
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant),7Q,2024Q4,2025Q1,2026Q3,7,0.2898099310117464,0.650681403987946
+Old National Bank,"ARDL bounds F (ARDL(2,1), case 2) | asymmetric","BIC / ARDL(2,1)",c - case 2 (restricted constant),8Q,2024Q3,2024Q4,2026Q3,8,0.31900124715880274,0.7707008781708852

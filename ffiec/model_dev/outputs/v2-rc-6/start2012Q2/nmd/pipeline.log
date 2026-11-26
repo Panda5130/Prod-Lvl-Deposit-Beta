@@ -1,0 +1,71 @@
+>> /usr/local/bin/python /home/user/Prod-Lvl-Deposit-Beta/Co-integration Tests.py /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/inputs/run_input_2012Q2.csv /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/inputs/v2-rc-3/FFT_2011-2026.csv /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/test_params.csv -o /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/Co-integration_results.csv
+>> /usr/local/bin/python /home/user/Prod-Lvl-Deposit-Beta/FlaggedRates_co-integration_respecification.py --dependents /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/inputs/run_input_2012Q2.csv --independents /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/inputs/v2-rc-3/FFT_2011-2026.csv --y rate_nmd_eoq_pf --x FFT --banks First Horizon Bank Huntington National Bank KeyBank National Association Manufacturers and Traders Trust Company Old National Bank -o /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/co-integration_respecification_results.csv
+>> /usr/local/bin/python /home/user/Prod-Lvl-Deposit-Beta/ECM workflow.py --cointegration /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/Co-integration_results.csv --respecification /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/co-integration_respecification_results.csv --dependents /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/inputs/run_input_2012Q2.csv --independents /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/inputs/v2-rc-3/FFT_2011-2026.csv --y rate_nmd_eoq_pf --x FFT --out-dir /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd
+2026-11-26 07:47:02,445 [1/4] ECM model selection.py
+2026-11-26 07:47:03,772 [1/4] wrote /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/ECM model selection results.csv (1090 rows)
+2026-11-26 07:47:03,772 [2/4] ECM Param selection.py
+2026-11-26 07:47:04,419 [2/4] wrote /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/ECM param selection results.csv (644 rows)
+2026-11-26 07:47:04,419 [3/4] ECM estimation.py
+deterministic pruning: 136 model(s), 79 with a term dropped; log -> deterministic_pruning_log.csv
+2026-11-26 07:47:07,221 [3/4] wrote /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/ECM estimation results (det pruned).csv (683 rows)
+2026-11-26 07:47:07,221 [4/4] ECM asymmetric variants.py
+136 screened ECM specification(s); 71 screened test(s) are not ECMs
+deterministic pruning: 136 variant(s), 17 with a term dropped; log -> deterministic_pruning_log.csv
+136 variant(s) written to ECM asymmetric estimation results (det pruned).csv; originals unchanged (SHA-256 checked)
+2026-11-26 07:47:14,638 [4/4] wrote /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/ECM asymmetric estimation results (det pruned).csv (1121 rows)
+2026-11-26 07:47:14,638 done: /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/ECM estimation results (det pruned).csv
+>> /usr/local/bin/python /home/user/Prod-Lvl-Deposit-Beta/MAE_Backtesting/run_backtest.py --horizon 8Q --bank-name All --first-origin 2016Q1 --limits peer --reference-dir /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/no_reference --summary /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/estimation result summary (det pruned).csv --estimates /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/ECM estimation results (det pruned).csv --asym-summary /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/asymmetric estimation result summary (det pruned).csv --asym-estimates /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/ECM asymmetric estimation results (det pruned).csv --dependents /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/inputs/run_input_2012Q2.csv --independents /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/inputs/v2-rc-3/FFT_2011-2026.csv --y rate_nmd_eoq_pf --x FFT
+2026-11-26 07:47:16,132 INFO backtesting 5 bank(s) over 8Q into /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/MAE_Backtesting/output/out_of_sample (out-of-sample model choice)
+2026-11-26 07:48:02,846 INFO First Horizon Bank: many-origin errors reused from cache
+2026-11-26 07:48:02,979 INFO [1/5] First Horizon Bank: EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none); MAE 1Q=0.1091, 2Q=0.0872, 3Q=0.1227, 4Q=0.2169, 5Q=0.1383, 6Q=0.1345, 7Q=0.2240, 8Q=0.2241
+2026-11-26 07:48:31,284 INFO Old National Bank: many-origin errors reused from cache
+2026-11-26 07:48:31,415 INFO [2/5] Old National Bank: EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none); MAE 1Q=0.0978, 2Q=0.1803, 3Q=0.0812, 4Q=0.1769, 5Q=0.0721, 6Q=0.4977, 7Q=0.1470, 8Q=0.1099
+2026-11-26 07:48:44,488 INFO KeyBank National Association: many-origin errors reused from cache
+2026-11-26 07:48:44,606 INFO [3/5] KeyBank National Association: Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend); MAE 1Q=0.0853, 2Q=0.0876, 3Q=0.0765, 4Q=0.1296, 5Q=0.0813, 6Q=0.0865, 7Q=0.0728, 8Q=0.2569
+2026-11-26 07:49:10,971 INFO Manufacturers and Traders Trust Company: many-origin errors reused from cache
+2026-11-26 07:49:11,090 INFO [4/5] Manufacturers and Traders Trust Company: ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant); MAE 1Q=0.1235, 2Q=0.0669, 3Q=0.0895, 4Q=0.1165, 5Q=0.0876, 6Q=0.0793, 7Q=0.2003, 8Q=0.2261
+2026-11-26 07:49:22,889 INFO Huntington National Bank: many-origin errors reused from cache
+2026-11-26 07:49:23,002 INFO [5/5] Huntington National Bank: ARDL bounds F (ARDL(4,1), case 1) | AIC / ARDL(4,1) | n - case 1 (no deterministic terms); MAE 1Q=0.0062, 2Q=0.3558, 3Q=0.1990, 4Q=0.1406, 5Q=0.1129, 6Q=0.1813, 7Q=0.4953, 8Q=0.1380
+2026-11-26 07:49:23,043 INFO many-origin limits from 5 bank(s): 1-2Q 0.15/0.20; 3-4Q 0.25/0.30; 5-8Q 0.40/0.45
+2026-11-26 07:49:23,043 INFO   First Horizon Bank: Green
+2026-11-26 07:49:23,192 INFO   Huntington National Bank: Green
+2026-11-26 07:49:23,350 INFO   KeyBank National Association: Green
+2026-11-26 07:49:23,488 INFO   Manufacturers and Traders Trust Company: Green
+2026-11-26 07:49:23,628 INFO   Old National Bank: Red (3-4Q avg 0.269 > green 0.25; 5-8Q max 0.688 > red 0.45; skill ratio 0.85 at 8Q)
+2026-11-26 07:49:23,798 INFO done: 5 chart(s) in /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/MAE_Backtesting/output/out_of_sample, 0 bank(s) skipped
+>> /usr/local/bin/python /home/user/Prod-Lvl-Deposit-Beta/Beta_Backtesting/run_beta_backtest.py --horizon 8Q --bank-name All --first-origin 2016Q1 --summary /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/estimation result summary (det pruned).csv --estimates /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/ECM estimation results (det pruned).csv --asym-summary /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/asymmetric estimation result summary (det pruned).csv --asym-estimates /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/ECM asymmetric estimation results (det pruned).csv --dependents /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/inputs/run_input_2012Q2.csv --independents /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/inputs/v2-rc-3/FFT_2011-2026.csv --y rate_nmd_eoq_pf --x FFT
+2026-11-26 07:49:25,297 INFO beta backtests of 5 bank(s) from 2016Q1 into /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/Beta_Backtesting/output/out_of_sample (out-of-sample model choice)
+2026-11-26 07:49:25,901 INFO First Horizon Bank: many-origin betas computed (38 origins)
+2026-11-26 07:49:26,120 INFO [1/5] First Horizon Bank: EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none); theta Green (full 0.606)
+2026-11-26 07:49:26,361 INFO Old National Bank: many-origin betas computed (38 origins)
+2026-11-26 07:49:26,556 INFO [2/5] Old National Bank: EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none); theta Red (full 0.472)
+2026-11-26 07:49:26,914 INFO KeyBank National Association: many-origin betas computed (38 origins)
+2026-11-26 07:49:27,149 INFO [3/5] KeyBank National Association: Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend); theta Red (full 0.463)
+2026-11-26 07:49:27,517 INFO Manufacturers and Traders Trust Company: many-origin betas computed (38 origins)
+2026-11-26 07:49:27,715 INFO [4/5] Manufacturers and Traders Trust Company: ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant); theta Amber (full 0.483)
+2026-11-26 07:49:27,983 INFO Huntington National Bank: many-origin betas computed (38 origins)
+2026-11-26 07:49:28,176 INFO [5/5] Huntington National Bank: ARDL bounds F (ARDL(4,1), case 1) | AIC / ARDL(4,1) | n - case 1 (no deterministic terms); theta Red (full 0.532)
+2026-11-26 07:49:28,796 INFO   theta stability First Horizon Bank: Green
+2026-11-26 07:49:28,796 INFO   theta stability Old National Bank: Red (15 origin(s) > 2 SE and > 20%; 11 beyond 3 SE)
+2026-11-26 07:49:28,796 INFO   theta stability KeyBank National Association: Red (13 origin(s) > 2 SE and > 20%; 11 beyond 3 SE)
+2026-11-26 07:49:28,796 INFO   theta stability Manufacturers and Traders Trust Company: Amber (1 origin(s) > 2 SE and > 20%)
+2026-11-26 07:49:28,796 INFO   theta stability Huntington National Bank: Red (3 origin(s) > 2 SE and > 20%)
+2026-11-26 07:49:28,796 INFO done: 5 bank(s) in /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/Beta_Backtesting/output/out_of_sample, 0 skipped
+>> /usr/local/bin/python /home/user/Prod-Lvl-Deposit-Beta/Beta_Backtesting/run_beta_backtest.py --horizon 8Q --bank-name All --first-origin 2016Q1 --realized --summary /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/estimation result summary (det pruned).csv --estimates /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/ECM estimation results (det pruned).csv --asym-summary /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/asymmetric estimation result summary (det pruned).csv --asym-estimates /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/ECM asymmetric estimation results (det pruned).csv --dependents /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/inputs/run_input_2012Q2.csv --independents /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/inputs/v2-rc-3/FFT_2011-2026.csv --y rate_nmd_eoq_pf --x FFT
+2026-11-26 07:49:30,177 INFO beta backtests of 5 bank(s) from 2016Q1 into /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/Beta_Backtesting/output/out_of_sample (out-of-sample model choice, realized beta)
+2026-11-26 07:49:30,439 INFO First Horizon Bank: many-origin betas reused from cache
+2026-11-26 07:49:34,211 INFO [1/5] First Horizon Bank: EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none); theta Green (full 0.606)
+2026-11-26 07:49:34,302 INFO Old National Bank: many-origin betas reused from cache
+2026-11-26 07:49:36,569 INFO [2/5] Old National Bank: EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none); theta Red (full 0.472)
+2026-11-26 07:49:36,769 INFO KeyBank National Association: many-origin betas reused from cache
+2026-11-26 07:49:38,609 INFO [3/5] KeyBank National Association: Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend); theta Red (full 0.463)
+2026-11-26 07:49:38,805 INFO Manufacturers and Traders Trust Company: many-origin betas reused from cache
+2026-11-26 07:49:40,614 INFO [4/5] Manufacturers and Traders Trust Company: ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant); theta Amber (full 0.483)
+2026-11-26 07:49:40,706 INFO Huntington National Bank: many-origin betas reused from cache
+2026-11-26 07:49:42,811 INFO [5/5] Huntington National Bank: ARDL bounds F (ARDL(4,1), case 1) | AIC / ARDL(4,1) | n - case 1 (no deterministic terms); theta Red (full 0.532)
+2026-11-26 07:49:43,375 INFO   theta stability First Horizon Bank: Green
+2026-11-26 07:49:43,375 INFO   theta stability Old National Bank: Red (15 origin(s) > 2 SE and > 20%; 11 beyond 3 SE)
+2026-11-26 07:49:43,375 INFO   theta stability KeyBank National Association: Red (13 origin(s) > 2 SE and > 20%; 11 beyond 3 SE)
+2026-11-26 07:49:43,375 INFO   theta stability Manufacturers and Traders Trust Company: Amber (1 origin(s) > 2 SE and > 20%)
+2026-11-26 07:49:43,375 INFO   theta stability Huntington National Bank: Red (3 origin(s) > 2 SE and > 20%)
+2026-11-26 07:49:44,295 INFO done: 5 bank(s) in /home/user/Prod-Lvl-Deposit-Beta/ffiec/model_dev/outputs/v2-rc-6/start2012Q2/nmd/Beta_Backtesting/output/out_of_sample, 0 skipped

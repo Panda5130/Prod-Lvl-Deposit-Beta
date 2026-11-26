@@ -1,0 +1,11 @@
+bank_name,segment,beta,theta_pos,theta_neg,source
+First Horizon Bank,nmd,0.6061686702126959,,,champion theta
+Huntington National Bank,nmd,0.5326771576806998,,,champion theta
+KeyBank National Association,nmd,0.4630344153737339,,,champion theta
+Manufacturers and Traders Trust Company,nmd,0.4832005660984715,,,champion theta
+Old National Bank,nmd,0.4720777083428006,,,champion theta
+First Horizon Bank,time,0.7333302074051341,,,champion theta
+Huntington National Bank,time,0.8286073348946806,,,champion theta
+KeyBank National Association,time,0.6583227586923279,,,champion theta
+Manufacturers and Traders Trust Company,time,0.8083063015735263,0.8105711554549059,0.3714062003140833,"theta split in champion (theta+ 0.8106, theta- 0.3714); default = symmetric parent ARDL bounds F (ARDL(3,1), case 4) theta"
+Old National Bank,time,0.9426548246107824,,,champion theta

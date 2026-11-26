@@ -1,0 +1,9 @@
+horizon_q,n_pairs,n_skipped,mean_actual_beta,mean_implied_beta,mean_theta_ref_theta,bank_name,test_name,IC/selected lag,trend type
+1Q,16,22,0.5035819418814024,0.26551074963805754,0.5382163020456483,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2)","BIC / ARDL(1,1)",c - case 2 (restricted constant)
+2Q,24,13,0.5009891215215757,0.30173174186932866,0.5961702336418632,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2)","BIC / ARDL(1,1)",c - case 2 (restricted constant)
+3Q,27,9,0.479761865198568,0.2996248227470715,0.5910363111305863,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2)","BIC / ARDL(1,1)",c - case 2 (restricted constant)
+4Q,30,5,0.5030123060714433,0.2970262241673522,0.598034901747486,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2)","BIC / ARDL(1,1)",c - case 2 (restricted constant)
+5Q,31,3,0.46989944935998684,0.24893493153623503,0.5931682208043881,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2)","BIC / ARDL(1,1)",c - case 2 (restricted constant)
+6Q,30,3,0.3038764387830274,0.1776152895569073,0.5863197905149476,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2)","BIC / ARDL(1,1)",c - case 2 (restricted constant)
+7Q,29,3,0.3021983822002259,0.16331432808107074,0.5918331477706222,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2)","BIC / ARDL(1,1)",c - case 2 (restricted constant)
+8Q,29,2,0.3523544613502728,0.2443004233841229,0.5895045795527454,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2)","BIC / ARDL(1,1)",c - case 2 (restricted constant)

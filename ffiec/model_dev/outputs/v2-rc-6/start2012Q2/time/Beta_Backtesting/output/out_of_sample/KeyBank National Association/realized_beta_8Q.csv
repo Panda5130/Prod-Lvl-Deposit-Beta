@@ -1,0 +1,9 @@
+horizon_q,n_pairs,n_skipped,mean_actual_beta,mean_implied_beta,mean_theta_ref_theta,bank_name,test_name,IC/selected lag,trend type
+1Q,16,22,0.6127873848209873,0.6047921296484214,0.5599298822559439,KeyBank National Association,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 0 (constant)
+2Q,24,13,0.684921492392626,0.6587229026753275,0.534245440496938,KeyBank National Association,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 0 (constant)
+3Q,27,9,0.7119608565938229,0.6902935048659273,0.5430903760150751,KeyBank National Association,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 0 (constant)
+4Q,30,5,0.7007406456367188,0.6891400934221911,0.546733182138827,KeyBank National Association,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 0 (constant)
+5Q,31,3,0.6603058767689214,0.6365173466113706,0.5419215013496658,KeyBank National Association,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 0 (constant)
+6Q,30,3,0.6135542349677219,0.6269675548788709,0.5379273060787887,KeyBank National Association,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 0 (constant)
+7Q,29,3,0.56762405099717,0.5295471719322407,0.5356949755654636,KeyBank National Association,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 0 (constant)
+8Q,29,2,0.6794909758260751,0.6087497029660431,0.5350609032311195,KeyBank National Association,Johansen VECM (rank 1),fixed / k_ar_diff=1,det_order 0 (constant)

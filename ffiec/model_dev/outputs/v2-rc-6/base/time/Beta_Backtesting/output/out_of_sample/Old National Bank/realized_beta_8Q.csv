@@ -1,0 +1,9 @@
+horizon_q,n_pairs,n_skipped,mean_actual_beta,mean_implied_beta,mean_theta_ref_theta,bank_name,test_name,IC/selected lag,trend type
+1Q,17,22,0.6376144873419638,0.5228318673194028,1.3341402957221975,Old National Bank,"ARDL bounds F (ARDL(3,4), case 1)","AIC / ARDL(3,4)",n - case 1 (no deterministic terms)
+2Q,25,13,0.6694346201585063,0.5831705480145061,1.4040962162118484,Old National Bank,"ARDL bounds F (ARDL(3,4), case 1)","AIC / ARDL(3,4)",n - case 1 (no deterministic terms)
+3Q,28,9,0.689359022023737,0.6013250520521805,1.413883597046418,Old National Bank,"ARDL bounds F (ARDL(3,4), case 1)","AIC / ARDL(3,4)",n - case 1 (no deterministic terms)
+4Q,31,5,0.7023564691584073,0.6265402409306164,1.4285063763509904,Old National Bank,"ARDL bounds F (ARDL(3,4), case 1)","AIC / ARDL(3,4)",n - case 1 (no deterministic terms)
+5Q,32,3,0.6739186738571299,0.4686250955263353,1.4226557953975132,Old National Bank,"ARDL bounds F (ARDL(3,4), case 1)","AIC / ARDL(3,4)",n - case 1 (no deterministic terms)
+6Q,31,3,0.4944888784010916,0.17075616681998626,1.3866955366574247,Old National Bank,"ARDL bounds F (ARDL(3,4), case 1)","AIC / ARDL(3,4)",n - case 1 (no deterministic terms)
+7Q,30,3,0.453960563912257,0.09594119036224794,1.4090205699840237,Old National Bank,"ARDL bounds F (ARDL(3,4), case 1)","AIC / ARDL(3,4)",n - case 1 (no deterministic terms)
+8Q,30,2,0.5582737926049245,0.247900330375373,1.4064367631414307,Old National Bank,"ARDL bounds F (ARDL(3,4), case 1)","AIC / ARDL(3,4)",n - case 1 (no deterministic terms)

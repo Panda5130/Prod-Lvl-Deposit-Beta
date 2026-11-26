@@ -1,0 +1,41 @@
+horizon_q,n_pairs,n_skipped,mean_actual_beta,mean_implied_beta,mean_theta_ref_theta,bank_name,model
+1Q,17,22,0.7389136424260645,0.4466433772601169,0.6581731636549676,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+2Q,25,13,0.6738878489105327,0.4602296007433736,0.6782657711215468,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+3Q,28,9,0.6131895201696427,0.47490982771131424,0.6699822665162483,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+4Q,31,5,0.631811313694478,0.5040503471862843,0.6634680349766003,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+5Q,32,3,0.6310922329587485,0.4549579464841427,0.6628459552325433,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+6Q,31,3,0.4651867253467948,0.34209775361248373,0.6612058937425526,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+7Q,30,3,0.45440434404326796,0.331483613271888,0.6726362276774192,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+8Q,30,2,0.5066649895499895,0.370250126898896,0.6733675087355532,First Horizon Bank,"EG_LongRun | asymmetric | BIC / ADF lag=1, ECM lag=0 | n (none)"
+1Q,17,22,0.45029617726666127,0.256961186076347,0.3424341291507763,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+2Q,25,13,0.43244349690518086,0.2764411462634119,0.3410802147434211,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+3Q,28,9,0.4187197439846971,0.3229918127491018,0.3400865796916808,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+4Q,31,5,0.4386369161304727,0.26428612684072167,0.524645356248212,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+5Q,32,3,0.4244860398225483,0.08774282819780313,0.5057267457229192,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+6Q,31,3,0.24030818421971417,0.02297619137446074,0.5030907766007091,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+7Q,30,3,0.23849484540156846,-0.07591610449455885,0.5138478572334925,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+8Q,30,2,0.28182544591184894,-0.11144571741332347,0.5063555326670072,Old National Bank,"EG_LongRun | BIC / ADF lag=1, ECM lag=1 | n (none)"
+1Q,17,22,0.47609459979228097,0.23676231176335372,0.5737693582762449,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+2Q,25,13,0.45484735641415985,0.2738934798660569,0.6452329229517346,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+3Q,28,9,0.44934658992025467,0.2597092031876132,0.6448896209267562,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+4Q,31,5,0.4710514992723929,0.26178454094790404,0.6481119486943521,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+5Q,32,3,0.455182854939665,0.19245728323847106,0.6389784262116331,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+6Q,31,3,0.30670209477486393,0.1517288802419202,0.6231903729803001,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+7Q,30,3,0.28658206713249057,0.13037911509675407,0.6229846333824248,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+8Q,30,2,0.3395915418887781,0.19195876161148648,0.6165313738350001,KeyBank National Association,Johansen VECM (rank 1) | AIC / k_ar_diff=1 | det_order 1 (linear trend)
+1Q,17,22,0.4748313315941102,0.2594774448349985,0.5541189369118671,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+2Q,25,13,0.4849477247232026,0.3008183747556196,0.5972005502017047,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+3Q,28,9,0.4678455779001002,0.300780780912449,0.5906713810774631,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+4Q,31,5,0.4923327417105463,0.3023985312688676,0.5954915573437676,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+5Q,32,3,0.4599212091870377,0.25525130358617193,0.5909009845283596,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+6Q,31,3,0.2999816354100536,0.18560487818896124,0.5853867650788803,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+7Q,30,3,0.2993669089579537,0.17252561290350468,0.5904075928564428,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+8Q,30,2,0.34871983591063466,0.25390533516262775,0.5878455776697531,Manufacturers and Traders Trust Company,"ARDL bounds F (ARDL(1,1), case 2) | BIC / ARDL(1,1) | c - case 2 (restricted constant)"
+1Q,17,22,0.4739304356761699,0.3936912917997645,0.5381633968263912,Huntington National Bank,"ARDL bounds F (ARDL(2,1), case 1) | BIC / ARDL(2,1) | n - case 1 (no deterministic terms)"
+2Q,25,13,0.4200269810849703,0.4172113078011691,0.5742891403674996,Huntington National Bank,"ARDL bounds F (ARDL(2,1), case 1) | BIC / ARDL(2,1) | n - case 1 (no deterministic terms)"
+3Q,28,9,0.43740352505862967,0.42595232774674546,0.5768501436695049,Huntington National Bank,"ARDL bounds F (ARDL(2,1), case 1) | BIC / ARDL(2,1) | n - case 1 (no deterministic terms)"
+4Q,31,5,0.45978966445637737,0.41674723691228327,0.5799314566537678,Huntington National Bank,"ARDL bounds F (ARDL(2,1), case 1) | BIC / ARDL(2,1) | n - case 1 (no deterministic terms)"
+5Q,32,3,0.4368191374385103,0.33808095196047727,0.5762436954009951,Huntington National Bank,"ARDL bounds F (ARDL(2,1), case 1) | BIC / ARDL(2,1) | n - case 1 (no deterministic terms)"
+6Q,31,3,0.33237096424247947,0.2849461392304625,0.5666822560034385,Huntington National Bank,"ARDL bounds F (ARDL(2,1), case 1) | BIC / ARDL(2,1) | n - case 1 (no deterministic terms)"
+7Q,30,3,0.30925836362173265,0.2596725750915406,0.5731561046091185,Huntington National Bank,"ARDL bounds F (ARDL(2,1), case 1) | BIC / ARDL(2,1) | n - case 1 (no deterministic terms)"
+8Q,30,2,0.3629018929082997,0.27290164121275257,0.565589603669564,Huntington National Bank,"ARDL bounds F (ARDL(2,1), case 1) | BIC / ARDL(2,1) | n - case 1 (no deterministic terms)"

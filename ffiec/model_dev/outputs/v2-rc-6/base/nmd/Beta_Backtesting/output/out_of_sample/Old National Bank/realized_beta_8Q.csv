@@ -1,0 +1,9 @@
+horizon_q,n_pairs,n_skipped,mean_actual_beta,mean_implied_beta,mean_theta_ref_theta,bank_name,test_name,IC/selected lag,trend type
+1Q,17,22,0.45029617726666127,0.256961186076347,0.3424341291507763,Old National Bank,EG_LongRun,"BIC / ADF lag=1, ECM lag=1",n (none)
+2Q,25,13,0.43244349690518086,0.2764411462634119,0.3410802147434211,Old National Bank,EG_LongRun,"BIC / ADF lag=1, ECM lag=1",n (none)
+3Q,28,9,0.4187197439846971,0.3229918127491018,0.3400865796916808,Old National Bank,EG_LongRun,"BIC / ADF lag=1, ECM lag=1",n (none)
+4Q,31,5,0.4386369161304727,0.26428612684072167,0.524645356248212,Old National Bank,EG_LongRun,"BIC / ADF lag=1, ECM lag=1",n (none)
+5Q,32,3,0.4244860398225483,0.08774282819780313,0.5057267457229192,Old National Bank,EG_LongRun,"BIC / ADF lag=1, ECM lag=1",n (none)
+6Q,31,3,0.24030818421971417,0.02297619137446074,0.5030907766007091,Old National Bank,EG_LongRun,"BIC / ADF lag=1, ECM lag=1",n (none)
+7Q,30,3,0.23849484540156846,-0.07591610449455885,0.5138478572334925,Old National Bank,EG_LongRun,"BIC / ADF lag=1, ECM lag=1",n (none)
+8Q,30,2,0.28182544591184894,-0.11144571741332347,0.5063555326670072,Old National Bank,EG_LongRun,"BIC / ADF lag=1, ECM lag=1",n (none)

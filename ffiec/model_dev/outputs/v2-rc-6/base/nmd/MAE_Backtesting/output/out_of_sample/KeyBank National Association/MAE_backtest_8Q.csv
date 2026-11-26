@@ -1,0 +1,9 @@
+bank_name,test_name,IC/selected lag,trend type,horizon_q,origin,start,end,n_obs,mae,naive_mae
+KeyBank National Association,Johansen VECM (rank 1),AIC / k_ar_diff=1,det_order 1 (linear trend),1Q,2026Q2,2026Q3,2026Q3,1,0.0847840741683108,0.05905744250325018
+KeyBank National Association,Johansen VECM (rank 1),AIC / k_ar_diff=1,det_order 1 (linear trend),2Q,2026Q1,2026Q2,2026Q3,2,0.08725762438802398,0.02952872125162509
+KeyBank National Association,Johansen VECM (rank 1),AIC / k_ar_diff=1,det_order 1 (linear trend),3Q,2025Q4,2026Q1,2026Q3,3,0.07649519155621325,0.24699244112257568
+KeyBank National Association,Johansen VECM (rank 1),AIC / k_ar_diff=1,det_order 1 (linear trend),4Q,2025Q3,2025Q4,2026Q3,4,0.1312920456532468,0.3397633256986496
+KeyBank National Association,Johansen VECM (rank 1),AIC / k_ar_diff=1,det_order 1 (linear trend),5Q,2025Q2,2025Q3,2026Q3,5,0.08286287756370699,0.2614844785624229
+KeyBank National Association,Johansen VECM (rank 1),AIC / k_ar_diff=1,det_order 1 (linear trend),6Q,2025Q1,2025Q2,2026Q3,6,0.08611232212259534,0.20407059797815122
+KeyBank National Association,Johansen VECM (rank 1),AIC / k_ar_diff=1,det_order 1 (linear trend),7Q,2024Q4,2025Q1,2026Q3,7,0.07305839053125639,0.3502774910233913
+KeyBank National Association,Johansen VECM (rank 1),AIC / k_ar_diff=1,det_order 1 (linear trend),8Q,2024Q3,2024Q4,2026Q3,8,0.2608310945264414,0.5231845007671436
