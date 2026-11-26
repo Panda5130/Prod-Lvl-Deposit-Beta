@@ -435,3 +435,15 @@ def test_ytd_restatement_removes_affiliates_prior_ytd_only_when_rate_spikes():
     key = ["CERT", "REPDTE"]
     pd.testing.assert_frame_equal(g2.sort_values(key).reset_index(drop=True), f2.sort_values(key).reset_index(drop=True))
     assert log2.empty
+
+
+def test_cumulative_beta_weights_by_average_balances():
+    import cumulative_beta as cb
+    rates = pd.DataFrame([{"bank_name": b, "quarter": q, "nmd_avg_pf": 60.0, "time_avg_pf": 20.0, "dep_avg_pf": 100.0}
+                          for b in cb.BANKS for q in ("2012-03-31", "2026-09-30")])
+    sb = pd.DataFrame([{"bank_name": b, "segment": s, "beta": v} for b in cb.BANKS for s, v in (("nmd", 0.4), ("time", 0.6))])
+    hl = pd.DataFrame({"bank_name": cb.BANKS, "hl_beta": 0.5})
+    r = cb.cumulative(rates, sb, hl).iloc[0]
+    assert r.cum_beta_ib == pytest.approx((60 * 0.4 + 20 * 0.6) / 80)          # 0.45
+    assert r.cum_beta_total == pytest.approx((60 * 0.4 + 20 * 0.6) / 100)      # 0.36: other deposits at beta 0
+    assert r.gap_hl_minus_cum_total == pytest.approx(0.14)
