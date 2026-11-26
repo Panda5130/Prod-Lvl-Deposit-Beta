@@ -12,13 +12,13 @@
 | Document title | Prod-Lvl Deposit Beta Analyses |
 | Model family | Regional bank deposit-rate error-correction models (deposit beta) |
 | Model type | Single-equation, one-step error-correction models (ECM), as in the origin model (section 3) |
-| Development status | Draft; data source switch approved, estimation not yet rerun |
+| Development status | Draft; data final for two segments x five banks (D7 to D9), estimation not yet run |
 | Validation status | Not validated |
 | Model tier / materiality | Not yet assigned |
 | Developer / owner | Shivam Panda (GitHub: Panda5130) |
 | Code repository | `Panda5130/Prod-Lvl-Deposit-Beta` |
 | Origin model | High-Level Deposit Beta, repository `Panda5130/Deposit-Beta` (FDIC BankFind data), document "WIP Regional Banking Deposit Beta Analyses", version 2.0 (WIP), last synced origin commit `ea95980` |
-| Document date | 2026-11-25 |
+| Document date | 2026-11-26 |
 | Data period | 2012Q1 to 2026Q3 (59 quarters per bank, section 6.1; about 56 after lags and differencing) |
 
 ### 0.1 Naming
@@ -28,6 +28,7 @@
 ### 0.2 Revision History
 | Version | Date | Description | Validation |
 | :--- | :--- | :--- | :--- |
+| 0.12 (draft) | 2026-11-26 | Model scope set by the owner: two segments per bank, interest-bearing non-maturity and time deposits (D9; 1.1, 1.3, 2, 3.1). No aggregate (total-deposit or interest-bearing) model; O1 closed. Data unchanged | None needed (no data change) |
 | 0.11 (draft) | 2026-11-26 | D8: non-maturity model also uses an end-of-quarter denominator (`rate_nmd_eoq_pf`, `nmd_eoq_pf`); both product models now default to end-of-quarter (6.10) | Impact moderate: median -0.2 bp, 95th percentile 4 bp, max 11 bp; no other column changed; 413 x 40; 28 tests |
 | 0.10 (draft) | 2026-11-26 | D7: time-deposit model uses an end-of-quarter denominator (owner decision; 6.9, P15). New columns `rate_time_eoq_pf` and `time_eoq_pf`; `rate_time_pf` (two-point) kept as reference; no other series changed | Matches the tested variant exactly; legs still tile `A_pf`; 28 tests |
 | 0.9 (draft) | 2026-11-26 | Scope decided: five banks estimated (O7, 1.2); sample end decided 2026Q3 and FFT rebuilt to 2026Q3 (1.3, 3.1, 4.4); dataset unchanged | FFT equals origin on every common quarter |
@@ -45,7 +46,7 @@
 ## 1. Executive Summary
 
 ### 1.1 Purpose
-Estimate the deposit beta of seven U.S. regional banks (the long-run share of a federal funds rate change that passes through to the bank's deposit rate) and the speed of adjustment toward it, using FFIEC Call Report data. Each bank is modeled separately.
+Estimate deposit betas (the long-run share of a federal funds rate change that passes through to a deposit rate) and the speed of adjustment toward them, using FFIEC Call Report data, for two segments in each of five U.S. regional banks: interest-bearing non-maturity deposits (NMD) and time deposits. Each bank and segment is modeled separately: ten models (D9, owner decision 2026-11-26: "I want to scope to be two segments for each bank: NMD rates and time-deposit rates."). No aggregate total-deposit or interest-bearing deposit model is estimated; the origin model's single bank-level rate is not carried over.
 
 ### 1.2 Banks in Scope
 Estimated (owner decision 2026-11-26, O7): First Horizon Bank (cert 4977), Huntington National Bank (6560), KeyBank National Association (17534), Manufacturers and Traders Trust Company (588), Old National Bank (3832). Glacier Bank (30788) and SouthState Bank (33555) are not estimated; they stay in the dataset, which is built for all seven, and the bank filter is applied at run time. Merger predecessors are included pro forma (section 4.2).
@@ -55,18 +56,18 @@ Estimated (owner decision 2026-11-26, O7): First Horizon Bank (cert 4977), Hunti
 | :-- | :-- | :-- |
 | Source of deposits and interest expense | FDIC BankFind Financials API | FFIEC Call Reports, CDR Public Web Service |
 | Sample | 2011Q1 to 2026Q2 (62 quarters) | 2012Q1 to 2026Q3 (59 quarters; end decided 2026-11-26, section 4.4) |
-| Dependent variable | `rate_pf_clean` (two-point average denominator) | Numerator from Call Report items; interest-bearing denominator on the Schedule RC base (sections 6.4 to 6.6); model variable to confirm (O1) |
+| Dependent variable | `rate_pf_clean`, one total-deposit rate per bank (two-point average denominator) | Two rates per bank (D9): `rate_nmd_eoq_pf` (NMD, D8) and `rate_time_eoq_pf` (time deposits, D7), both on pro forma end-of-quarter balances (sections 6.7, 6.9, 6.10). No aggregate rate is modelled |
 | Regressor, model form, selection, backtests | As origin | Unchanged; rerun on the new data |
 | Merger events | FDIC `/history` plus 7 NIC-found transfers | Same event list (read from the origin repository's shared file), cross-checked to NIC Transformations |
 
-Results of the rerun are not yet available. This document will carry them in section 6 once the rerun is complete.
+Estimation results are not yet available. This document will carry them once the ten models are estimated.
 
 ---
 
 ## 2. Model Purpose, Scope and Intended Use
 
 ### 2.1 Business Purpose
-Deposit betas feed interest-rate risk measurement (NII and EVE sensitivity), deposit pricing analysis, funds-transfer pricing and peer benchmarking. The Call Report source also carries deposit detail by account type (Schedule RC-E and RC-K) that allows product-level betas as a later development.
+Deposit betas feed interest-rate risk measurement (NII and EVE sensitivity), deposit pricing analysis, funds-transfer pricing and peer benchmarking. The Call Report source carries deposit detail by account type (Schedules RC, RC-E and RI), which allows separate betas for non-maturity and time deposits; that split is the scope of this model (D9).
 
 ### 2.2 Intended Use (once validated)
 - Peer benchmarking of long-run deposit pass-through.
@@ -74,11 +75,12 @@ Deposit betas feed interest-rate risk measurement (NII and EVE sensitivity), dep
 
 ### 2.3 Uses Outside Scope
 - Production pricing or regulatory capital decisions before validation.
-- Product-level betas: not in this version (planned as a separate development, section 8).
+- A beta for total deposits or for all interest-bearing deposits (not estimated, D9). `rate_total_pf` and `rate_ib_pf` stay in the data file for reconciliation only.
+- Separate transaction, savings/MMDA or time-by-size betas: no consistent Call Report basis (6.7).
 - Horizons beyond 8 quarters or rate regimes outside the sample (for example negative rates).
 
 ### 2.4 Model Output
-Per bank: estimated one-step ECM (speed of adjustment, long-run beta with delta-method standard errors), in-sample and rolling-origin forecast error, and long-run beta stability.
+Per bank and segment (NMD, time deposits): estimated one-step ECM (speed of adjustment, long-run beta with delta-method standard errors), in-sample and rolling-origin forecast error, and long-run beta stability.
 
 ---
 
@@ -87,10 +89,11 @@ Per bank: estimated one-step ECM (speed of adjustment, long-run beta with delta-
 ### 3.1 Variables
 | Role | Variable | Definition | Source |
 | :-- | :-- | :-- | :-- |
-| Dependent (y) | `rate_pf_clean` | 400 x quarterly deposit interest expense / average of current and prior quarter-end total deposits, pro forma for mergers | FFIEC Call Reports |
+| Dependent (y), NMD model | `rate_nmd_eoq_pf` | 400 x quarterly (`RIAD4508 + RIAD0093`) / end-of-quarter (`RCON6636` less time deposits), pro forma for mergers (D8, 6.10) | FFIEC Call Reports |
+| Dependent (y), time-deposit model | `rate_time_eoq_pf` | 400 x quarterly time-deposit interest (`RIADA517 + A518` to 2016, `RIADHK03 + HK04` from 2017) / end-of-quarter time deposits (`RCON6648 + J473 + J474` to 2016, `RCONHK16 + HK17` from 2017), pro forma (D7, 6.9) | FFIEC Call Reports |
 | Regressor (x) | `FFT` | Quarterly average of the monthly effective federal funds rate | FRED `FEDFUNDS`; Prod-Lvl series rebuilt to 2026Q3 (section 4.4) |
 
-Call Report items (fixed in `ffiec/data_build/items.py`, each checked against the current MDRM): total deposits `RCFD2200` if present, else `RCON2200 + RCFN2200` (domestic plus foreign offices); deposit interest expense from the Schedule RI domestic codes plus `RIAD4172` (foreign offices). Call Report income items are year to date and are converted to quarterly values; dollars are divided by 1,000.
+Call Report items (fixed in `ffiec/data_build/items.py`, each checked against the current MDRM). The model items are in the table above. Total deposits are used only for the merger materiality test (Mode A/B) and the reconciliation: total deposits `RCFD2200` if present, else `RCON2200 + RCFN2200` (domestic plus foreign offices); deposit interest expense from the Schedule RI domestic codes plus `RIAD4172` (foreign offices). Call Report income items are year to date and are converted to quarterly values; dollars are divided by 1,000.
 
 ### 3.2 Model Form
 Unchanged from the origin model: one-step ECM fitted by OLS, specification chosen among Engle-Granger, Johansen VECM and ARDL bounds forms, champion chosen out of sample, one asymmetric variant per passing specification, deterministic terms pruned after the screen. The origin document is the reference for the equations, the selection rule and the backtest design. Any departure on Prod-Lvl is recorded in section 0.2.
@@ -418,9 +421,9 @@ Non-maturity balances move slowly, so the two denominators nearly coincide; the 
 
 | # | Item | Status |
 | :-: | :-- | :-- |
-| O1 | Average-balance denominator: Schedule RC base chosen and built 2026-11-25 (6.4 to 6.6). Owner to confirm the model variable is `rate_ib_pf` (`rate_total_pf` stays in the same file) | Built; model variable to confirm |
+| O1 | Aggregate model variable (`rate_ib_pf` vs `rate_total_pf`) | Closed 2026-11-26: no aggregate model (D9). `rate_ib_pf` had been assumed by the build session and was never confirmed; both series stay in the file for reconciliation only |
 | O2 | COVID liquidity dummy retest on the Prod-Lvl series | Deferred to model development |
-| O3 | Product-level betas | Product lines set out in 6.7 (interest-bearing non-maturity, time; foreign and noninterest-bearing as non-modelled legs). Model rates final 2026-11-26: `rate_nmd_eoq_pf` (D8) and `rate_time_eoq_pf` (D7), five banks (O7), 2012Q1 to 2026Q3 | Data final; models in progress (Prod-Lvl session) |
+| O3 | Product-level betas (now the model scope, D9) | Product lines set out in 6.7 (interest-bearing non-maturity, time; foreign and noninterest-bearing as non-modelled legs). Model rates final 2026-11-26: `rate_nmd_eoq_pf` (D8) and `rate_time_eoq_pf` (D7), five banks (O7), 2012Q1 to 2026Q3 | Data final; models in progress (Prod-Lvl session) |
 | O4 | `ffiec/reference/CSV_ATTRIBUTES_*.zip` (NIC attributes) are not committed; keep or delete | Owner |
 | O5 | Independent validation, model inventory registration, monitoring plan | Not started |
 | O6 | Commit the sensitivity script and its outputs so section 6.5 can be reproduced | Done 2026-11-25 (`ffiec/sweep_sensitivity.py`) |
