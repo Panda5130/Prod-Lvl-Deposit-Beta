@@ -40,11 +40,12 @@ TD_FALLBACK_PERIOD = "2012-03-31"
 QE_PRODUCTS = {"nmd": ("NMD_Q", "NMD_IE"), "time": ("TD_Q", "TD_IE"), "for": ("FOR_Q", "FOR_IE")}
 AVG_PRODUCTS = {"tran": ("RCON3485", "RIAD4508"), "sav": ("RCONB563", "RIAD0093")}
 PRODUCTS = {**QE_PRODUCTS, **AVG_PRODUCTS}
-# Legs that also get an end-of-quarter rate (owner decision 2026-11-26, D7, doc 6.9): rate_<leg>_eoq_pf = 400 x interest
+# Legs that also get an end-of-quarter rate (owner decisions 2026-11-26: time D7, doc 6.9; non-maturity D8, doc 6.10;
+# both are the model defaults): rate_<leg>_eoq_pf = 400 x interest
 # / <leg>_eoq_pf, the pro forma end-of-quarter balance. No reported time-deposit average exists after 2016, and the
 # two-point average misstates the average in quarters of fast intra-quarter growth (First Horizon 2023, KeyBank 2023).
 # rate_<leg>_pf (two-point) is kept as the reference, so the two-point legs still tile the interest-bearing base A_pf.
-END_BALANCE_LEGS = {"time"}
+END_BALANCE_LEGS = {"time", "nmd"}
 log = logging.getLogger("build_ffiec")
 
 

@@ -28,6 +28,7 @@
 ### 0.2 Revision History
 | Version | Date | Description | Validation |
 | :--- | :--- | :--- | :--- |
+| 0.11 (draft) | 2026-11-26 | D8: non-maturity model also uses an end-of-quarter denominator (`rate_nmd_eoq_pf`, `nmd_eoq_pf`); both product models now default to end-of-quarter (6.10) | Impact moderate: median -0.2 bp, 95th percentile 4 bp, max 11 bp; no other column changed; 413 x 40; 28 tests |
 | 0.10 (draft) | 2026-11-26 | D7: time-deposit model uses an end-of-quarter denominator (owner decision; 6.9, P15). New columns `rate_time_eoq_pf` and `time_eoq_pf`; `rate_time_pf` (two-point) kept as reference; no other series changed | Matches the tested variant exactly; legs still tile `A_pf`; 28 tests |
 | 0.9 (draft) | 2026-11-26 | Scope decided: five banks estimated (O7, 1.2); sample end decided 2026Q3 and FFT rebuilt to 2026Q3 (1.3, 3.1, 4.4); dataset unchanged | FFT equals origin on every common quarter |
 | 0.8 (draft) | 2026-11-25 | Year-to-date breaks in the quarterly interest expense repaired (6.8): push-down restarts (previous-quarter rate carried forward) and common-control restatements (affiliates' prior YTD removed); M&T 2022Q2-Q3 time-deposit dip confirmed as reported data (P13) | BankFind reconciliation in window 13 of 406 (was 21), max 0.045 (was 0.160); 28 tests |
@@ -323,8 +324,8 @@ Code `ffiec/data_build/build_ffiec.py` (`hybrid_denominator`, `build_hybrid`). O
 *Product lines for Huntington, Old National, KeyBank, M&T and First Horizon* (codes checked in the MDRM 2026-11-25; all FFIEC 031/041, Call Report source, 2012Q1 to 2026Q3):
 | Line | Interest expense (Schedule RI) | Balance (quarter-end, two-point averaged) | Share of `A_pf`, median | Status |
 | :-- | :-- | :-- | :-: | :-- |
-| Interest-bearing non-maturity (interest-bearing transaction accounts + savings incl. MMDA) | `RIAD4508 + RIAD0093` | `RCON6636` (RC) less time deposits | 80% to 86% | Model line; `rate_nmd_pf` |
-| Time deposits | `RIADA517 + RIADA518` to 2016; `RIADHK03 + RIADHK04` from 2017 | `RCON6648 + RCONJ473 + RCONJ474` to 2016; `RCONHK16 + RCONHK17` from 2017 (RC-E); the rate uses the end-of-quarter balance (6.9) | 14% to 20% | Model line; `rate_time_pf` |
+| Interest-bearing non-maturity (interest-bearing transaction accounts + savings incl. MMDA) | `RIAD4508 + RIAD0093` | `RCON6636` (RC) less time deposits; the model rate uses the end-of-quarter balance (6.10) | 80% to 86% | Model line; `rate_nmd_eoq_pf` (`rate_nmd_pf` two-point reference) |
+| Time deposits | `RIADA517 + RIADA518` to 2016; `RIADHK03 + RIADHK04` from 2017 | `RCON6648 + RCONJ473 + RCONJ474` to 2016; `RCONHK16 + RCONHK17` from 2017 (RC-E); the model rate uses the end-of-quarter balance (6.9) | 14% to 20% | Model line; `rate_time_eoq_pf` (`rate_time_pf` two-point reference) |
 | Foreign offices | `RIAD4172` | `RCFN6636` (RC) | 0% to 2.9%; none after 2016Q4 (Huntington), 2015Q4 (KeyBank), 2021Q2 (M&T); never for First Horizon, Old National | Kept inside `rate_ib_pf`; not a model line |
 | Noninterest-bearing | none (zero rate) | `RCON6631 + RCFN6631` (RC) | outside `A_pf` | Mix and weights only |
 
@@ -367,6 +368,28 @@ A spike is a quarter more than 0.3 points away from the mean of the quarters eit
 
 *Known weaknesses (P15).* Huntington 2026Q2 (time deposits +32%) becomes 3.10%, between 3.87% and 3.06%, which would be an artefact if the growth came late in the quarter; First Horizon 2024Q3 becomes 4.65% where its own balances imply 4.91%; KeyBank 2023Q1 (3.32%) depends on whether its CD growth came before or after March. M&T 2022Q2 to Q3 (P13) is unchanged at about 0.09%.
 
+### 6.10 Non-maturity denominator: end-of-quarter balance (D8, owner decision 2026-11-26)
+*Decision.* The owner asked for the end-of-quarter adjustment to be applied to the non-maturity rate as well and adopted as the default if its impact was moderate. It is (below), so both product models use end-of-quarter denominators: `rate_nmd_eoq_pf` (D8) and `rate_time_eoq_pf` (D7).
+
+*Implementation.* `rate_nmd_eoq_pf = 400 x (RIAD4508 + RIAD0093) / nmd_eoq_pf`, where `nmd_eoq_pf` is the pro forma end-of-quarter interest-bearing non-maturity balance (`RCON6636` less time deposits). `rate_nmd_pf` and `nmd_avg_pf` (two-point) are kept as reference; no other column changed. Output: 413 rows x 40 columns.
+
+*Impact, five banks, 2012Q1 to 2026Q3* (end-of-quarter minus two-point; "slope" is the OLS slope of the rate level on FFT, an illustration only, not the ECM long-run beta):
+
+| Leg | Bank | Median (bp) | 95th pct of abs (bp) | Max abs (bp) | Corr. of quarterly changes | Spikes > 0.3 pt (2-pt / EOQ) | Slope 2-pt / EOQ |
+| :-- | :-- | --: | --: | --: | --: | :-: | :-: |
+| Non-maturity | First Horizon | -0.1 | 4.0 | 11.2 | 0.989 | 1 / 1 | 0.525 / 0.523 |
+| Non-maturity | Huntington | -0.2 | 4.0 | 5.2 | 0.990 | 0 / 0 | 0.464 / 0.461 |
+| Non-maturity | KeyBank | -0.2 | 2.0 | 3.8 | 0.996 | 0 / 0 | 0.418 / 0.415 |
+| Non-maturity | M&T | -0.2 | 3.3 | 9.0 | 0.984 | 0 / 0 | 0.424 / 0.421 |
+| Non-maturity | Old National | -0.1 | 2.1 | 3.4 | 0.997 | 0 / 0 | 0.415 / 0.414 |
+| Time | First Horizon | +0.8 | 40.4 | 87.4 | 0.880 | 8 / 4 | 0.679 / 0.641 |
+| Time | Huntington | +0.9 | 40.0 | 60.5 | 0.875 | 3 / 2 | 0.696 / 0.669 |
+| Time | KeyBank | +1.3 | 27.7 | 87.5 | 0.938 | 6 / 2 | 0.654 / 0.621 |
+| Time | M&T | +1.2 | 32.4 | 93.9 | 0.951 | 4 / 2 | 0.630 / 0.603 |
+| Time | Old National | +0.5 | 25.1 | 41.4 | 0.959 | 4 / 1 | 0.675 / 0.645 |
+
+Non-maturity balances move slowly, so the two denominators nearly coincide; the largest difference is First Horizon 2023Q2 (2.22% to 2.11%). For time deposits the change is larger and lowers the static slope by about 0.03 at every bank. The aggregate rate `rate_ib_pf` and the total-deposit rate stay on the two-point average.
+
 ---
 
 ## 7. Limitations and Assumptions
@@ -397,7 +420,7 @@ A spike is a quarter more than 0.3 points away from the mean of the quarters eit
 | :-: | :-- | :-- |
 | O1 | Average-balance denominator: Schedule RC base chosen and built 2026-11-25 (6.4 to 6.6). Owner to confirm the model variable is `rate_ib_pf` (`rate_total_pf` stays in the same file) | Built; model variable to confirm |
 | O2 | COVID liquidity dummy retest on the Prod-Lvl series | Deferred to model development |
-| O3 | Product-level betas | Product lines set out in 6.7 (interest-bearing non-maturity, time; foreign and noninterest-bearing as non-modelled legs); `rate_nmd_pf`, `rate_time_pf` built on the RC base; owner to confirm the lines; models not started |
+| O3 | Product-level betas | Product lines set out in 6.7 (interest-bearing non-maturity, time; foreign and noninterest-bearing as non-modelled legs). Model rates final 2026-11-26: `rate_nmd_eoq_pf` (D8) and `rate_time_eoq_pf` (D7), five banks (O7), 2012Q1 to 2026Q3 | Data final; models in progress (Prod-Lvl session) |
 | O4 | `ffiec/reference/CSV_ATTRIBUTES_*.zip` (NIC attributes) are not committed; keep or delete | Owner |
 | O5 | Independent validation, model inventory registration, monitoring plan | Not started |
 | O6 | Commit the sensitivity script and its outputs so section 6.5 can be reproduced | Done 2026-11-25 (`ffiec/sweep_sensitivity.py`) |
