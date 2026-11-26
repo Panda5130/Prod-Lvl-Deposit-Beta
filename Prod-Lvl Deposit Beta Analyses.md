@@ -28,6 +28,7 @@
 ### 0.2 Revision History
 | Version | Date | Description | Validation |
 | :--- | :--- | :--- | :--- |
+| 0.13 (draft) | 2026-11-26 | Cumulative (balance-weighted) beta of the two segments and its comparison with the High-Level betas (6.11, `ffiec/cumulative_beta.py`); provisional until the segment ECMs are estimated | Static segment betas weighted over total deposits reproduce the static total-deposit beta within 0.034 |
 | 0.12 (draft) | 2026-11-26 | Model scope set by the owner: two segments per bank, interest-bearing non-maturity and time deposits (D9; 1.1, 1.3, 2, 3.1). No aggregate (total-deposit or interest-bearing) model; O1 closed. Data unchanged | None needed (no data change) |
 | 0.11 (draft) | 2026-11-26 | D8: non-maturity model also uses an end-of-quarter denominator (`rate_nmd_eoq_pf`, `nmd_eoq_pf`); both product models now default to end-of-quarter (6.10) | Impact moderate: median -0.2 bp, 95th percentile 4 bp, max 11 bp; no other column changed; 413 x 40; 28 tests |
 | 0.10 (draft) | 2026-11-26 | D7: time-deposit model uses an end-of-quarter denominator (owner decision; 6.9, P15). New columns `rate_time_eoq_pf` and `time_eoq_pf`; `rate_time_pf` (two-point) kept as reference; no other series changed | Matches the tested variant exactly; legs still tile `A_pf`; 28 tests |
@@ -392,6 +393,27 @@ A spike is a quarter more than 0.3 points away from the mean of the quarters eit
 | Time | Old National | +0.5 | 25.1 | 41.4 | 0.959 | 4 / 1 | 0.675 / 0.645 |
 
 Non-maturity balances move slowly, so the two denominators nearly coincide; the largest difference is First Horizon 2023Q2 (2.22% to 2.11%). For time deposits the change is larger and lowers the static slope by about 0.03 at every bank. The aggregate rate `rate_ib_pf` and the total-deposit rate stay on the two-point average.
+
+### 6.11 Cumulative beta and comparison with the High-Level betas (2026-11-26, provisional)
+*Definition* (`ffiec/cumulative_beta.py`, output `ffiec/outputs/cumulative_beta_v2.csv`). Weights are the sample-average pro forma balances, 2012Q1 to 2026Q3:
+- `cum_beta_ib = (B_nmd b_nmd + B_time b_time) / (B_nmd + B_time)`: beta of interest-bearing deposits.
+- `cum_beta_total = (B_nmd b_nmd + B_time b_time) / B_total`: beta of total deposits, with noninterest-bearing deposits (and foreign offices, at most 2.9%) at beta 0. This is the comparable figure: the High-Level beta is the beta of the total-deposit rate, whose base includes noninterest-bearing deposits.
+
+*Segment betas are provisional.* The ten segment ECMs are not yet estimated, so `b_nmd` and `b_time` are the slope of an OLS regression of the segment rate on a constant and FFT (the long-run step of the Engle-Granger form, no dynamics). The script takes the ECM long-run betas with `--segment-betas` when they exist. High-Level betas: champion long-run betas from the High-Level document rev 2.1, section 1.3 (`ffiec/reference/high_level_champion_betas.csv`).
+
+| Bank | b_nmd | b_time | NMD / time / NIB share of total deposits | cum_beta_ib | cum_beta_total | Static total-rate beta (Call Report / BankFind) | High-Level beta | High-Level minus cum_beta_total |
+| :-- | --: | --: | :-: | --: | --: | :-: | --: | --: |
+| First Horizon | 0.523 | 0.641 | 60% / 11% / 28% | 0.542 | 0.389 | 0.391 / 0.374 | 0.477 | +0.088 |
+| Huntington | 0.461 | 0.669 | 64% / 13% / 23% | 0.496 | 0.380 | 0.382 / 0.366 | 0.463 | +0.083 |
+| KeyBank | 0.415 | 0.621 | 64% / 9% / 27% | 0.440 | 0.322 | 0.356 / 0.341 | 0.402 | +0.080 |
+| M&T | 0.421 | 0.603 | 57% / 11% / 32% | 0.450 | 0.308 | 0.304 / 0.290 | 0.402 | +0.094 |
+| Old National | 0.414 | 0.645 | 60% / 15% / 25% | 0.460 | 0.346 | 0.337 / 0.317 | 0.419 | +0.073 |
+
+*Reading.*
+- Aggregation holds: on the same estimator, the segments weighted over total deposits reproduce the beta of the total-deposit rate within 0.01 at four banks and 0.034 at KeyBank (where the time-deposit share moved most with the rate cycle).
+- Source and sample are not the cause of the gap: the static beta of the BankFind rate (2011Q1 to 2026Q2) and of the Call Report total rate (2012Q1 to 2026Q3) differ by at most 0.02.
+- The gap of +0.07 to +0.09 to the High-Level beta is the estimator: ECM long-run beta (with lags and deterministic terms) against a static regression. The like-for-like comparison is the High-Level beta against `cum_beta_total` built from the segment ECM betas; it is to be rerun when those are estimated.
+- On interest-bearing deposits only, time deposits pass through more than NMD at every bank (0.60 to 0.67 against 0.41 to 0.52, provisional).
 
 ---
 

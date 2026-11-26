@@ -1,0 +1,6 @@
+bank_name,cert,hl_champion,hl_beta,source
+First Horizon Bank,4977,"Johansen VECM (rank 1), k_ar_diff = 1, det_order -1, BIC",0.477,"WIP Regional Banking Deposit Beta Analyses, rev 2.1, section 1.3 (main checkout dbf08ba)"
+Huntington National Bank,6560,"EG long run, trend n, AIC (ADF lag=1, ECM lag=3)",0.463,"WIP Regional Banking Deposit Beta Analyses, rev 2.1, section 1.3 (main checkout dbf08ba)"
+KeyBank National Association,17534,"ARDL(2,1), case 1, BIC, asymmetric",0.402,"WIP Regional Banking Deposit Beta Analyses, rev 2.1, section 1.3 (main checkout dbf08ba)"
+Manufacturers and Traders Trust Company,588,"EG long run, trend c, AIC (ADF lag=1, ECM lag=4); constant pruned",0.402,"WIP Regional Banking Deposit Beta Analyses, rev 2.1, section 1.3 (main checkout dbf08ba)"
+Old National Bank,3832,"Johansen VECM (rank 1), k_ar_diff = 1, det_order -1, fixed",0.419,"WIP Regional Banking Deposit Beta Analyses, rev 2.1, section 1.3 (main checkout dbf08ba)"
